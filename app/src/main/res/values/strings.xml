@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">ChessClock</string>
+
+    <!-- SETTINGS -->
+    <string name="single_game">Pojedyncza partia</string>
+    <string name="chess_match">Mecz szachowy</string>
+    <string name="game_time">Czas na gracza: 1$%d </string>
+    <string name="increment">Inkrement: 1$%d </string>
+    <string name="different_time">Różny czas </string>
+    <string name="game_time_two">Czas na gracza 1$%d (gracz drugi): </string>
+    <string name="increment_two">Inkrement: 1$%d (gracz drugi): </string>
+    <string name="number_of_games">Ilość gier: 1$%d </string>
+    <string name="play_button">Graj</string>
+    <string name="customize_button">Zapisane ustawienia</string>
 </resources>
