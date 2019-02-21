@@ -16,7 +16,7 @@
         <item name="android:layout_marginTop">2dp</item>
         <item name="android:layout_marginBottom">2dp</item>
         <item name="android:layout_marginLeft">24dp</item>
-        <item name="android:textColor">@color/settingsTextColor</item>
+        <item name="android:textColor">@color/blackColor</item>
     </style>
 
     <!-- Settings - SeekBars -->
@@ -27,6 +27,15 @@
         <item name="android:layout_marginBottom">2dp</item>
         <item name="android:layout_marginLeft">24dp</item>
         <item name="android:layout_marginRight">24dp</item>
+    </style>
+
+    <!-- Timer - TextViews -->
+    <style name="TimerView">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/blackColor</item>
     </style>
 
 </resources>

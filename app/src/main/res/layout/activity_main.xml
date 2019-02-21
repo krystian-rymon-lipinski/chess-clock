@@ -44,7 +44,7 @@
 
         <SeekBar android:id="@+id/game_time_seek_bar"
             style = "@style/SettingsSeekBar"
-            android:max="60" />
+            android:max="59" />
 
         <TextView android:id="@+id/increment_text"
             style="@style/SettingsText"
@@ -65,7 +65,7 @@
 
         <SeekBar android:id="@+id/game_time_two_seek_bar"
             style = "@style/SettingsSeekBar"
-            android:max="60"
+            android:max="59"
             android:visibility="invisible"/>
 
         <TextView android:id="@+id/increment_two_text"

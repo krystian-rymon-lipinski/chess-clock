@@ -12,4 +12,15 @@
     <string name="number_of_games">Ilość gier: %1$d </string>
     <string name="play_button">Graj</string>
     <string name="customize_button">Zapisane ustawienia</string>
+
+    <!-- TIMER -->
+    <string name="points">%1$.1f:%2$.1f</string>
+    <string name="move_number">Ruch %1$d.</string>
+    <string name="game_number">Gra %1$d/%2$d</string>
+    <string name="time">%1$02d:%2$02d:%3$02d</string>
+    <string name="first_move_text">%1$d sekund na wykonanie pierwszego ruchu</string>
+    <string name="draw_offer">Remis?</string>
+    <string name="resign">Poddaj</string>
+    <string name="new_game">Nowa partia</string>
+    <string name="next_game">Kolejna partia</string>
 </resources>

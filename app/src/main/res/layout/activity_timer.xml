@@ -1,27 +1,170 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:grid="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TimerActivity"
-    android:orientation="vertical">
+    grid:columnCount="3"
+    grid:alignmentMode="alignBounds"
+    tools:context=".TimerActivity" >
+
+    <TextView android:id="@+id/points_text_rotated"
+        style = "@style/TimerView"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="1"
+        android:rotation="180"
+        android:text="@string/points"/>
+
+    <Button android:id="@+id/move_button_rotated"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="1"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        android:rotation="180"
+        android:text="@string/move_number" />
+
+    <TextView android:id="@+id/game_number_text_rotated"
+        style = "@style/TimerView"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="1"
+        android:rotation="180"
+        android:text="@string/game_number"/>
+
+    <TextView android:id="@+id/timer_text_rotated"
+        style = "@style/TimerView"
+        grid:layout_columnWeight="0.1"
+        grid:layout_rowWeight="1"
+        grid:layout_columnSpan="3"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:gravity="top|center_horizontal"
+        android:rotation="180"
+        android:text="@string/time" />
+
+    <TextView android:id="@+id/first_move_text_rotated"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="1"
+        grid:layout_columnSpan="3"
+        android:gravity="bottom|center_horizontal"
+        android:rotation="180"
+        android:text="@string/first_move_text"/>
+
+    <Button android:id="@+id/resign_button_rotated"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="1"
+        android:gravity="center"
+        android:rotation="180"
+        android:text="@string/resign"/>
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text=""/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""/>
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="1" />
 
-</LinearLayout>
+    <ToggleButton android:id="@+id/draw_button_rotated"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="1"
+        android:gravity="center"
+        android:rotation="180"
+        android:textOff="@string/draw_offer"
+        android:textOn="@string/draw_offer"/>
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="5"/>
+
+    <Button android:id="@+id/new_game_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="5"
+        android:gravity="center"
+        android:layout_margin="20dp"
+        android:text="@string/new_game"/>
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="5"/>
+
+    <ToggleButton android:id="@+id/draw_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="1"
+        android:gravity="center"
+        android:layout_marginLeft="32dp"
+        android:layout_marginStart="32dp"
+        android:textOff="@string/draw_offer"
+        android:textOn="@string/draw_offer"/>
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="1"/>
+
+    <Button android:id="@+id/resign_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="1"
+        android:gravity="center"
+        android:layout_marginRight="32dp"
+        android:layout_marginEnd="32dp"
+        android:text="@string/resign"/>
+
+    <TextView android:id="@+id/first_move_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="1"
+        grid:layout_columnSpan="3"
+        android:gravity="bottom|center_horizontal"
+        android:text="@string/first_move_text"/>
+
+    <TextView android:id="@+id/timer_text"
+        style = "@style/TimerView"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="1"
+        grid:layout_columnSpan="3"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:gravity="top|center_horizontal"
+        android:text="@string/time"/>
+
+    <TextView android:id="@+id/game_number_text"
+        style = "@style/TimerView"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="1"
+        android:text="@string/game_number"/>
+
+    <Button android:id="@+id/move_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="1"
+        android:gravity="center"
+        android:layout_marginBottom="16dp"
+        android:text="@string/move_number"/>
+
+    <TextView android:id="@+id/points_text"
+        style = "@style/TimerView"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="1"
+        android:text="@string/points"/>
+
+</android.support.v7.widget.GridLayout>
