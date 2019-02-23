@@ -33,13 +33,13 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         Game.setPlayerTwoPoints(0);
         getSettings();
         setViewComponents();
-        setStartValues();
+        setViewStartValues();
         play();
     }
 
     public void getSettings() {
         int timeOne = getIntent().getIntExtra("playerOneTime", 15);
-        int timeTwo = getIntent().getIntExtra("playerTwoTime", timeOne);
+        int timeTwo = getIntent().getIntExtra("playerTwoTime", timeOne); //if there's no player two, it means
         int incrementOne = getIntent().getIntExtra("playerOneIncrement", 0);
         int incrementTwo = getIntent().getIntExtra("playerTwoIncrement", incrementOne);
         int numberOfGames = getIntent().getIntExtra("numberOfGames", 1);
@@ -73,7 +73,60 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         drawButton.setOnClickListener(this);
     }
 
-    public void setStartValues() {
+    public void setViewStartValues() {
+        setTextViews();
+        setButtons();
+        if(currentGame.getNumberOfGames() > 1) setButtonColors(); //switching sides after every game in a match
+    }
+
+    public void play() {
+        final Handler handler = new Handler();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                calculateTime();
+                checkForResult();
+                if(currentGame.getGameState() != GameState.RUNNING) finishGame();
+                else handler.postDelayed(this, 1000);
+            }
+        });
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()) {
+            case R.id.move_button:
+                makeWhiteMove();
+                break;
+            case R.id.move_button_rotated:
+                makeBlackMove();
+                break;
+            case R.id.draw_button:
+                setButton(drawButton, false); //a draw can be offered only once a move and during your own
+                break;
+            case R.id.draw_button_rotated:
+                setButton(drawButtonRotated, false);
+                break;
+            case R.id.resign_button:
+                currentGame.setGameState(GameState.LOST);
+                break;
+            case R.id.resign_button_rotated:
+                currentGame.setGameState(GameState.WON);
+                break;
+            case R.id.new_game_button:
+                if(currentGame.getNumberOfGames() == 1) {
+                    Game.setGameNumber(0); //new game, but not a part of a match
+                    Game.setPlayerOnePoints(0);
+                    Game.setPlayerTwoPoints(0);
+                }
+                getSettings();
+                setViewStartValues();
+                play();
+                break;
+        }
+    }
+
+    public void setTextViews() {
         timerText.setText(String.format(getString(R.string.time), currentGame.getFirstTimer()/3600,
                 currentGame.getFirstTimer()/60%60, currentGame.getFirstTimer()%60));
         timerTextRotated.setText(String.format(getString(R.string.time), currentGame.getSecondTimer()/3600,
@@ -91,50 +144,75 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         moveButton.setText(String.format(getString(R.string.move_number), currentGame.getMoveNumber()));
         moveButtonRotated.setText(String.format(getString(R.string.move_number), currentGame.getMoveNumberRotated()));
 
-        newGameButton.setVisibility(View.INVISIBLE);
         firstMoveText.setVisibility(View.VISIBLE);
         firstMoveTextRotated.setVisibility(View.VISIBLE);
+    }
+
+    public void setButtons() {
+        newGameButton.setVisibility(View.INVISIBLE);
         drawButton.setChecked(false);
         drawButtonRotated.setChecked(false);
-        resignButton.setAlpha(1);
-        resignButton.setClickable(true);
-        resignButtonRotated.setAlpha(1);
-        resignButtonRotated.setClickable(true);
+        setButton(resignButton, true);
+        setButton(resignButtonRotated, true);
         if(currentGame.getIsFirstPlayerMove()) {
-            moveButton.setAlpha(1);
-            moveButton.setClickable(true);
-            moveButtonRotated.setAlpha(0.5f);
-            moveButtonRotated.setClickable(false);
-            drawButton.setAlpha(1);
-            drawButton.setClickable(true);
-            drawButtonRotated.setAlpha(0.5f);
-            drawButtonRotated.setClickable(false);
+            setButton(moveButton, true);
+            setButton(drawButton, true);
+            setButton(moveButtonRotated, false);
+            setButton(drawButtonRotated, false);
         }
         else {
-            moveButton.setAlpha(0.5f);
-            moveButton.setClickable(false);
-            moveButtonRotated.setAlpha(1);
-            moveButtonRotated.setClickable(true);
-            drawButton.setAlpha(0.5f);
-            drawButton.setClickable(false);
-            drawButtonRotated.setAlpha(1);
-            drawButtonRotated.setClickable(true);
-
+            setButton(moveButton, false);
+            setButton(drawButton, false);
+            setButton(moveButtonRotated, true);
+            setButton(drawButtonRotated, true);
         }
     }
 
-    public void play() {
-        final Handler handler = new Handler();
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                calculateTime();
-                checkForResult();
-                if(currentGame.getGameState() != GameState.RUNNING) finishGame();
-                else handler.postDelayed(this, 1000);
-            }
-        });
+    public void setButton(Button button, boolean isEnabled) {
+        if(isEnabled) {
+            button.setClickable(true);
+            button.setAlpha(1);
+        }
+        else {
+            button.setClickable(false);
+            button.setAlpha(0.5f);
+        }
     }
+
+    public void setButtonColors() {
+        if(Game.getGameNumber()%2 != 0) {
+            moveButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_white_button));
+            drawButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_white_button));
+            resignButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_white_button));
+            moveButton.setTextColor(getResources().getColor(R.color.blackColor));
+            drawButton.setTextColor(getResources().getColor(R.color.blackColor));
+            resignButton.setTextColor(getResources().getColor(R.color.blackColor));
+
+            moveButtonRotated.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_black_button));
+            drawButtonRotated.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_black_button));
+            resignButtonRotated.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_black_button));
+            moveButtonRotated.setTextColor(getResources().getColor(R.color.whiteColor));
+            drawButtonRotated.setTextColor(getResources().getColor(R.color.whiteColor));
+            resignButtonRotated.setTextColor(getResources().getColor(R.color.whiteColor));
+        }
+        else {
+            moveButtonRotated.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_white_button));
+            drawButtonRotated.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_white_button));
+            resignButtonRotated.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_white_button));
+            moveButtonRotated.setTextColor(getResources().getColor(R.color.blackColor));
+            drawButtonRotated.setTextColor(getResources().getColor(R.color.blackColor));
+            resignButtonRotated.setTextColor(getResources().getColor(R.color.blackColor));
+
+            moveButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_black_button));
+            drawButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_black_button));
+            resignButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_black_button));
+            moveButton.setTextColor(getResources().getColor(R.color.whiteColor));
+            drawButton.setTextColor(getResources().getColor(R.color.whiteColor));
+            resignButton.setTextColor(getResources().getColor(R.color.whiteColor));
+        }
+    }
+
+
 
     public void calculateTime() { //and display it
         if(currentGame.getIsFirstPlayerMove()) {
@@ -163,76 +241,48 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    @Override
-    public void onClick(View v) {
-        switch(v.getId()) {
-            case R.id.move_button:
-                currentGame.setIsFirstPlayerMove(false);
-                currentGame.setMoveNumberRotated(currentGame.getMoveNumberRotated()+1);
-                drawButton.setAlpha(0.5f);
-                drawButton.setClickable(false);
-                drawButtonRotated.setAlpha(1);
-                drawButtonRotated.setClickable(true); //making a move declines a draw offer
-                drawButtonRotated.setChecked(false); //a player must re-offer a draw every single time after it being declined
-                moveButton.setAlpha(0.5f);
-                moveButton.setClickable(false);
-                moveButtonRotated.setAlpha(1);
-                moveButtonRotated.setClickable(true);
-                moveButtonRotated.setText(String.format(getString(R.string.move_number),
-                        currentGame.getMoveNumberRotated()));
-                if(currentGame.getMoveNumber() > 1) {
-                    currentGame.setFirstTimer(currentGame.getFirstTimer()+currentGame.getFirstIncrement());
-                    timerText.setText(String.format(getString(R.string.time), currentGame.getFirstTimer()/3600,
-                            currentGame.getFirstTimer()/60%60, currentGame.getFirstTimer()%60));
-                }
-                else firstMoveText.setVisibility(View.INVISIBLE); //text no longer needed
-                break;
-            case R.id.move_button_rotated:
-                currentGame.setIsFirstPlayerMove(true);
-                currentGame.setMoveNumber(currentGame.getMoveNumber()+1);
-                drawButtonRotated.setAlpha(0.5f);
-                drawButtonRotated.setClickable(false);
-                drawButton.setAlpha(1);
-                drawButton.setClickable(true);
-                drawButton.setChecked(false);
-                moveButtonRotated.setAlpha(0.5f);
-                moveButtonRotated.setClickable(false);
-                moveButton.setAlpha(1);
-                moveButton.setClickable(true);
-                moveButton.setText(String.format(getString(R.string.move_number),
-                        currentGame.getMoveNumber()));
-                if(currentGame.getMoveNumberRotated() > 1) {
-                    currentGame.setSecondTimer(currentGame.getSecondTimer()+currentGame.getSecondIncrement());
-                    timerTextRotated.setText(String.format(getString(R.string.time), currentGame.getSecondTimer()/3600,
-                            currentGame.getSecondTimer()/60%60, currentGame.getSecondTimer()%60));
-                }
-                else firstMoveTextRotated.setVisibility(View.INVISIBLE);
-                break;
-            case R.id.draw_button:
-                drawButton.setAlpha(0.5f); //a draw can be offered only once a move and during your own
-                drawButton.setClickable(false);
-                break;
-            case R.id.draw_button_rotated:
-                drawButtonRotated.setAlpha(0.5f);
-                drawButtonRotated.setClickable(false);
-                break;
-            case R.id.resign_button:
-                currentGame.setGameState(GameState.LOST);
-                break;
-            case R.id.resign_button_rotated:
-                currentGame.setGameState(GameState.WON);
-                break;
-            case R.id.new_game_button:
-                if(currentGame.getNumberOfGames() == 1) {
-                    Game.setGameNumber(0); //new game, but not a part of a match
-                    Game.setPlayerOnePoints(0);
-                    Game.setPlayerTwoPoints(0);
-                }
-                getSettings();
-                setStartValues();
-                play();
-                break;
+
+
+    public void makeWhiteMove() {
+        currentGame.setIsFirstPlayerMove(false);
+        currentGame.setMoveNumberRotated(currentGame.getMoveNumberRotated()+1);
+        setButton(moveButton, false);
+        setButton(drawButton, false);
+        setButton(moveButtonRotated, true);
+        setButton(drawButtonRotated, true); //making a move declines a draw offer
+
+        drawButtonRotated.setChecked(false); //a player must re-offer a draw every single time after it being declined
+        moveButtonRotated.setText(String.format(getString(R.string.move_number),
+                currentGame.getMoveNumberRotated()));
+        if(currentGame.getMoveNumber() > 1) {
+            if(currentGame.getFirstIncrement() != 0) {
+                currentGame.setFirstTimer(currentGame.getFirstTimer()+currentGame.getFirstIncrement());
+                timerText.setText(String.format(getString(R.string.time), currentGame.getFirstTimer()/3600,
+                        currentGame.getFirstTimer()/60%60, currentGame.getFirstTimer()%60));
+            }
         }
+        else firstMoveText.setVisibility(View.INVISIBLE); //text no longer needed - first move already made
+    }
+
+    public void makeBlackMove() {
+        currentGame.setIsFirstPlayerMove(true);
+        currentGame.setMoveNumber(currentGame.getMoveNumber()+1);
+        setButton(moveButton, true);
+        setButton(drawButton, true);
+        setButton(moveButtonRotated, false);
+        setButton(drawButtonRotated, false);
+
+        drawButton.setChecked(false);
+        moveButton.setText(String.format(getString(R.string.move_number),
+                currentGame.getMoveNumber()));
+        if(currentGame.getMoveNumberRotated() > 1) {
+            if(currentGame.getSecondIncrement() != 0) {
+                currentGame.setSecondTimer(currentGame.getSecondTimer() + currentGame.getSecondIncrement());
+                timerTextRotated.setText(String.format(getString(R.string.time), currentGame.getSecondTimer() / 3600,
+                        currentGame.getSecondTimer() / 60 % 60, currentGame.getSecondTimer() % 60));
+            }
+        }
+        else firstMoveTextRotated.setVisibility(View.INVISIBLE);
     }
 
     public void checkForResult() {

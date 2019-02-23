@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     TextView playerTime, playerTwoTime;
     TextView playerIncrement, playerTwoIncrement;
     TextView numberOfGames;
-    Button playButton, customizeButton;
+    Button playButton;
 
     SeekBar playerTimeBar, playerTwoTimeBar;
     SeekBar playerIncrementBar, playerTwoIncrementBar;
@@ -44,10 +44,8 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         differentTime.setOnClickListener(this);
 
         playButton = findViewById(R.id.play_button); //buttons
-        customizeButton = findViewById(R.id.customize_button);
         chessMatch.setOnClickListener(this);
         playButton.setOnClickListener(this);
-        customizeButton.setOnClickListener(this);
 
         playerTime = findViewById(R.id.game_time_text); //textViews
         playerTwoTime = findViewById(R.id.game_time_two_text);
@@ -148,9 +146,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
                 startActivity(intent);
 
-                break;
-            case R.id.customize_button:
-                //startActivity(new Intent(this, CustomMatchesActivity.class));
                 break;
         }
     }

@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
     </style>
 
     <!-- Settings - TextViews -->
@@ -29,13 +30,22 @@
         <item name="android:layout_marginRight">24dp</item>
     </style>
 
-    <!-- Timer - TextViews -->
+    <!-- Timer - Views -->
     <style name="TimerView">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center</item>
+    </style>
+
+    <style name="TimerTextView" parent="TimerView">
         <item name="android:textSize">20sp</item>
         <item name="android:textColor">@color/blackColor</item>
+    </style>
+
+    <style name="TimerTimeTextView" parent="TimerView">
+        <item name="android:textSize">32sp</item>
+        <item name="android:textColor">@color/blackColor</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
 </resources>
