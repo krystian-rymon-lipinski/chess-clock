@@ -40,7 +40,8 @@ public class CustomMatchDialogFragment extends DialogFragment implements SeekBar
                             intent.putExtra("matchName", name);
                             intent.putExtra("numberOfGames", numberOfGamesBar.getProgress()+2);
                             startActivity(intent);
-                            Toast.makeText(getActivity(), R.string.match_created, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), R.string.match_created,
+                                    Toast.LENGTH_LONG).show();
                         }
                     }
                 })

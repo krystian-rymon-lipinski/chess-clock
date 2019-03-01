@@ -168,6 +168,9 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 CustomMatchDialogFragment custom = new CustomMatchDialogFragment();
                 custom.show(getSupportFragmentManager(), "CustomMatchDialog");
                 return true;
+            case R.id.choose_custom_match:
+                startActivity(new Intent(this, CustomMatchActivityList.class));
+                return true;
                 default:
                     return super.onOptionsItemSelected(item);
         }
