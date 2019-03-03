@@ -31,12 +31,17 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     SeekBar playerIncrementBar, playerTwoIncrementBar;
     SeekBar numberOfGamesBar;
 
+    int customGameNumber; /*if 0 then it's a single game or a match with all games on the same terms;
+                                    as opposed to customized match with possibly all games
+                                    different with time and increment created by a user*/
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        customGameNumber = getIntent().getIntExtra("customGameNumber", 0); //if it's a non-custom, set value as 0;
         setViewComponents();
     }
 
@@ -45,10 +50,10 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         differentTime = findViewById(R.id.different_time_checkbox);
         chessMatch = findViewById(R.id.chess_match_radio_button);
         singleGame.setOnClickListener(this);
+        chessMatch.setOnClickListener(this);
         differentTime.setOnClickListener(this);
 
         playButton = findViewById(R.id.play_button); //buttons
-        chessMatch.setOnClickListener(this);
         playButton.setOnClickListener(this);
 
         playerTime = findViewById(R.id.game_time_text); //textViews
@@ -74,6 +79,11 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         playerIncrement.setText(String.format(getString(R.string.increment), 0));
         playerTwoIncrement.setText(String.format(getString(R.string.increment_two), 0));
         numberOfGames.setText(String.format(getString(R.string.number_of_games), 1));
+
+        if(customGameNumber != 0) {
+            chessMatch.setVisibility(View.INVISIBLE); //customizing single game - match shouldn't be available
+            playButton.setText(R.string.save_button);
+        }
     }
 
     @Override
@@ -111,13 +121,11 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     public void onClick(View v) {
         switch(v.getId()) {
             case R.id.single_game_radio_button:
-                Log.v("Single game checked", "" + singleGame.isChecked());
                 numberOfGames.setVisibility(View.INVISIBLE);
                 numberOfGamesBar.setVisibility(View.INVISIBLE);
                 break;
 
             case R.id.chess_match_radio_button:
-                Log.v("Chess match checked", "" + singleGame.isChecked());
                 numberOfGames.setVisibility(View.VISIBLE);
                 numberOfGamesBar.setVisibility(View.VISIBLE);
                 break;
@@ -137,19 +145,43 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 break;
 
             case R.id.play_button:
-                Intent intent = new Intent(this, TimerActivity.class);
-                intent.putExtra("playerOneTime", playerTimeBar.getProgress()+1);
-                intent.putExtra("playerOneIncrement", playerIncrementBar.getProgress());
+                Intent intent;
+                if(customGameNumber == 0) { //play a game - it's not custom game editor mode
+                    intent = new Intent(this, TimerActivity.class);
+                    intent.putExtra("playerOneTime", playerTimeBar.getProgress()+1);
+                    intent.putExtra("playerOneIncrement", playerIncrementBar.getProgress());
 
-                if (differentTime.isChecked()) {
-                    intent.putExtra("playerTwoTime", playerTwoTimeBar.getProgress()+1);
-                    intent.putExtra("playerTwoIncrement", playerTwoIncrementBar.getProgress());
+                    if (differentTime.isChecked()) {
+                        intent.putExtra("playerTwoTime", playerTwoTimeBar.getProgress()+1);
+                        intent.putExtra("playerTwoIncrement", playerTwoIncrementBar.getProgress());
+                    }
+                    if (!singleGame.isChecked()) //no possibility to uncheck in custom version
+                        intent.putExtra("numberOfGames", numberOfGamesBar.getProgress() + 1);
+
+                    startActivity(intent);
                 }
-                if (!singleGame.isChecked())
-                    intent.putExtra("numberOfGames", numberOfGamesBar.getProgress() + 1);
-
-                startActivity(intent);
-
+                else { //edit custom game parameters, save it into database and go back to the list
+                    String customMatchName = getIntent().getExtras().getString("customMatchName");
+                    int[] gameSettings = new int[4];
+                    gameSettings[0] = playerTimeBar.getProgress()+1;
+                    gameSettings[1] = playerIncrementBar.getProgress();
+                    if(differentTime.isChecked()) {
+                        gameSettings[2] = playerTwoTimeBar.getProgress()+1;
+                        gameSettings[3] = playerTwoIncrementBar.getProgress();
+                    }
+                    else {
+                        gameSettings[2] = gameSettings[0];
+                        gameSettings[3] = gameSettings[1];
+                    }
+                    CustomMatchDatabase customDb = new CustomMatchDatabase();
+                    customDb.accessDatabase(this);
+                    customDb.updateCustomGame(customMatchName, customGameNumber, gameSettings);
+                    customDb.closeDatabase();
+                    intent = new Intent(this, CustomGameActivityList.class);
+                    intent.putExtra("customGameNumber", customGameNumber); //to show which game is being updated
+                    intent.putExtra("customMatchName", customMatchName); //games from which match to show
+                    startActivity(intent);
+                }
                 break;
         }
     }

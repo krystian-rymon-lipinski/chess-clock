@@ -3,6 +3,9 @@ package com.krystian.chessclock;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,30 +27,17 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
     Button resignButton, resignButtonRotated;
     Button newGameButton;
 
-    Game currentGame;
+    Match match;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timer);
 
-        Game.setGameNumber(0); //if user goes back from a timer and set different settings
-        Game.setPlayerOnePoints(0);
-        Game.setPlayerTwoPoints(0);
-        getSettings();
-        setViewComponents();
-        setViewStartValues();
-        play();
-    }
-
-    public void getSettings() {
-        int timeOne = getIntent().getIntExtra("playerOneTime", 15);
-        int timeTwo = getIntent().getIntExtra("playerTwoTime", timeOne); //if there's no player two, it means
-        int incrementOne = getIntent().getIntExtra("playerOneIncrement", 0);
-        int incrementTwo = getIntent().getIntExtra("playerTwoIncrement", incrementOne);
-        int numberOfGames = getIntent().getIntExtra("numberOfGames", 1);
-
-        currentGame = new Game(timeOne*60, timeTwo*60, incrementOne, incrementTwo, numberOfGames); //time stored in seconds
+        setViewComponents(); //find views and attach listeners
+        getSettings(); //find match parameters ((non)-custom, time, increments, number of games) and store it in match object
+        setMatch(); //set n-th game with its parameters
     }
 
     public void setViewComponents() {
@@ -76,10 +66,69 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         drawButton.setOnClickListener(this);
     }
 
+    public void getSettings() { //and store it into a match object
+
+        String customMatchName = getIntent().getStringExtra("customMatchName");
+        int numberOfGames;
+
+        if(customMatchName == null) numberOfGames = getIntent().getIntExtra("numberOfGames", 1);
+        else {
+            CustomMatchDatabase customDb = new CustomMatchDatabase();
+            String query = "SELECT NUMBER_OF_GAMES FROM CUSTOM_MATCHES_TABLE WHERE " +
+                    "NAME = '" + customMatchName + "';";
+            Cursor cursor = customDb.accessDatabase(this).rawQuery(query, null);
+            cursor.moveToFirst();
+            numberOfGames = cursor.getInt(0);
+            cursor.close(); //no need for closing database just yet - next step is to get the data into the object
+        }
+        int[] timeOnes = new int[numberOfGames];
+        int[] incrementOnes = new int[numberOfGames];
+        int[] timeTwos = new int[numberOfGames];
+        int[] incrementTwos = new int[numberOfGames];
+
+        if(customMatchName == null) {
+            int timeOne = getIntent().getIntExtra("playerOneTime", 15);
+            int timeTwo = getIntent().getIntExtra("playerTwoTime", timeOne); //if there's no player two's extra, timeTwo = timeOne;
+            int incrementOne = getIntent().getIntExtra("playerOneIncrement", 0);
+            int incrementTwo = getIntent().getIntExtra("playerTwoIncrement", incrementOne); //same as time
+            for(int i=0; i<numberOfGames; i++) {
+                timeOnes[i] = timeOne;
+                incrementOnes[i] = incrementOne;
+                timeTwos[i] = timeTwo;
+                incrementTwos[i] = incrementTwo;
+            }
+        }
+        else {
+            CustomMatchDatabase customDb = new CustomMatchDatabase();
+            String query = "SELECT * FROM " + customMatchName + ";";
+            Cursor cursor = customDb.accessDatabase(this).rawQuery(query, null);
+            cursor.moveToFirst();
+            int index = 0;
+            do {
+                timeOnes[index] = cursor.getInt(2);
+                incrementOnes[index] = cursor.getInt(3);
+                timeTwos[index] = cursor.getInt(4);
+                incrementTwos[index] = cursor.getInt(5);
+                index++;
+            } while(cursor.moveToNext());
+            cursor.close();
+            customDb.closeDatabase();
+        }
+        match = new Match(numberOfGames, timeOnes, incrementOnes, timeTwos, incrementTwos);
+    }
+
+    public void setMatch() {
+        int game = match.getGameNumber()-1;
+        match.setCurrentGame(new Game(match.getOneTimes()[game]*60, match.getOneIncrements()[game],
+                match.getTwoTimes()[game]*60, match.getTwoIncrements()[game], game+1)); //create a game
+        setViewStartValues(); //textViews values, which button to enable, etc.
+        play();
+    }
+
     public void setViewStartValues() {
-        setTextViews();
-        setButtons();
-        if(currentGame.getNumberOfGames() > 1) setButtonColors(); //switching sides after every game in a match
+        setTextViews(); //timer values, points, number of move
+        setButtons(); //draw, resign and move buttons
+        if(match.getNumberOfGames() > 1) setButtonColors(); //switching sides after every game in a match
     }
 
     public void play() {
@@ -88,8 +137,11 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void run() {
                 calculateTime();
-                checkForResult();
-                if(currentGame.getGameState() != GameState.RUNNING) finishGame();
+                checkForResult(); //maybe someone won
+                if(match.getCurrentGame().getGameState() != GameState.RUNNING) {
+                    handler.removeCallbacksAndMessages(null);
+                    finishGame();
+                }
                 else handler.postDelayed(this, 1000);
             }
         });
@@ -111,24 +163,25 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
                 setButton(drawButtonRotated, false);
                 break;
             case R.id.resign_button:
-                currentGame.setGameState(GameState.LOST);
+                match.getCurrentGame().setGameState(GameState.LOST);
                 break;
             case R.id.resign_button_rotated:
-                currentGame.setGameState(GameState.WON);
+                match.getCurrentGame().setGameState(GameState.WON);
                 break;
             case R.id.new_game_button:
-                if(currentGame.getNumberOfGames() == 1) {
-                    Game.setGameNumber(0); //new game, but not a part of a match
-                    Game.setPlayerOnePoints(0);
-                    Game.setPlayerTwoPoints(0);
+                if(match.getNumberOfGames() == 1) { //replay a single game
+                    Log.v("Match", ""+match);
+                    match = new Match(match);
+                    Log.v("Match", ""+match);
+                    setMatch();
                 }
-                getSettings();
-                setViewStartValues();
-                play();
+                else
+                match.setGameNumber(match.getGameNumber()+1);
+                setMatch();
                 break;
         }
     }
-
+/*
     @Override
     public void onPause() {
         super.onPause();
@@ -145,24 +198,24 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
             play();
         }
     }
-
+*/
     public void setTextViews() {
-        timerText.setText(String.format(getString(R.string.time), currentGame.getFirstTimer()/3600,
-                currentGame.getFirstTimer()/60%60, currentGame.getFirstTimer()%60));
-        timerTextRotated.setText(String.format(getString(R.string.time), currentGame.getSecondTimer()/3600,
-                currentGame.getSecondTimer()/60%60, currentGame.getSecondTimer()%60));
+        timerText.setText(String.format(getString(R.string.time), match.getCurrentGame().getFirstTimer()/3600,
+                match.getCurrentGame().getFirstTimer()/60%60, match.getCurrentGame().getFirstTimer()%60));
+        timerTextRotated.setText(String.format(getString(R.string.time), match.getCurrentGame().getSecondTimer()/3600,
+                match.getCurrentGame().getSecondTimer()/60%60, match.getCurrentGame().getSecondTimer()%60));
         firstMoveText.setText(String.format(getString(R.string.first_move_text), 30));
         firstMoveTextRotated.setText(String.format(getString(R.string.first_move_text), 30));
-        pointsText.setText(String.format(getString(R.string.points), Game.getPlayerOnePoints(),
-                Game.getPlayerTwoPoints()));
-        pointsTextRotated.setText(String.format(getString(R.string.points), Game.getPlayerTwoPoints(),
-                Game.getPlayerOnePoints()));
-        gameNumberText.setText(String.format(getString(R.string.game_number), Game.getGameNumber(),
-                currentGame.getNumberOfGames()));
-        gameNumberTextRotated.setText(String.format(getString(R.string.game_number), Game.getGameNumber(),
-                currentGame.getNumberOfGames()));
-        moveButton.setText(String.format(getString(R.string.move_number), currentGame.getMoveNumber()));
-        moveButtonRotated.setText(String.format(getString(R.string.move_number), currentGame.getMoveNumberRotated()));
+        pointsText.setText(String.format(getString(R.string.points), match.getFirstPlayerPoints(),
+                match.getSecondPlayerPoints()));
+        pointsTextRotated.setText(String.format(getString(R.string.points), match.getSecondPlayerPoints(),
+                match.getFirstPlayerPoints()));
+        gameNumberText.setText(String.format(getString(R.string.game_number), match.getGameNumber(),
+                match.getNumberOfGames()));
+        gameNumberTextRotated.setText(String.format(getString(R.string.game_number), match.getGameNumber(),
+                match.getNumberOfGames()));
+        moveButton.setText(String.format(getString(R.string.move_number), match.getCurrentGame().getMoveNumber()));
+        moveButtonRotated.setText(String.format(getString(R.string.move_number), match.getCurrentGame().getMoveNumberRotated()));
 
         firstMoveText.setVisibility(View.VISIBLE);
         firstMoveTextRotated.setVisibility(View.VISIBLE);
@@ -174,7 +227,7 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         drawButtonRotated.setChecked(false);
         setButton(resignButton, true);
         setButton(resignButtonRotated, true);
-        if(currentGame.getIsFirstPlayerMove()) {
+        if(match.getCurrentGame().getIsFirstPlayerMove()) {
             setButton(moveButton, true);
             setButton(drawButton, true);
             setButton(moveButtonRotated, false);
@@ -200,7 +253,7 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
     }
 
     public void setButtonColors() {
-        if(Game.getGameNumber()%2 != 0) {
+        if(match.getGameNumber()%2 != 0) {
             moveButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_white_button));
             drawButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_white_button));
             resignButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_white_button));
@@ -235,28 +288,28 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
 
 
     public void calculateTime() { //and display it
-        if(currentGame.getIsFirstPlayerMove()) {
-            if(currentGame.getMoveNumber() == 1) {
-                currentGame.setFirstMoveTime(currentGame.getFirstMoveTime()-1);
+        if(match.getCurrentGame().getIsFirstPlayerMove()) {
+            if(match.getCurrentGame().getMoveNumber() == 1) {
+                match.getCurrentGame().setFirstMoveTime(match.getCurrentGame().getFirstMoveTime()-1);
                 firstMoveText.setText(String.format(getString(R.string.first_move_text),
-                        currentGame.getFirstMoveTime()));
+                        match.getCurrentGame().getFirstMoveTime()));
             }
             else {
-                currentGame.setFirstTimer(currentGame.getFirstTimer()-1);
-                timerText.setText(String.format(getString(R.string.time), currentGame.getFirstTimer()/3600,
-                        currentGame.getFirstTimer()/60%60, currentGame.getFirstTimer()%60));
+                match.getCurrentGame().setFirstTimer(match.getCurrentGame().getFirstTimer()-1);
+                timerText.setText(String.format(getString(R.string.time), match.getCurrentGame().getFirstTimer()/3600,
+                        match.getCurrentGame().getFirstTimer()/60%60, match.getCurrentGame().getFirstTimer()%60));
             }
         }
         else {
-            if(currentGame.getMoveNumberRotated() == 1) {
-                currentGame.setFirstMoveTimeRotated(currentGame.getFirstMoveTimeRotated()-1);
+            if(match.getCurrentGame().getMoveNumberRotated() == 1) {
+                match.getCurrentGame().setFirstMoveTimeRotated(match.getCurrentGame().getFirstMoveTimeRotated()-1);
                 firstMoveTextRotated.setText(String.format(getString(R.string.first_move_text),
-                        currentGame.getFirstMoveTimeRotated()));
+                        match.getCurrentGame().getFirstMoveTimeRotated()));
             }
             else {
-                currentGame.setSecondTimer(currentGame.getSecondTimer()-1);
-                timerTextRotated.setText(String.format(getString(R.string.time), currentGame.getSecondTimer()/3600,
-                        currentGame.getSecondTimer()/60%60, currentGame.getSecondTimer()%60));
+                match.getCurrentGame().setSecondTimer(match.getCurrentGame().getSecondTimer()-1);
+                timerTextRotated.setText(String.format(getString(R.string.time), match.getCurrentGame().getSecondTimer()/3600,
+                        match.getCurrentGame().getSecondTimer()/60%60, match.getCurrentGame().getSecondTimer()%60));
             }
         }
     }
@@ -264,8 +317,8 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
 
 
     public void makeWhiteMove() {
-        currentGame.setIsFirstPlayerMove(false);
-        currentGame.setMoveNumberRotated(currentGame.getMoveNumberRotated()+1);
+        match.getCurrentGame().setIsFirstPlayerMove(false);
+        match.getCurrentGame().setMoveNumberRotated(match.getCurrentGame().getMoveNumberRotated()+1);
         setButton(moveButton, false);
         setButton(drawButton, false);
         setButton(moveButtonRotated, true);
@@ -273,20 +326,21 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
 
         drawButtonRotated.setChecked(false); //a player must re-offer a draw every single time after it being declined
         moveButtonRotated.setText(String.format(getString(R.string.move_number),
-                currentGame.getMoveNumberRotated()));
-        if(currentGame.getMoveNumber() > 1) {
-            if(currentGame.getFirstIncrement() != 0) {
-                currentGame.setFirstTimer(currentGame.getFirstTimer()+currentGame.getFirstIncrement());
-                timerText.setText(String.format(getString(R.string.time), currentGame.getFirstTimer()/3600,
-                        currentGame.getFirstTimer()/60%60, currentGame.getFirstTimer()%60));
+                match.getCurrentGame().getMoveNumberRotated()));
+        if(match.getCurrentGame().getMoveNumber() > 1) {
+            if(match.getCurrentGame().getFirstIncrement() != 0) {
+                match.getCurrentGame().setFirstTimer(
+                        match.getCurrentGame().getFirstTimer()+match.getCurrentGame().getFirstIncrement());
+                timerText.setText(String.format(getString(R.string.time), match.getCurrentGame().getFirstTimer()/3600,
+                        match.getCurrentGame().getFirstTimer()/60%60, match.getCurrentGame().getFirstTimer()%60));
             }
         }
         else firstMoveText.setVisibility(View.INVISIBLE); //text no longer needed - first move already made
     }
 
     public void makeBlackMove() {
-        currentGame.setIsFirstPlayerMove(true);
-        currentGame.setMoveNumber(currentGame.getMoveNumber()+1);
+        match.getCurrentGame().setIsFirstPlayerMove(true);
+        match.getCurrentGame().setMoveNumber(match.getCurrentGame().getMoveNumber()+1);
         setButton(moveButton, true);
         setButton(drawButton, true);
         setButton(moveButtonRotated, false);
@@ -294,57 +348,58 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
 
         drawButton.setChecked(false);
         moveButton.setText(String.format(getString(R.string.move_number),
-                currentGame.getMoveNumber()));
-        if(currentGame.getMoveNumberRotated() > 1) {
-            if(currentGame.getSecondIncrement() != 0) {
-                currentGame.setSecondTimer(currentGame.getSecondTimer() + currentGame.getSecondIncrement());
-                timerTextRotated.setText(String.format(getString(R.string.time), currentGame.getSecondTimer() / 3600,
-                        currentGame.getSecondTimer() / 60 % 60, currentGame.getSecondTimer() % 60));
+                match.getCurrentGame().getMoveNumber()));
+        if(match.getCurrentGame().getMoveNumberRotated() > 1) {
+            if(match.getCurrentGame().getSecondIncrement() != 0) {
+                match.getCurrentGame().setSecondTimer(
+                        match.getCurrentGame().getSecondTimer() + match.getCurrentGame().getSecondIncrement());
+                timerTextRotated.setText(String.format(getString(R.string.time), match.getCurrentGame().getSecondTimer() / 3600,
+                        match.getCurrentGame().getSecondTimer() / 60 % 60, match.getCurrentGame().getSecondTimer() % 60));
             }
         }
         else firstMoveTextRotated.setVisibility(View.INVISIBLE);
     }
 
     public void checkForResult() {
-        if(currentGame.getFirstMoveTime() == 0 || currentGame.getFirstTimer() == 0)
-            currentGame.setGameState(GameState.LOST);
-        if(currentGame.getFirstMoveTimeRotated() == 0 || currentGame.getSecondTimer() == 0)
-            currentGame.setGameState(GameState.WON);
-        if(drawButton.isChecked() && drawButtonRotated.isChecked())
-            currentGame.setGameState(GameState.DRAWN);
+        if(match.getCurrentGame().getFirstMoveTime() == 0 || match.getCurrentGame().getFirstTimer() == 0)
+            match.getCurrentGame().setGameState(GameState.LOST);
+        else if(match.getCurrentGame().getFirstMoveTimeRotated() == 0 || match.getCurrentGame().getSecondTimer() == 0)
+            match.getCurrentGame().setGameState(GameState.WON);
+        else if(drawButton.isChecked() && drawButtonRotated.isChecked())
+            match.getCurrentGame().setGameState(GameState.DRAWN);
     }
 
     public void finishGame() {
         disableAllButtons();
 
-        switch(currentGame.getGameState()) {
-            case WON:
-                Game.setPlayerOnePoints(Game.getPlayerOnePoints()+1);
+        switch(match.getCurrentGame().getGameState()) {
+            case WON: //from player one perspective
+                match.setFirstPlayerPoints(match.getFirstPlayerPoints()+1);
                 break;
             case DRAWN:
-                Game.setPlayerOnePoints(Game.getPlayerOnePoints()+0.5f);
-                Game.setPlayerTwoPoints(Game.getPlayerTwoPoints()+0.5f);
+                match.setFirstPlayerPoints(match.getFirstPlayerPoints()+0.5f);
+                match.setSecondPlayerPoints(match.getSecondPlayerPoints()+0.5f);
                 break;
             case LOST:
-                Game.setPlayerTwoPoints(Game.getPlayerTwoPoints()+1);
+                match.setSecondPlayerPoints(match.getSecondPlayerPoints()+1);
                 break;
         }
         pointsText.setText(String.format(getString(R.string.points),
-                Game.getPlayerOnePoints(), Game.getPlayerTwoPoints()));
+                match.getFirstPlayerPoints(), match.getSecondPlayerPoints()));
         pointsTextRotated.setText(String.format(getString(R.string.points),
-                Game.getPlayerTwoPoints(), Game.getPlayerOnePoints()));
+                match.getSecondPlayerPoints(), match.getFirstPlayerPoints()));
 
-        if(currentGame.getNumberOfGames() == 1) {
+        if(match.getNumberOfGames() == 1) {
             newGameButton.setText(getString(R.string.new_game));
             newGameButton.setVisibility(View.VISIBLE);
         }
         else {
-            if (Game.getGameNumber() < currentGame.getNumberOfGames()) {
+            if (match.getGameNumber() < match.getNumberOfGames()) {
                 newGameButton.setText((getString(R.string.next_game)));
                 newGameButton.setVisibility(View.VISIBLE);
             } else {
                 newGameButton.setVisibility(View.INVISIBLE);
-                showResults(); //in Alert Dialog
+                showResults(); //in Alert Dialog; end of a match
             }
         }
     }
@@ -361,8 +416,9 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
     }
     public void showResults() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(getString(R.string.results, Game.getPlayerOnePoints(), Game.getPlayerTwoPoints()));
-        builder.setPositiveButton(R.string.ok_button, new DialogInterface.OnClickListener() {
+        builder.setMessage(getString(R.string.results,
+                match.getFirstPlayerPoints(), match.getSecondPlayerPoints()))
+                .setPositiveButton(R.string.ok_button, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 startActivity(new Intent(TimerActivity.this, MainActivity.class));

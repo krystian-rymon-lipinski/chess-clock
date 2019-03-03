@@ -10,14 +10,18 @@
     <string name="game_time_two">Czas na gracza %1$d (gracz drugi): </string>
     <string name="increment_two">Inkrement: %1$d (gracz drugi): </string>
     <string name="number_of_games">Ilość gier: %1$d </string>
+    <string name="play_button">Graj</string>
+    <string name="save_button">Zapisz</string> <!-- for setting custom games-->
+    <string name="custom_game_saved">Zapisywanie\u2026</string> <!-- for setting custom game -->
     <string name="custom_match_button">Własne mecze</string> <!-- menu -->
-    <!-- Settings -> Dialog -->
     <string name="add_new_match">Dodaj własny mecz</string>
+
+    <!-- Settings -> Dialog -->
     <string name="match_name">Nazwa:</string>
     <string name="no_name_chosen">Nadaj nazwę!</string>
     <string name="match_created">Utworzono nowy mecz. Skonfiguruj poszczególne partie.</string>
     <string name="hint">Blitz + Superblitz </string>
-    <string name="play_button">Graj</string>
+
     <string name="cancel_button">Anuluj</string>
     <string name="database_unreachable">Brak dostępu do bazy danych</string>
 
@@ -37,6 +41,7 @@
     <!-- Custom Match List Item -->
     <string name="custom_match_name">%1$s</string>
     <string name="arrows">\u25B6 \u25B6 \u25B6</string>
+    <string name="delete_match">Usunąć mecz?</string> <!-- in AlertDialog -->
 
     <!-- Custom Game List Item -->
     <string name="number_of_custom_game">%1$d</string>
