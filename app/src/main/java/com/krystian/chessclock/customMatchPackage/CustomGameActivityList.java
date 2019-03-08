@@ -1,4 +1,4 @@
-package com.krystian.chessclock;
+package com.krystian.chessclock.customMatchPackage;
 
 import android.app.ListActivity;
 import android.content.Intent;
@@ -10,6 +10,10 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+
+import com.krystian.chessclock.ExtraValues;
+import com.krystian.chessclock.MainActivity;
+import com.krystian.chessclock.R;
 
 
 public class CustomGameActivityList extends ListActivity {
@@ -23,7 +27,7 @@ public class CustomGameActivityList extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         customDb = new CustomMatchDatabase();
-        customMatchName = getIntent().getExtras().getString("customMatchName"); //activity is launched only after clicking
+        customMatchName = getIntent().getExtras().getString(ExtraValues.CUSTOM_MATCH_NAME); //activity is launched only after clicking
         displayCustomGames(customDb.accessDatabase(this)); /*a custom match list item or setting custom game -
                                                             - there will be an extra */
     }
@@ -31,16 +35,16 @@ public class CustomGameActivityList extends ListActivity {
     public void displayCustomGames(SQLiteDatabase db) {
         String query = "SELECT * FROM " + customMatchName +";";
         cursor = db.rawQuery(query, null);
-        final int gameChanged = getIntent().getIntExtra("customGameNumber", 0); //to color the one being changed
+        final int gameChanged = getIntent().getIntExtra(ExtraValues.CUSTOM_GAME_NUMBER, 0); //to color the one being changed
 
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.custom_game_list_item, cursor,
-                new String[]{"GAME_NUMBER", "TIME_ONE", "INCREMENT_ONE", "TIME_TWO", "INCREMENT_TWO"},
+                new String[]{CustomMatchDatabase.GAME_NUMBER, CustomMatchDatabase.TIME_ONE,
+                        CustomMatchDatabase.INCREMENT_ONE, CustomMatchDatabase.TIME_TWO,
+                        CustomMatchDatabase.INCREMENT_TWO},
                 new int[]{R.id.custom_game_number, R.id.custom_game});
         adapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
             @Override
             public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-                Log.v("Cursor", ""+cursor.getPosition());
-                Log.v("Game", ""+gameChanged);
                 if(columnIndex == 1) {
                     int gameNumber = cursor.getInt(columnIndex);
                     TextView customGameNumber = (TextView) view;
@@ -67,8 +71,8 @@ public class CustomGameActivityList extends ListActivity {
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("customMatchName", customMatchName); //to know where (in which match) to save the updates
-        intent.putExtra("customGameNumber", position+1);
+        intent.putExtra(ExtraValues.CUSTOM_MATCH_NAME, customMatchName); //to know where (in which match) to save the updates
+        intent.putExtra(ExtraValues.CUSTOM_GAME_NUMBER, position+1);
         startActivity(intent);
     }
 

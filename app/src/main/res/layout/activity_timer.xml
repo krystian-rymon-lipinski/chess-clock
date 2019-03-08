@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     grid:columnCount="3"
     grid:alignmentMode="alignBounds"
-    tools:context=".TimerActivity" >
+    tools:context=".timerPackage.TimerActivity" >
 
     <TextView android:id="@+id/points_text_rotated"
         style = "@style/TimerTextView"

@@ -1,4 +1,4 @@
-package com.krystian.chessclock;
+package com.krystian.chessclock.timerPackage;
 
 public class Game {
 

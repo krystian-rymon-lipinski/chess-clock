@@ -1,11 +1,9 @@
-package com.krystian.chessclock;
+package com.krystian.chessclock.timerPackage;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +12,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ToggleButton;
+
+import com.krystian.chessclock.ExtraValues;
+import com.krystian.chessclock.customMatchPackage.CustomMatchDatabase;
+import com.krystian.chessclock.MainActivity;
+import com.krystian.chessclock.R;
+
+import java.util.ArrayList;
 
 public class TimerActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -37,7 +42,7 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
 
         setViewComponents(); //find views and attach listeners
         getSettings(); //find match parameters ((non)-custom, time, increments, number of games) and store it in match object
-        setMatch(); //set n-th game with its parameters
+        setMatchGame(); //set n-th game with its parameters
     }
 
     public void setViewComponents() {
@@ -68,48 +73,38 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
 
     public void getSettings() { //and store it into a match object
 
-        String customMatchName = getIntent().getStringExtra("customMatchName");
+        String customMatchName = getIntent().getStringExtra(ExtraValues.CUSTOM_MATCH_NAME);
         int numberOfGames;
-
-        if(customMatchName == null) numberOfGames = getIntent().getIntExtra("numberOfGames", 1);
-        else {
-            CustomMatchDatabase customDb = new CustomMatchDatabase();
-            String query = "SELECT NUMBER_OF_GAMES FROM CUSTOM_MATCHES_TABLE WHERE " +
-                    "NAME = '" + customMatchName + "';";
-            Cursor cursor = customDb.accessDatabase(this).rawQuery(query, null);
-            cursor.moveToFirst();
-            numberOfGames = cursor.getInt(0);
-            cursor.close(); //no need for closing database just yet - next step is to get the data into the object
-        }
-        int[] timeOnes = new int[numberOfGames];
-        int[] incrementOnes = new int[numberOfGames];
-        int[] timeTwos = new int[numberOfGames];
-        int[] incrementTwos = new int[numberOfGames];
+        ArrayList<Integer> timeOnes = new ArrayList<>();
+        ArrayList<Integer> incrementOnes = new ArrayList<>();
+        ArrayList<Integer> timeTwos = new ArrayList<>();
+        ArrayList<Integer> incrementTwos = new ArrayList<>();
 
         if(customMatchName == null) {
-            int timeOne = getIntent().getIntExtra("playerOneTime", 15);
-            int timeTwo = getIntent().getIntExtra("playerTwoTime", timeOne); //if there's no player two's extra, timeTwo = timeOne;
-            int incrementOne = getIntent().getIntExtra("playerOneIncrement", 0);
-            int incrementTwo = getIntent().getIntExtra("playerTwoIncrement", incrementOne); //same as time
+            numberOfGames = getIntent().getIntExtra(ExtraValues.NUMBER_OF_GAMES, 1); //if no extra send, it's a single game
+            int timeOne = getIntent().getIntExtra(ExtraValues.PLAYER_ONE_TIME, 15);
+            int timeTwo = getIntent().getIntExtra(ExtraValues.PLAYER_TWO_TIME, timeOne); //if there's no player two's extra, timeTwo = timeOne;
+            int incrementOne = getIntent().getIntExtra(ExtraValues.PLAYER_ONE_INCREMENT, 0);
+            int incrementTwo = getIntent().getIntExtra(ExtraValues.PLAYER_TWO_INCREMENT, incrementOne); //same as time
             for(int i=0; i<numberOfGames; i++) {
-                timeOnes[i] = timeOne;
-                incrementOnes[i] = incrementOne;
-                timeTwos[i] = timeTwo;
-                incrementTwos[i] = incrementTwo;
+                timeOnes.add(timeOne);
+                incrementOnes.add(incrementOne);
+                timeTwos.add(timeTwo);
+                incrementTwos.add(incrementTwo);
             }
         }
+
         else {
             CustomMatchDatabase customDb = new CustomMatchDatabase();
             String query = "SELECT * FROM " + customMatchName + ";";
             Cursor cursor = customDb.accessDatabase(this).rawQuery(query, null);
+            numberOfGames = cursor.getCount();
             cursor.moveToFirst();
-            int index = 0;
             do {
-                timeOnes[index] = cursor.getInt(2);
-                incrementOnes[index] = cursor.getInt(3);
-                timeTwos[index] = cursor.getInt(4);
-                incrementTwos[index] = cursor.getInt(5);
-                index++;
+                timeOnes.add(cursor.getInt(2));
+                incrementOnes.add(cursor.getInt(3));
+                timeTwos.add(cursor.getInt(4));
+                incrementTwos.add(cursor.getInt(5));
             } while(cursor.moveToNext());
             cursor.close();
             customDb.closeDatabase();
@@ -117,10 +112,10 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         match = new Match(numberOfGames, timeOnes, incrementOnes, timeTwos, incrementTwos);
     }
 
-    public void setMatch() {
-        int game = match.getGameNumber()-1;
-        match.setCurrentGame(new Game(match.getOneTimes()[game]*60, match.getOneIncrements()[game],
-                match.getTwoTimes()[game]*60, match.getTwoIncrements()[game], game+1)); //create a game
+    public void setMatchGame() {
+        int game = match.getGameNumber();
+        match.setCurrentGame(new Game(match.getOneTimes().get(game-1)*60, match.getOneIncrements().get(game-1),
+                match.getTwoTimes().get(game-1)*60, match.getTwoIncrements().get(game-1), game)); //create a game
         setViewStartValues(); //textViews values, which button to enable, etc.
         play();
     }
@@ -138,10 +133,7 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
             public void run() {
                 calculateTime();
                 checkForResult(); //maybe someone won
-                if(match.getCurrentGame().getGameState() != GameState.RUNNING) {
-                    handler.removeCallbacksAndMessages(null);
-                    finishGame();
-                }
+                if(match.getCurrentGame().getGameState() != GameState.RUNNING) finishGame();
                 else handler.postDelayed(this, 1000);
             }
         });
@@ -170,14 +162,11 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
                 break;
             case R.id.new_game_button:
                 if(match.getNumberOfGames() == 1) { //replay a single game
-                    Log.v("Match", ""+match);
-                    match = new Match(match);
-                    Log.v("Match", ""+match);
-                    setMatch();
+                    match = new Match(match); //same settings of a single game with GameState = RUNNING -> handler starts counting again
                 }
                 else
                 match.setGameNumber(match.getGameNumber()+1);
-                setMatch();
+                setMatchGame(); //the next one
                 break;
         }
     }
@@ -397,7 +386,8 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
             if (match.getGameNumber() < match.getNumberOfGames()) {
                 newGameButton.setText((getString(R.string.next_game)));
                 newGameButton.setVisibility(View.VISIBLE);
-            } else {
+            }
+            else {
                 newGameButton.setVisibility(View.INVISIBLE);
                 showResults(); //in Alert Dialog; end of a match
             }
@@ -414,6 +404,7 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         setButton(drawButtonRotated, false);
         setButton(resignButtonRotated, false);
     }
+
     public void showResults() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(getString(R.string.results,

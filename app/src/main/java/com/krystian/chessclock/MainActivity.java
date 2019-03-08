@@ -1,10 +1,8 @@
 package com.krystian.chessclock;
 
 import android.content.Intent;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -12,10 +10,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.krystian.chessclock.customMatchPackage.CustomGameActivityList;
+import com.krystian.chessclock.customMatchPackage.CustomMatchActivityList;
+import com.krystian.chessclock.customMatchPackage.CustomMatchDatabase;
+import com.krystian.chessclock.customMatchPackage.CustomMatchDialogFragment;
+import com.krystian.chessclock.timerPackage.TimerActivity;
 
 public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener, View.OnClickListener {
 
@@ -41,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        customGameNumber = getIntent().getIntExtra("customGameNumber", 0); //if it's a non-custom, set value as 0;
+        customGameNumber = getIntent().getIntExtra(ExtraValues.CUSTOM_GAME_NUMBER, 0); //if it's a non-custom, set value as 0;
         setViewComponents();
     }
 
@@ -148,20 +150,20 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 Intent intent;
                 if(customGameNumber == 0) { //play a game - it's not custom game editor mode
                     intent = new Intent(this, TimerActivity.class);
-                    intent.putExtra("playerOneTime", playerTimeBar.getProgress()+1);
-                    intent.putExtra("playerOneIncrement", playerIncrementBar.getProgress());
+                    intent.putExtra(ExtraValues.PLAYER_ONE_TIME, playerTimeBar.getProgress()+1);
+                    intent.putExtra(ExtraValues.PLAYER_ONE_INCREMENT, playerIncrementBar.getProgress());
 
                     if (differentTime.isChecked()) {
-                        intent.putExtra("playerTwoTime", playerTwoTimeBar.getProgress()+1);
-                        intent.putExtra("playerTwoIncrement", playerTwoIncrementBar.getProgress());
+                        intent.putExtra(ExtraValues.PLAYER_TWO_TIME, playerTwoTimeBar.getProgress()+1);
+                        intent.putExtra(ExtraValues.PLAYER_TWO_INCREMENT, playerTwoIncrementBar.getProgress());
                     }
                     if (!singleGame.isChecked()) //no possibility to uncheck in custom version
-                        intent.putExtra("numberOfGames", numberOfGamesBar.getProgress() + 1);
+                        intent.putExtra(ExtraValues.NUMBER_OF_GAMES, numberOfGamesBar.getProgress() + 1);
 
                     startActivity(intent);
                 }
                 else { //edit custom game parameters, save it into database and go back to the list
-                    String customMatchName = getIntent().getExtras().getString("customMatchName");
+                    String customMatchName = getIntent().getExtras().getString(ExtraValues.CUSTOM_MATCH_NAME);
                     int[] gameSettings = new int[4];
                     gameSettings[0] = playerTimeBar.getProgress()+1;
                     gameSettings[1] = playerIncrementBar.getProgress();
@@ -178,8 +180,8 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                     customDb.updateCustomGame(customMatchName, customGameNumber, gameSettings);
                     customDb.closeDatabase();
                     intent = new Intent(this, CustomGameActivityList.class);
-                    intent.putExtra("customGameNumber", customGameNumber); //to show which game is being updated
-                    intent.putExtra("customMatchName", customMatchName); //games from which match to show
+                    intent.putExtra(ExtraValues.CUSTOM_GAME_NUMBER, customGameNumber); //to show which game is being updated
+                    intent.putExtra(ExtraValues.CUSTOM_MATCH_NAME, customMatchName); //games from which match to show
                     startActivity(intent);
                 }
                 break;

@@ -1,4 +1,4 @@
-package com.krystian.chessclock;
+package com.krystian.chessclock.customMatchPackage;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -12,6 +12,9 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.krystian.chessclock.ExtraValues;
+import com.krystian.chessclock.R;
 
 public class CustomMatchDialogFragment extends DialogFragment implements SeekBar.OnSeekBarChangeListener {
 
@@ -36,12 +39,14 @@ public class CustomMatchDialogFragment extends DialogFragment implements SeekBar
                         if(name.isEmpty())
                             Toast.makeText(getActivity(), R.string.no_name_chosen, Toast.LENGTH_SHORT).show();
                         else {
-                            Intent intent = new Intent(getContext(), CustomMatchActivityList.class);
-                            intent.putExtra("matchName", name);
-                            intent.putExtra("numberOfGames", numberOfGamesBar.getProgress()+2);
-                            startActivity(intent);
+                            CustomMatchDatabase customDb = new CustomMatchDatabase();
+                            customDb.accessDatabase(getContext());
+                            customDb.createNewCustomMatch(name, numberOfGamesBar.getProgress()+2);
+                            customDb.closeDatabase();
                             Toast.makeText(getActivity(), R.string.match_created,
                                     Toast.LENGTH_LONG).show();
+                            startActivity(new Intent(getContext(), CustomMatchActivityList.class));
+
                         }
                     }
                 })

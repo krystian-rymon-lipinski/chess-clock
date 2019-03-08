@@ -1,4 +1,6 @@
-package com.krystian.chessclock;
+package com.krystian.chessclock.timerPackage;
+
+import java.util.ArrayList;
 
 public class Match {
     private Game currentGame;
@@ -8,10 +10,10 @@ public class Match {
     private float secondPlayerPoints;
     private int gameNumber;
 
-    private int[] oneTimes;
-    private int[] oneIncrements;
-    private int[] twoTimes;
-    private int[] twoIncrements;
+    private ArrayList<Integer> oneTimes;
+    private ArrayList<Integer> oneIncrements;
+    private ArrayList<Integer> twoTimes;
+    private ArrayList<Integer> twoIncrements;
 
     public Match(int numberOfGames) {
         this.numberOfGames = numberOfGames;
@@ -28,12 +30,23 @@ public class Match {
         this(match.numberOfGames, match.oneTimes, match.oneIncrements, match.twoTimes, match.twoIncrements);
     }
 
-    public Match(int numberOfGames, int[] oneTimes, int[] oneIncrements, int[] twoTimes, int[] twoIncrements) { //custom matches
+    public Match(int numberOfGames, ArrayList<Integer> oneTimes, ArrayList<Integer> oneIncrements,
+                 ArrayList<Integer> twoTimes, ArrayList<Integer> twoIncrements) {
         this(numberOfGames);
         this.oneTimes = oneTimes;
         this.oneIncrements = oneIncrements;
         this.twoTimes = twoTimes;
         this.twoIncrements = twoIncrements;
+    }
+
+    public Match reset(Match match) {
+        match.setGameNumber(1);
+        match.setFirstPlayerPoints(0);
+        match.setSecondPlayerPoints(0);
+        match.setNumberOfGames(1);
+
+
+        return match;
     }
 
     public Game getCurrentGame() { return currentGame; }
@@ -51,15 +64,15 @@ public class Match {
     public int getGameNumber() { return gameNumber; }
     public void setGameNumber(int gameNumber) { this.gameNumber = gameNumber; }
 
-    public int[] getOneTimes() { return oneTimes; }
-    public void setOneTimes(int[] oneTimes) { this.oneTimes = oneTimes; }
+    public ArrayList<Integer> getOneTimes() { return oneTimes; }
+    public void setOneTimes(ArrayList<Integer> oneTimes) { this.oneTimes = oneTimes; }
 
-    public int[] getOneIncrements() { return oneIncrements; }
-    public void setOneIncrements(int[] oneIncrements) { this.oneIncrements = oneIncrements; }
+    public ArrayList<Integer> getOneIncrements() { return oneIncrements; }
+    public void setOneIncrements(ArrayList<Integer> oneIncrements) { this.oneIncrements = oneIncrements; }
 
-    public int[] getTwoTimes() { return twoTimes; }
-    public void setTwoTimes(int[] twoTimes) { this.twoTimes = twoTimes; }
+    public ArrayList<Integer> getTwoTimes() { return twoTimes; }
+    public void setTwoTimes(ArrayList<Integer> twoTimes) { this.twoTimes = twoTimes; }
 
-    public int[] getTwoIncrements() { return twoIncrements; }
-    public void setTwoIncrements(int[] twoIncrements) { this.twoIncrements = twoIncrements; }
+    public ArrayList<Integer> getTwoIncrements() { return twoIncrements; }
+    public void setTwoIncrements(ArrayList<Integer> twoIncrements) { this.twoIncrements = twoIncrements; }
 }

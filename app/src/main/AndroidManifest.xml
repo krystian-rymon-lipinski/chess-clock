@@ -4,12 +4,12 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/chess_clock_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/chess_clock_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
-        <activity android:name=".TimerActivity"
+        <activity android:name=".timerPackage.TimerActivity"
             android:screenOrientation="portrait"> </activity>
         <activity android:name=".MainActivity"
             android:screenOrientation="portrait">
@@ -19,8 +19,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CustomMatchActivityList"> </activity>
-        <activity android:name=".CustomGameActivityList"> </activity>
+        <activity android:name=".customMatchPackage.CustomMatchActivityList"> </activity>
+        <activity android:name=".customMatchPackage.CustomGameActivityList"> </activity>
     </application>
 
 </manifest>

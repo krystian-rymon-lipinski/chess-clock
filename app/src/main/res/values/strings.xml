@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ChessClock</string>
+    <string name="app_name">Chess Clock</string>
 
     <!-- SETTINGS -->
     <string name="single_game">Pojedyncza partia</string>
