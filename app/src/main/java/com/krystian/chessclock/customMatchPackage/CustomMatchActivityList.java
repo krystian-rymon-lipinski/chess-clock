@@ -53,8 +53,8 @@ public class CustomMatchActivityList extends ListActivity implements  View.OnTou
                         String matchName = cursor.getString(columnIndex);
                         TextView customMatchName = (TextView) view;
                         customMatchName.setText(String.format(getString(R.string.custom_match_name), matchName));
-//TO DO                        customMatchName.setTextColor(getResources().getColor(R.color.blackColor)); /*if there was a chosen
- //                match, it got coloured and when going back from timer - it stayed coloured, so it needs to be changed */
+                        customMatchName.setTextColor(Color.rgb(30, 30, 30)); /*if there was a chosen
+                 match, it got coloured and when going back from timer - it stayed coloured, so it needs to be changed */
                         return true;
                     case 2:
                         int matchGames = cursor.getInt(columnIndex);
