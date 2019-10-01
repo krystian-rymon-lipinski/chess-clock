@@ -303,8 +303,6 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-
-
     public void makeWhiteMove() {
         match.getCurrentGame().setIsFirstPlayerMove(false);
         match.getCurrentGame().setMoveNumberRotated(match.getCurrentGame().getMoveNumberRotated()+1);
@@ -417,4 +415,7 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         });
         builder.show();
     }
+
+    @Override
+    public void onBackPressed() { startActivity(new Intent(this, MainActivity.class)); }
 }

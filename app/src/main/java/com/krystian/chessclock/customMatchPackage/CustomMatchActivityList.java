@@ -8,7 +8,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -53,8 +57,7 @@ public class CustomMatchActivityList extends ListActivity implements  View.OnTou
                         String matchName = cursor.getString(columnIndex);
                         TextView customMatchName = (TextView) view;
                         customMatchName.setText(String.format(getString(R.string.custom_match_name), matchName));
-                        customMatchName.setTextColor(Color.rgb(30, 30, 30)); /*if there was a chosen
-                 match, it got coloured and when going back from timer - it stayed coloured, so it needs to be changed */
+                        customMatchName.setTextColor(Color.rgb(30, 30, 30));
                         return true;
                     case 2:
                         int matchGames = cursor.getInt(columnIndex);
@@ -166,7 +169,6 @@ public class CustomMatchActivityList extends ListActivity implements  View.OnTou
         }
         return false;
     }
-
 
     @Override
     public void onBackPressed() {

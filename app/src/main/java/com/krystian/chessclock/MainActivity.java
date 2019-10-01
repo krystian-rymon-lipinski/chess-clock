@@ -210,5 +210,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         }
     }
 
-
+    @Override
+    public void onBackPressed() { }
 }

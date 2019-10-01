@@ -45,7 +45,6 @@ public class Match {
         match.setSecondPlayerPoints(0);
         match.setNumberOfGames(1);
 
-
         return match;
     }
 
