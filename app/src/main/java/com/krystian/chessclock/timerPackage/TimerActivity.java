@@ -140,33 +140,25 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-        switch(v.getId()) {
-            case R.id.move_button:
-                makeWhiteMove();
-                break;
-            case R.id.move_button_rotated:
-                makeBlackMove();
-                break;
-            case R.id.draw_button:
-                setButton(drawButton, false); //a draw can be offered only once a move and during your own
-                break;
-            case R.id.draw_button_rotated:
-                setButton(drawButtonRotated, false);
-                break;
-            case R.id.resign_button:
-                match.getCurrentGame().setGameState(GameState.LOST);
-                break;
-            case R.id.resign_button_rotated:
-                match.getCurrentGame().setGameState(GameState.WON);
-                break;
-            case R.id.new_game_button:
-                if(match.getNumberOfGames() == 1) { //replay a single game
-                    match = new Match(match); //same settings of a single game with GameState = RUNNING -> handler starts counting again
-                }
-                else
-                match.setGameNumber(match.getGameNumber()+1);
-                setMatchGame(); //the next one
-                break;
+        int id = v.getId(); //switch gives compilation error: "constant expression required"
+        if (id == R.id.move_button) {
+            makeWhiteMove();
+        } else if (id == R.id.move_button_rotated) {
+            makeBlackMove();
+        } else if (id == R.id.draw_button) {
+            setButton(drawButton, false); //a draw can be offered only once a move and during your own
+        } else if (id == R.id.draw_button_rotated) {
+            setButton(drawButtonRotated, false);
+        } else if (id == R.id.resign_button) {
+            match.getCurrentGame().setGameState(GameState.LOST);
+        } else if (id == R.id.resign_button_rotated) {
+            match.getCurrentGame().setGameState(GameState.WON);
+        } else if (id == R.id.new_game_button) {
+            if (match.getNumberOfGames() == 1) { //replay a single game
+                match = new Match(match); //same settings of a single game with GameState = RUNNING -> handler starts counting again
+            } else
+                match.setGameNumber(match.getGameNumber() + 1);
+            setMatchGame(); //the next one
         }
     }
 /*
