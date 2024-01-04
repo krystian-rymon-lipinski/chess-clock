@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
+    namespace "com.krystianrymonlipinski.chessclock"
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.krystian.chessclock"
