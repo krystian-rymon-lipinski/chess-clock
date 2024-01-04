@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.krystian.chessclock.ExtraValues;
 import com.krystian.chessclock.MainActivity;
-import com.krystian.chessclock.R;
+import com.krystianrymonlipinski.chessclock.R;
 
 
 public class CustomGameActivityList extends ListActivity {
