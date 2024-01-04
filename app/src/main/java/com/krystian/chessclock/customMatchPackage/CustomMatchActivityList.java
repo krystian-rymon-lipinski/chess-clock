@@ -8,11 +8,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -22,8 +17,8 @@ import android.widget.TextView;
 
 import com.krystian.chessclock.ExtraValues;
 import com.krystian.chessclock.MainActivity;
-import com.krystian.chessclock.R;
 import com.krystian.chessclock.timerPackage.TimerActivity;
+import com.krystianrymonlipinski.chessclock.R;
 
 public class CustomMatchActivityList extends ListActivity implements  View.OnTouchListener {
 

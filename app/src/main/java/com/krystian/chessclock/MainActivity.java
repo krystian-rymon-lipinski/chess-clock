@@ -1,7 +1,7 @@
 package com.krystian.chessclock;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,6 +12,8 @@ import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import com.krystianrymonlipinski.chessclock.R;
 
 import com.krystian.chessclock.customMatchPackage.CustomGameActivityList;
 import com.krystian.chessclock.customMatchPackage.CustomMatchActivityList;

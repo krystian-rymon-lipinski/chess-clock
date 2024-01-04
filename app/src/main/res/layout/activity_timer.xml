@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.gridlayout.widget.GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:grid="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     grid:columnCount="3"
     grid:alignmentMode="alignBounds"
-    tools:context=".timerPackage.TimerActivity" >
+    tools:context="com.krystian.chessclock.timerPackage.TimerActivity" >
 
     <TextView android:id="@+id/points_text_rotated"
         style = "@style/TimerTextView"
@@ -158,4 +158,4 @@
         grid:layout_rowWeight="1"
         android:text="@string/points"/>
 
-</android.support.v7.widget.GridLayout>
+</androidx.gridlayout.widget.GridLayout>
