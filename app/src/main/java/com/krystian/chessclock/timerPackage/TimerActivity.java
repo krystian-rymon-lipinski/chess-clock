@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Handler;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -140,33 +142,25 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-        switch(v.getId()) {
-            case R.id.move_button:
-                makeWhiteMove();
-                break;
-            case R.id.move_button_rotated:
-                makeBlackMove();
-                break;
-            case R.id.draw_button:
-                setButton(drawButton, false); //a draw can be offered only once a move and during your own
-                break;
-            case R.id.draw_button_rotated:
-                setButton(drawButtonRotated, false);
-                break;
-            case R.id.resign_button:
-                match.getCurrentGame().setGameState(GameState.LOST);
-                break;
-            case R.id.resign_button_rotated:
-                match.getCurrentGame().setGameState(GameState.WON);
-                break;
-            case R.id.new_game_button:
-                if(match.getNumberOfGames() == 1) { //replay a single game
-                    match = new Match(match); //same settings of a single game with GameState = RUNNING -> handler starts counting again
-                }
-                else
-                match.setGameNumber(match.getGameNumber()+1);
-                setMatchGame(); //the next one
-                break;
+        int id = v.getId(); //switch gives compilation error: "constant expression required"
+        if (id == R.id.move_button) {
+            makeWhiteMove();
+        } else if (id == R.id.move_button_rotated) {
+            makeBlackMove();
+        } else if (id == R.id.draw_button) {
+            setButton(drawButton, false); //a draw can be offered only once a move and during your own
+        } else if (id == R.id.draw_button_rotated) {
+            setButton(drawButtonRotated, false);
+        } else if (id == R.id.resign_button) {
+            match.getCurrentGame().setGameState(GameState.LOST);
+        } else if (id == R.id.resign_button_rotated) {
+            match.getCurrentGame().setGameState(GameState.WON);
+        } else if (id == R.id.new_game_button) {
+            if (match.getNumberOfGames() == 1) { //replay a single game
+                match = new Match(match); //same settings of a single game with GameState = RUNNING -> handler starts counting again
+            } else
+                match.setGameNumber(match.getGameNumber() + 1);
+            setMatchGame(); //the next one
         }
     }
 /*
@@ -242,34 +236,35 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
 
     public void setButtonColors() {
         if(match.getGameNumber()%2 != 0) {
-            moveButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_white_button));
-            drawButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_white_button));
-            resignButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_white_button));
-            moveButton.setTextColor(getResources().getColor(R.color.blackColor));
-            drawButton.setTextColor(getResources().getColor(R.color.blackColor));
-            resignButton.setTextColor(getResources().getColor(R.color.blackColor));
+            moveButton.setBackground(ContextCompat.getDrawable(this, R.drawable.timer_white_button));
+            moveButton.setBackground(ContextCompat.getDrawable(this, R.drawable.timer_white_button));
+            drawButton.setBackground(ContextCompat.getDrawable(this, R.drawable.timer_white_button));
+            resignButton.setBackground(ContextCompat.getDrawable(this, R.drawable.timer_white_button));
+            moveButton.setTextColor(ContextCompat.getColor(this, R.color.blackColor));
+            drawButton.setTextColor(ContextCompat.getColor(this, R.color.blackColor));
+            resignButton.setTextColor(ContextCompat.getColor(this, R.color.blackColor));
 
-            moveButtonRotated.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_black_button));
-            drawButtonRotated.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_black_button));
-            resignButtonRotated.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_black_button));
-            moveButtonRotated.setTextColor(getResources().getColor(R.color.whiteColor));
-            drawButtonRotated.setTextColor(getResources().getColor(R.color.whiteColor));
-            resignButtonRotated.setTextColor(getResources().getColor(R.color.whiteColor));
+            moveButtonRotated.setBackground(ContextCompat.getDrawable(this, R.drawable.timer_black_button));
+            drawButtonRotated.setBackground(ContextCompat.getDrawable(this, R.drawable.timer_black_button));
+            resignButtonRotated.setBackground(ContextCompat.getDrawable(this, R.drawable.timer_black_button));
+            moveButtonRotated.setTextColor(ContextCompat.getColor(this, R.color.whiteColor));
+            drawButtonRotated.setTextColor(ContextCompat.getColor(this, R.color.whiteColor));
+            resignButtonRotated.setTextColor(ContextCompat.getColor(this, R.color.whiteColor));
         }
         else {
-            moveButtonRotated.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_white_button));
-            drawButtonRotated.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_white_button));
-            resignButtonRotated.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_white_button));
-            moveButtonRotated.setTextColor(getResources().getColor(R.color.blackColor));
-            drawButtonRotated.setTextColor(getResources().getColor(R.color.blackColor));
-            resignButtonRotated.setTextColor(getResources().getColor(R.color.blackColor));
+            moveButtonRotated.setBackground(ContextCompat.getDrawable(this, R.drawable.timer_white_button));
+            drawButtonRotated.setBackground(ContextCompat.getDrawable(this, R.drawable.timer_white_button));
+            resignButtonRotated.setBackground(ContextCompat.getDrawable(this, R.drawable.timer_white_button));
+            moveButtonRotated.setTextColor(ContextCompat.getColor(this, R.color.blackColor));
+            drawButtonRotated.setTextColor(ContextCompat.getColor(this, R.color.blackColor));
+            resignButtonRotated.setTextColor(ContextCompat.getColor(this, R.color.blackColor));
 
-            moveButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_black_button));
-            drawButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_black_button));
-            resignButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_black_button));
-            moveButton.setTextColor(getResources().getColor(R.color.whiteColor));
-            drawButton.setTextColor(getResources().getColor(R.color.whiteColor));
-            resignButton.setTextColor(getResources().getColor(R.color.whiteColor));
+            moveButton.setBackground(ContextCompat.getDrawable(this, R.drawable.timer_black_button));
+            drawButton.setBackground(ContextCompat.getDrawable(this, R.drawable.timer_black_button));
+            resignButton.setBackground(ContextCompat.getDrawable(this, R.drawable.timer_black_button));
+            moveButton.setTextColor(ContextCompat.getColor(this, R.color.whiteColor));
+            drawButton.setTextColor(ContextCompat.getColor(this, R.color.whiteColor));
+            resignButton.setTextColor(ContextCompat.getColor(this, R.color.whiteColor));
         }
     }
 
@@ -406,12 +401,7 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(getString(R.string.results,
                 match.getFirstPlayerPoints(), match.getSecondPlayerPoints()))
-                .setPositiveButton(R.string.ok_button, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                startActivity(new Intent(TimerActivity.this, MainActivity.class));
-            }
-        });
+                .setPositiveButton(R.string.ok_button, (dialog, which) -> startActivity(new Intent(TimerActivity.this, MainActivity.class)));
         builder.show();
     }
 

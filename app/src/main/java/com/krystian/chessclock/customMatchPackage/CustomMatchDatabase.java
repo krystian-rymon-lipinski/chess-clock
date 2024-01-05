@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.widget.Toast;
 
-import com.krystian.chessclock.R;
+import com.krystianrymonlipinski.chessclock.R;
 
 public class CustomMatchDatabase {
 

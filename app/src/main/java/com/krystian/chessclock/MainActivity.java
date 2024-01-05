@@ -92,22 +92,17 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        switch(seekBar.getId()) {
-            case R.id.game_time_seek_bar:
-                playerTime.setText(String.format(getString(R.string.game_time), progress+1));
-                break;
-            case R.id.game_time_two_seek_bar:
-                playerTwoTime.setText(String.format(getString(R.string.game_time_two), progress+1));
-                break;
-            case R.id.increment_seek_bar:
-                playerIncrement.setText(String.format(getString(R.string.increment), progress));
-                break;
-            case R.id.increment_two_seek_bar:
-                playerTwoIncrement.setText(String.format(getString(R.string.increment_two), progress));
-                break;
-            case R.id.games_seek_bar:
-                numberOfGames.setText(String.format(getString(R.string.number_of_games), progress + 1));
-                break;
+        int id = seekBar.getId(); //switch gives compilation error: "constant expression required"
+        if (id == R.id.game_time_seek_bar) {
+            playerTime.setText(String.format(getString(R.string.game_time), progress + 1));
+        } else if (id == R.id.game_time_two_seek_bar) {
+            playerTwoTime.setText(String.format(getString(R.string.game_time_two), progress + 1));
+        } else if (id == R.id.increment_seek_bar) {
+            playerIncrement.setText(String.format(getString(R.string.increment), progress));
+        } else if (id == R.id.increment_two_seek_bar) {
+            playerTwoIncrement.setText(String.format(getString(R.string.increment_two), progress));
+        } else if (id == R.id.games_seek_bar) {
+            numberOfGames.setText(String.format(getString(R.string.number_of_games), progress + 1));
         }
     }
 
@@ -123,70 +118,61 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
     @Override
     public void onClick(View v) {
-        switch(v.getId()) {
-            case R.id.single_game_radio_button:
-                numberOfGames.setVisibility(View.INVISIBLE);
-                numberOfGamesBar.setVisibility(View.INVISIBLE);
-                break;
+        int id = v.getId(); //switch gives compilation error: "constant expression required"
+        if (id == R.id.single_game_radio_button) {
+            numberOfGames.setVisibility(View.INVISIBLE);
+            numberOfGamesBar.setVisibility(View.INVISIBLE);
+        } else if (id == R.id.chess_match_radio_button) {
+            numberOfGames.setVisibility(View.VISIBLE);
+            numberOfGamesBar.setVisibility(View.VISIBLE);
+        } else if (id == R.id.different_time_checkbox) {
+            if (differentTime.isChecked()) {
+                playerTwoTime.setVisibility(View.VISIBLE);
+                playerTwoIncrement.setVisibility(View.VISIBLE);
+                playerTwoTimeBar.setVisibility(View.VISIBLE);
+                playerTwoIncrementBar.setVisibility(View.VISIBLE);
+            } else {
+                playerTwoTime.setVisibility(View.INVISIBLE);
+                playerTwoIncrement.setVisibility(View.INVISIBLE);
+                playerTwoTimeBar.setVisibility(View.INVISIBLE);
+                playerTwoIncrementBar.setVisibility(View.INVISIBLE);
+            }
+        } else if (id == R.id.play_button) {
+            Intent intent;
+            if (customGameNumber == 0) { //play a game - it's not custom game editor mode
+                intent = new Intent(this, TimerActivity.class);
+                intent.putExtra(ExtraValues.PLAYER_ONE_TIME, playerTimeBar.getProgress() + 1);
+                intent.putExtra(ExtraValues.PLAYER_ONE_INCREMENT, playerIncrementBar.getProgress());
 
-            case R.id.chess_match_radio_button:
-                numberOfGames.setVisibility(View.VISIBLE);
-                numberOfGamesBar.setVisibility(View.VISIBLE);
-                break;
-
-            case R.id.different_time_checkbox:
                 if (differentTime.isChecked()) {
-                    playerTwoTime.setVisibility(View.VISIBLE);
-                    playerTwoIncrement.setVisibility(View.VISIBLE);
-                    playerTwoTimeBar.setVisibility(View.VISIBLE);
-                    playerTwoIncrementBar.setVisibility(View.VISIBLE);
+                    intent.putExtra(ExtraValues.PLAYER_TWO_TIME, playerTwoTimeBar.getProgress() + 1);
+                    intent.putExtra(ExtraValues.PLAYER_TWO_INCREMENT, playerTwoIncrementBar.getProgress());
+                }
+                if (!singleGame.isChecked()) //no possibility to uncheck in custom version
+                    intent.putExtra(ExtraValues.NUMBER_OF_GAMES, numberOfGamesBar.getProgress() + 1);
+
+                startActivity(intent);
+            } else { //edit custom game parameters, save it into database and go back to the list
+                String customMatchName = getIntent().getExtras().getString(ExtraValues.CUSTOM_MATCH_NAME);
+                int[] gameSettings = new int[4];
+                gameSettings[0] = playerTimeBar.getProgress() + 1;
+                gameSettings[1] = playerIncrementBar.getProgress();
+                if (differentTime.isChecked()) {
+                    gameSettings[2] = playerTwoTimeBar.getProgress() + 1;
+                    gameSettings[3] = playerTwoIncrementBar.getProgress();
                 } else {
-                    playerTwoTime.setVisibility(View.INVISIBLE);
-                    playerTwoIncrement.setVisibility(View.INVISIBLE);
-                    playerTwoTimeBar.setVisibility(View.INVISIBLE);
-                    playerTwoIncrementBar.setVisibility(View.INVISIBLE);
+                    gameSettings[2] = gameSettings[0];
+                    gameSettings[3] = gameSettings[1];
                 }
-                break;
-
-            case R.id.play_button:
-                Intent intent;
-                if(customGameNumber == 0) { //play a game - it's not custom game editor mode
-                    intent = new Intent(this, TimerActivity.class);
-                    intent.putExtra(ExtraValues.PLAYER_ONE_TIME, playerTimeBar.getProgress()+1);
-                    intent.putExtra(ExtraValues.PLAYER_ONE_INCREMENT, playerIncrementBar.getProgress());
-
-                    if (differentTime.isChecked()) {
-                        intent.putExtra(ExtraValues.PLAYER_TWO_TIME, playerTwoTimeBar.getProgress()+1);
-                        intent.putExtra(ExtraValues.PLAYER_TWO_INCREMENT, playerTwoIncrementBar.getProgress());
-                    }
-                    if (!singleGame.isChecked()) //no possibility to uncheck in custom version
-                        intent.putExtra(ExtraValues.NUMBER_OF_GAMES, numberOfGamesBar.getProgress() + 1);
-
-                    startActivity(intent);
-                }
-                else { //edit custom game parameters, save it into database and go back to the list
-                    String customMatchName = getIntent().getExtras().getString(ExtraValues.CUSTOM_MATCH_NAME);
-                    int[] gameSettings = new int[4];
-                    gameSettings[0] = playerTimeBar.getProgress()+1;
-                    gameSettings[1] = playerIncrementBar.getProgress();
-                    if(differentTime.isChecked()) {
-                        gameSettings[2] = playerTwoTimeBar.getProgress()+1;
-                        gameSettings[3] = playerTwoIncrementBar.getProgress();
-                    }
-                    else {
-                        gameSettings[2] = gameSettings[0];
-                        gameSettings[3] = gameSettings[1];
-                    }
-                    CustomMatchDatabase customDb = new CustomMatchDatabase();
-                    customDb.accessDatabase(this);
-                    customDb.updateCustomGame(customMatchName, customGameNumber, gameSettings);
-                    customDb.closeDatabase();
-                    intent = new Intent(this, CustomGameActivityList.class);
-                    intent.putExtra(ExtraValues.CUSTOM_GAME_NUMBER, customGameNumber); //to show which game is being updated
-                    intent.putExtra(ExtraValues.CUSTOM_MATCH_NAME, customMatchName); //games from which match to show
-                    startActivity(intent);
-                }
-                break;
+                CustomMatchDatabase customDb = new CustomMatchDatabase();
+                customDb.accessDatabase(this);
+                customDb.updateCustomGame(customMatchName, customGameNumber, gameSettings);
+                customDb.closeDatabase();
+                intent = new Intent(this, CustomGameActivityList.class);
+                intent.putExtra(ExtraValues.CUSTOM_GAME_NUMBER, customGameNumber); //to show which game is being updated
+                intent.putExtra(ExtraValues.CUSTOM_MATCH_NAME, customMatchName); //games from which match to show
+                startActivity(intent);
+            }
         }
     }
 
@@ -199,17 +185,16 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            case R.id.add_new_match:
-                CustomMatchDialogFragment custom = new CustomMatchDialogFragment();
-                custom.show(getSupportFragmentManager(), "CustomMatchDialog");
-                return true;
-            case R.id.choose_custom_match:
-                startActivity(new Intent(this, CustomMatchActivityList.class));
-                return true;
-                default:
-                    return super.onOptionsItemSelected(item);
+        int itemId = item.getItemId(); //switch gives compilation error: "constant expression required"
+        if (itemId == R.id.add_new_match) {
+            CustomMatchDialogFragment custom = new CustomMatchDialogFragment();
+            custom.show(getSupportFragmentManager(), "CustomMatchDialog");
+            return true;
+        } else if (itemId == R.id.choose_custom_match) {
+            startActivity(new Intent(this, CustomMatchActivityList.class));
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
