@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getContext();
 
-        assertEquals("com.krystian.chessclock", appContext.getPackageName());
+        assertEquals("com.krystianrymonlipinski.chessclock.test", appContext.getPackageName());
     }
 }
