@@ -1,0 +1,16 @@
+name: Integration Pipeline
+
+on:
+  push:
+    branches-ignore: ['release/**']
+  pull_request:
+    branches: ['master']
+
+jobs:
+  integrate:
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+    uses: ./.github/workflows/integration-steps.yml
