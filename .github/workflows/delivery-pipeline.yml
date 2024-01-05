@@ -1,0 +1,82 @@
+name: Delivery Pipeline
+
+on:
+  push:
+    branches: ['release/**']
+
+jobs:
+
+  integrate:
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+    uses: ./.github/workflows/integration-steps.yml
+
+  deliver:
+    runs-on: macos-latest
+    needs: integrate
+    env:
+      KEYSTORE_FILENAME: keystore-release.jks
+
+    steps:
+      - name: Checkout project sources
+        uses: actions/checkout@v3
+
+      - name: Setup Java distribution
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Add permissions for Gradle
+        run: chmod +x gradlew
+
+      - name: Decode keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ENCODED_KEYSTORE }}
+        run: echo $KEYSTORE_BASE64 | base64 --decode > $KEYSTORE_FILENAME
+
+      - name: Retrieve keystore properties
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        #keystorePath path relative to build.gradle.kts file
+        run: |
+          echo "keystorePath=./../$KEYSTORE_FILENAME" > ./keystore.properties 
+          echo "keystorePassword=$KEYSTORE_PASSWORD" >> ./keystore.properties
+          echo "keyAlias=$KEY_ALIAS" >> ./keystore.properties
+          echo "keyPassword=$KEY_PASSWORD" >> ./keystore.properties
+
+      - name: Create bundle
+        run: ./gradlew bundleRelease
+
+      - name: Upload bundle as an artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-bundle
+          path: app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
+
+      - name: Extract version info
+        id: extract_version_info
+        run: |
+          chmod +r ./app/build.gradle.kts
+          echo "VERSION_CODE=$(grep "versionCode" ./app/build.gradle.kts | awk '{print $3}')" >> "$GITHUB_OUTPUT"
+          echo "VERSION_NAME=$(grep "versionName" ./app/build.gradle.kts | awk '{gsub("\"", "", $3); print $3}')" >> "$GITHUB_OUTPUT"
+
+      - name: Upload bundle to Google Play Store
+        env:
+          VERSION_CODE: ${{ steps.extract_version_info.outputs.VERSION_CODE }}
+          VERSION_NAME: ${{ steps.extract_version_info.outputs.VERSION_NAME }}
+        uses: r0adkll/upload-google-play@v1
+        with:
+          releaseFiles: app/build/outputs/bundle/release/*.aab
+          serviceAccountJsonPlainText: ${{ secrets.DELIVERY_PIPELINE_KEY }}
+          packageName: com.krystianrymonlipinski.chessclock.release
+          track: internal
+          releaseName: ${{ env.VERSION_CODE }} (${{ env.VERSION_NAME }})
+          whatsNewDirectory: ./release-notes/whatsnew
+          status: draft
