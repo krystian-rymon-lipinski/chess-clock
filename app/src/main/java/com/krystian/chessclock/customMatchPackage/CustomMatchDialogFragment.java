@@ -30,28 +30,22 @@ public class CustomMatchDialogFragment extends DialogFragment implements SeekBar
         setViewComponents();
         builder.setView(dialogView)
                 .setTitle(R.string.add_new_match)
-                .setPositiveButton(R.string.ok_button, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        String name = matchName.getText().toString();
-                        if(name.isEmpty())
-                            Toast.makeText(getActivity(), R.string.no_name_chosen, Toast.LENGTH_SHORT).show();
-                        else {
-                            CustomMatchDatabase customDb = new CustomMatchDatabase();
-                            customDb.accessDatabase(getContext());
-                            customDb.createNewCustomMatch(name, numberOfGamesBar.getProgress()+2);
-                            customDb.closeDatabase();
-                            Toast.makeText(getActivity(), R.string.match_created,
-                                    Toast.LENGTH_LONG).show();
-                            startActivity(new Intent(getContext(), CustomMatchActivityList.class));
+                .setPositiveButton(R.string.ok_button, (dialog, id) -> {
+                    String name = matchName.getText().toString();
+                    if(name.isEmpty())
+                        Toast.makeText(getActivity(), R.string.no_name_chosen, Toast.LENGTH_SHORT).show();
+                    else {
+                        CustomMatchDatabase customDb = new CustomMatchDatabase();
+                        customDb.accessDatabase(getContext());
+                        customDb.createNewCustomMatch(name, numberOfGamesBar.getProgress()+2);
+                        customDb.closeDatabase();
+                        Toast.makeText(getActivity(), R.string.match_created,
+                                Toast.LENGTH_LONG).show();
+                        startActivity(new Intent(getContext(), CustomMatchActivityList.class));
 
-                        }
                     }
                 })
-                .setNegativeButton(R.string.cancel_button, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {}
-                });
+                .setNegativeButton(R.string.cancel_button, (dialog, which) -> {});
 
         return builder.create();
     }

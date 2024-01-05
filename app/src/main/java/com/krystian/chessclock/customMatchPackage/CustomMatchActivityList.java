@@ -47,24 +47,21 @@ public class CustomMatchActivityList extends ListActivity implements  View.OnTou
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.custom_match_list_item, cursor,
                 new String[]{CustomMatchDatabase.NAME, CustomMatchDatabase.NUMBER_OF_GAMES},
                 new int[]{R.id.custom_match_name, R.id.custom_match_games});
-        adapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
-            @Override
-            public boolean setViewValue(View view, Cursor cursor, int columnIndex) { //put cursor data into views prepared in custom_match layout
-                switch(columnIndex) {
-                    case 1:
-                        String matchName = cursor.getString(columnIndex);
-                        TextView customMatchName = (TextView) view;
-                        customMatchName.setText(String.format(getString(R.string.custom_match_name), matchName));
-                        customMatchName.setTextColor(Color.rgb(30, 30, 30));
-                        return true;
-                    case 2:
-                        int matchGames = cursor.getInt(columnIndex);
-                        TextView customMatchGames = (TextView) view;
-                        customMatchGames.setText(String.format(getString(R.string.number_of_games), matchGames));
-                        return true;
-                }
-                return false;
+        adapter.setViewBinder((view, cursor, columnIndex) -> { //put cursor data into views prepared in custom_match layout
+            switch(columnIndex) {
+                case 1:
+                    String matchName = cursor.getString(columnIndex);
+                    TextView customMatchName = (TextView) view;
+                    customMatchName.setText(String.format(getString(R.string.custom_match_name), matchName));
+                    customMatchName.setTextColor(Color.rgb(30, 30, 30));
+                    return true;
+                case 2:
+                    int matchGames = cursor.getInt(columnIndex);
+                    TextView customMatchGames = (TextView) view;
+                    customMatchGames.setText(String.format(getString(R.string.number_of_games), matchGames));
+                    return true;
             }
+            return false;
         });
         setListAdapter(adapter);
     }
@@ -83,33 +80,30 @@ public class CustomMatchActivityList extends ListActivity implements  View.OnTou
 
     public void setLongClick() { //to delete custom match if there's such need
         ListView listView = getListView();
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                TextView customMatchText = view.findViewById(R.id.custom_match_name);
-                final String customMatchName = customMatchText.getText().toString();
+        listView.setOnItemLongClickListener((parent, view, position, id) -> {
+            TextView customMatchText = view.findViewById(R.id.custom_match_name);
+            final String customMatchName = customMatchText.getText().toString();
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(CustomMatchActivityList.this);
-                builder.setMessage(R.string.delete_match)
-                        .setPositiveButton(R.string.ok_button, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                CustomMatchDatabase customDb = new CustomMatchDatabase();
-                                customDb.accessDatabase(getApplicationContext()).
-                                        delete(CustomMatchDatabase.CUSTOM_MATCHES_TABLE,
-                                                CustomMatchDatabase.NAME + " = ?", new String[]{customMatchName});
-                                customDb.closeDatabase();
-                                CustomMatchActivityList.this.recreate();
-                            }
-                        })
-                        .setNegativeButton(R.string.cancel_button, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        });
-                builder.show();
-                return true;
-            }
+            AlertDialog.Builder builder = new AlertDialog.Builder(CustomMatchActivityList.this);
+            builder.setMessage(R.string.delete_match)
+                    .setPositiveButton(R.string.ok_button, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            CustomMatchDatabase customDb = new CustomMatchDatabase();
+                            customDb.accessDatabase(getApplicationContext()).
+                                    delete(CustomMatchDatabase.CUSTOM_MATCHES_TABLE,
+                                            CustomMatchDatabase.NAME + " = ?", new String[]{customMatchName});
+                            customDb.closeDatabase();
+                            CustomMatchActivityList.this.recreate();
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel_button, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+            builder.show();
+            return true;
         });
     }
 

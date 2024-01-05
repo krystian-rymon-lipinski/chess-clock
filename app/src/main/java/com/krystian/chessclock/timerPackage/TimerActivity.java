@@ -401,12 +401,7 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(getString(R.string.results,
                 match.getFirstPlayerPoints(), match.getSecondPlayerPoints()))
-                .setPositiveButton(R.string.ok_button, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                startActivity(new Intent(TimerActivity.this, MainActivity.class));
-            }
-        });
+                .setPositiveButton(R.string.ok_button, (dialog, which) -> startActivity(new Intent(TimerActivity.this, MainActivity.class)));
         builder.show();
     }
 
