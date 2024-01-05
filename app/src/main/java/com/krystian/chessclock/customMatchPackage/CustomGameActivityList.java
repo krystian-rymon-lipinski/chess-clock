@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -14,6 +13,8 @@ import android.widget.TextView;
 import com.krystian.chessclock.ExtraValues;
 import com.krystian.chessclock.MainActivity;
 import com.krystianrymonlipinski.chessclock.R;
+
+import androidx.core.content.ContextCompat;
 
 
 public class CustomGameActivityList extends ListActivity {
@@ -42,27 +43,24 @@ public class CustomGameActivityList extends ListActivity {
                         CustomMatchDatabase.INCREMENT_ONE, CustomMatchDatabase.TIME_TWO,
                         CustomMatchDatabase.INCREMENT_TWO},
                 new int[]{R.id.custom_game_number, R.id.custom_game});
-        adapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
-            @Override
-            public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-                if(columnIndex == 1) {
-                    int gameNumber = cursor.getInt(columnIndex);
-                    TextView customGameNumber = (TextView) view;
-                    customGameNumber.setText(String.format(getString(R.string.number_of_custom_game), gameNumber));
-                    if (cursor.getPosition()+1 == gameChanged)
-                        customGameNumber.setTextColor(getResources().getColor(R.color.colorAccent));
-                    return true;
-                }
-                else if(columnIndex == 2){ //set string once
-                    TextView customGame = (TextView) view;
-                    customGame.setText(String.format(getString(R.string.custom_game), cursor.getInt(2),
-                            cursor.getInt(3), cursor.getInt(4), cursor.getInt(5)));
-                    if (cursor.getPosition()+1 == gameChanged)
-                        customGame.setTextColor(getResources().getColor(R.color.colorAccent));
-                    return true;
-                }
-                return false;
+        adapter.setViewBinder((view, cursor, columnIndex) -> {
+            if(columnIndex == 1) {
+                int gameNumber = cursor.getInt(columnIndex);
+                TextView customGameNumber = (TextView) view;
+                customGameNumber.setText(String.format(getString(R.string.number_of_custom_game), gameNumber));
+                if (cursor.getPosition()+1 == gameChanged)
+                    customGameNumber.setTextColor(ContextCompat.getColor(this, R.color.colorAccent));
+                return true;
             }
+            else if(columnIndex == 2){ //set string once
+                TextView customGame = (TextView) view;
+                customGame.setText(String.format(getString(R.string.custom_game), cursor.getInt(2),
+                        cursor.getInt(3), cursor.getInt(4), cursor.getInt(5)));
+                if (cursor.getPosition()+1 == gameChanged)
+                    customGame.setTextColor(ContextCompat.getColor(this, R.color.colorAccent));
+                return true;
+            }
+            return false;
         });
         setListAdapter(adapter);
     }

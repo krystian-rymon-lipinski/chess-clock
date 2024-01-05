@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Handler;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -234,34 +236,35 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
 
     public void setButtonColors() {
         if(match.getGameNumber()%2 != 0) {
-            moveButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_white_button));
-            drawButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_white_button));
-            resignButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_white_button));
-            moveButton.setTextColor(getResources().getColor(R.color.blackColor));
-            drawButton.setTextColor(getResources().getColor(R.color.blackColor));
-            resignButton.setTextColor(getResources().getColor(R.color.blackColor));
+            moveButton.setBackground(ContextCompat.getDrawable(this, R.drawable.timer_white_button));
+            moveButton.setBackground(ContextCompat.getDrawable(this, R.drawable.timer_white_button));
+            drawButton.setBackground(ContextCompat.getDrawable(this, R.drawable.timer_white_button));
+            resignButton.setBackground(ContextCompat.getDrawable(this, R.drawable.timer_white_button));
+            moveButton.setTextColor(ContextCompat.getColor(this, R.color.blackColor));
+            drawButton.setTextColor(ContextCompat.getColor(this, R.color.blackColor));
+            resignButton.setTextColor(ContextCompat.getColor(this, R.color.blackColor));
 
-            moveButtonRotated.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_black_button));
-            drawButtonRotated.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_black_button));
-            resignButtonRotated.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_black_button));
-            moveButtonRotated.setTextColor(getResources().getColor(R.color.whiteColor));
-            drawButtonRotated.setTextColor(getResources().getColor(R.color.whiteColor));
-            resignButtonRotated.setTextColor(getResources().getColor(R.color.whiteColor));
+            moveButtonRotated.setBackground(ContextCompat.getDrawable(this, R.drawable.timer_black_button));
+            drawButtonRotated.setBackground(ContextCompat.getDrawable(this, R.drawable.timer_black_button));
+            resignButtonRotated.setBackground(ContextCompat.getDrawable(this, R.drawable.timer_black_button));
+            moveButtonRotated.setTextColor(ContextCompat.getColor(this, R.color.whiteColor));
+            drawButtonRotated.setTextColor(ContextCompat.getColor(this, R.color.whiteColor));
+            resignButtonRotated.setTextColor(ContextCompat.getColor(this, R.color.whiteColor));
         }
         else {
-            moveButtonRotated.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_white_button));
-            drawButtonRotated.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_white_button));
-            resignButtonRotated.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_white_button));
-            moveButtonRotated.setTextColor(getResources().getColor(R.color.blackColor));
-            drawButtonRotated.setTextColor(getResources().getColor(R.color.blackColor));
-            resignButtonRotated.setTextColor(getResources().getColor(R.color.blackColor));
+            moveButtonRotated.setBackground(ContextCompat.getDrawable(this, R.drawable.timer_white_button));
+            drawButtonRotated.setBackground(ContextCompat.getDrawable(this, R.drawable.timer_white_button));
+            resignButtonRotated.setBackground(ContextCompat.getDrawable(this, R.drawable.timer_white_button));
+            moveButtonRotated.setTextColor(ContextCompat.getColor(this, R.color.blackColor));
+            drawButtonRotated.setTextColor(ContextCompat.getColor(this, R.color.blackColor));
+            resignButtonRotated.setTextColor(ContextCompat.getColor(this, R.color.blackColor));
 
-            moveButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_black_button));
-            drawButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_black_button));
-            resignButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.timer_black_button));
-            moveButton.setTextColor(getResources().getColor(R.color.whiteColor));
-            drawButton.setTextColor(getResources().getColor(R.color.whiteColor));
-            resignButton.setTextColor(getResources().getColor(R.color.whiteColor));
+            moveButton.setBackground(ContextCompat.getDrawable(this, R.drawable.timer_black_button));
+            drawButton.setBackground(ContextCompat.getDrawable(this, R.drawable.timer_black_button));
+            resignButton.setBackground(ContextCompat.getDrawable(this, R.drawable.timer_black_button));
+            moveButton.setTextColor(ContextCompat.getColor(this, R.color.whiteColor));
+            drawButton.setTextColor(ContextCompat.getColor(this, R.color.whiteColor));
+            resignButton.setTextColor(ContextCompat.getColor(this, R.color.whiteColor));
         }
     }
 

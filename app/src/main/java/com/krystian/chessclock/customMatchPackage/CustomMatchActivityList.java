@@ -2,6 +2,7 @@ package com.krystian.chessclock.customMatchPackage;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -19,6 +20,8 @@ import com.krystian.chessclock.ExtraValues;
 import com.krystian.chessclock.MainActivity;
 import com.krystian.chessclock.timerPackage.TimerActivity;
 import com.krystianrymonlipinski.chessclock.R;
+
+import androidx.core.content.ContextCompat;
 
 public class CustomMatchActivityList extends ListActivity implements  View.OnTouchListener {
 
@@ -149,7 +152,7 @@ public class CustomMatchActivityList extends ListActivity implements  View.OnTou
                     String name = customMatchName.getText().toString();
 
                     if(itemTapped == itemReleased && xFinish - xStart > minSwipe) {
-                        customMatchName.setTextColor(getResources().getColor(R.color.colorAccent));
+                        customMatchName.setTextColor(ContextCompat.getColor(this, R.color.colorAccent));
                         Intent intent = new Intent(this, TimerActivity.class);
                         intent.putExtra(ExtraValues.CUSTOM_MATCH_NAME, name);
                         startActivity(intent);
