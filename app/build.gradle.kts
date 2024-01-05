@@ -1,8 +1,24 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins{
     id("com.android.application")
 }
 
 android {
+    signingConfigs {
+        create("release") {
+            val keystorePropertiesFile: File = rootProject.file("keystore.properties")
+            val keystoreProperties = Properties()
+            keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+
+            storeFile = file(keystoreProperties["keystorePath"].toString())
+            keyAlias = keystoreProperties["keyAlias"].toString()
+            storePassword = keystoreProperties["keystorePassword"].toString()
+            keyPassword = keystoreProperties["keyPassword"].toString()
+        }
+    }
+
     namespace = "com.krystianrymonlipinski.chessclock"
     compileSdk = 34
     defaultConfig {
@@ -15,6 +31,7 @@ android {
     }
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
