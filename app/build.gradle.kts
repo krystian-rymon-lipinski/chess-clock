@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.plugin.extraProperties
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -53,6 +54,8 @@ android {
 }
 
 dependencies {
+    val hiltVersion = rootProject.extraProperties.get("hiltVersion")
+
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     testImplementation("junit:junit:4.13.2")
@@ -60,4 +63,7 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation("androidx.gridlayout:gridlayout:1.0.0")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
+
+    implementation("com.google.dagger:hilt-android:$hiltVersion")
+    kapt("com.google.dagger:hilt-compiler:$hiltVersion")
 }
