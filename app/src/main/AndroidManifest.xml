@@ -8,7 +8,7 @@
         android:roundIcon="@mipmap/chess_clock_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:name="com.krystian.chessclock.ChessClockApplication">
+        android:name="com.krystian.chessclock.com.krystian.chessclock.ChessClockApplication">
         <activity android:name="com.krystian.chessclock.timerPackage.TimerActivity"
             android:screenOrientation="portrait"> </activity>
         <activity android:name="com.krystian.chessclock.MainActivity"
