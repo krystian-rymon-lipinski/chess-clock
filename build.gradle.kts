@@ -2,9 +2,8 @@ import org.jetbrains.kotlin.gradle.plugin.extraProperties
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
-extraProperties {
-    val hiltVersion = "2.48"
-}
+
+rootProject.extraProperties.set("hiltVersion", "2.48")
 
 
 plugins {
