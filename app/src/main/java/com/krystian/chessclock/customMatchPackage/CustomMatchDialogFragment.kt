@@ -1,79 +1,69 @@
-package com.krystian.chessclock.customMatchPackage;
+package com.krystian.chessclock.customMatchPackage
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Bundle;
-import androidx.fragment.app.DialogFragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.SeekBar;
-import android.widget.TextView;
-import android.widget.Toast;
-import com.krystianrymonlipinski.chessclock.R;
+import android.app.AlertDialog
+import android.app.Dialog
+import android.content.DialogInterface
+import android.content.Intent
+import android.os.Bundle
+import android.view.View
+import android.widget.EditText
+import android.widget.SeekBar
+import android.widget.SeekBar.OnSeekBarChangeListener
+import android.widget.TextView
+import android.widget.Toast
+import androidx.fragment.app.DialogFragment
+import com.krystianrymonlipinski.chessclock.R
 
-public class CustomMatchDialogFragment extends DialogFragment implements SeekBar.OnSeekBarChangeListener {
-
-    private View dialogView;
-
-    private SeekBar numberOfGamesBar;
-    private TextView numberOfGamesText;
-    private EditText matchName;
-
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final AlertDialog.Builder builder= new AlertDialog.Builder(getActivity());
-        LayoutInflater inflater = requireActivity().getLayoutInflater();
-        dialogView = inflater.inflate(R.layout.custom_match_dialog, null);
-        setViewComponents();
+class CustomMatchDialogFragment : DialogFragment(), OnSeekBarChangeListener {
+    private var dialogView: View? = null
+    private var numberOfGamesBar: SeekBar? = null
+    private var numberOfGamesText: TextView? = null
+    private var matchName: EditText? = null
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val builder = AlertDialog.Builder(activity)
+        val inflater = requireActivity().layoutInflater
+        dialogView = inflater.inflate(R.layout.custom_match_dialog, null)
+        setViewComponents()
         builder.setView(dialogView)
-                .setTitle(R.string.add_new_match)
-                .setPositiveButton(R.string.ok_button, (dialog, id) -> {
-                    String name = matchName.getText().toString();
-                    if(name.isEmpty())
-                        Toast.makeText(getActivity(), R.string.no_name_chosen, Toast.LENGTH_SHORT).show();
-                    else {
-                        CustomMatchDatabase customDb = new CustomMatchDatabase();
-                        customDb.accessDatabase(getContext());
-                        customDb.createNewCustomMatch(name, numberOfGamesBar.getProgress()+2);
-                        customDb.closeDatabase();
-                        Toast.makeText(getActivity(), R.string.match_created,
-                                Toast.LENGTH_LONG).show();
-                        startActivity(new Intent(getContext(), CustomMatchActivityList.class));
-
-                    }
-                })
-                .setNegativeButton(R.string.cancel_button, (dialog, which) -> {});
-
-        return builder.create();
+            .setTitle(R.string.add_new_match)
+            .setPositiveButton(R.string.ok_button) { dialog: DialogInterface?, id: Int ->
+                val name = matchName!!.text.toString()
+                if (name.isEmpty()) Toast.makeText(
+                    activity,
+                    R.string.no_name_chosen,
+                    Toast.LENGTH_SHORT
+                ).show() else {
+                    val customDb = CustomMatchDatabase()
+                    customDb.accessDatabase(context)
+                    customDb.createNewCustomMatch(name, numberOfGamesBar!!.progress + 2)
+                    customDb.closeDatabase()
+                    Toast.makeText(
+                        activity, R.string.match_created,
+                        Toast.LENGTH_LONG
+                    ).show()
+                    startActivity(Intent(context, CustomMatchActivityList::class.java))
+                }
+            }
+            .setNegativeButton(R.string.cancel_button) { dialog: DialogInterface?, which: Int -> }
+        return builder.create()
     }
 
-    public void setViewComponents() {
-        numberOfGamesBar = dialogView.findViewById(R.id.number_of_games_bar);
-        numberOfGamesText = dialogView.findViewById(R.id.number_of_games_dialog);
-        matchName = dialogView.findViewById(R.id.match_name);
-        numberOfGamesBar.setOnSeekBarChangeListener(this);
-
-        numberOfGamesBar.setProgress(3);
-        numberOfGamesText.setText(getString(R.string.number_of_games, numberOfGamesBar.getProgress()+2));
+    fun setViewComponents() {
+        numberOfGamesBar = dialogView!!.findViewById(R.id.number_of_games_bar)
+        numberOfGamesText = dialogView!!.findViewById(R.id.number_of_games_dialog)
+        matchName = dialogView!!.findViewById(R.id.match_name)
+        numberOfGamesBar?.setOnSeekBarChangeListener(this)
+        numberOfGamesBar?.progress = 3
+        numberOfGamesText?.text = getString(
+            R.string.number_of_games, numberOfGamesBar?.progress?.plus(2)
+        )
     }
 
-
-    @Override
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        int numberOfGames = progress + 2; //range 2-30
-        numberOfGamesText.setText(getString(R.string.number_of_games, numberOfGames));
+    override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+        val numberOfGames = progress + 2 //range 2-30
+        numberOfGamesText!!.text = getString(R.string.number_of_games, numberOfGames)
     }
 
-    @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {
-
-    }
-
-    @Override
-    public void onStopTrackingTouch(SeekBar seekBar) {
-
-    }
+    override fun onStartTrackingTouch(seekBar: SeekBar) {}
+    override fun onStopTrackingTouch(seekBar: SeekBar) {}
 }
