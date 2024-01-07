@@ -55,6 +55,7 @@ android {
 
 dependencies {
     val hiltVersion = rootProject.extraProperties.get("hiltVersion")
+    val roomVersion = "2.6.1"
 
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
@@ -66,4 +67,7 @@ dependencies {
 
     implementation("com.google.dagger:hilt-android:$hiltVersion")
     kapt("com.google.dagger:hilt-compiler:$hiltVersion")
+
+    implementation("androidx.room:room-ktx:$roomVersion")
+    kapt("androidx.room:room-compiler:$roomVersion")
 }
