@@ -21,7 +21,7 @@ object DatabaseModule {
         return Room.databaseBuilder(
             context,
             ChessClockDatabase::class.java,
-            "chess-clock-database"
+            ChessClockDatabase.databaseName
         ).build()
     }
 }
