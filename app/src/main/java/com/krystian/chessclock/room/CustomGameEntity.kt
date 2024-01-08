@@ -20,5 +20,5 @@ data class CustomGameEntity(
     @ColumnInfo(name = "white_increment") val whiteIncrement: Int,
     @ColumnInfo(name = "black_time") val blackTime: Int,
     @ColumnInfo(name = "black_increment") val blackIncrement: Int,
-    @ColumnInfo(name = ChessClockDatabase.customGameTableMatchIdColumn) val matchId: Int
+    @ColumnInfo(name = ChessClockDatabase.customGameTableMatchIdColumn, index = true) val matchId: Int
 )

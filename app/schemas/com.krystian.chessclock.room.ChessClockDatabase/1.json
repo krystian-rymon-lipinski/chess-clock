@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "b805f21b39210bfc21413b5be8ceef90",
+    "identityHash": "fb32b8a7793e0c9c6c4366e479c4f797",
     "entities": [
       {
         "tableName": "custom_match_table",
@@ -77,7 +77,17 @@
             "id"
           ]
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_custom_game_table_match_id",
+            "unique": false,
+            "columnNames": [
+              "match_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_custom_game_table_match_id` ON `${TABLE_NAME}` (`match_id`)"
+          }
+        ],
         "foreignKeys": [
           {
             "table": "custom_match_table",
@@ -96,7 +106,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b805f21b39210bfc21413b5be8ceef90')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fb32b8a7793e0c9c6c4366e479c4f797')"
     ]
   }
 }
