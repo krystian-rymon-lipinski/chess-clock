@@ -14,7 +14,7 @@ import androidx.room.PrimaryKey
         onDelete = ForeignKey.CASCADE
     )]
 )
-class CustomGameEntity(
+data class CustomGameEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "white_time") val whiteTime: Int,
     @ColumnInfo(name = "white_increment") val whiteIncrement: Int,

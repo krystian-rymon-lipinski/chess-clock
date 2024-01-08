@@ -5,20 +5,25 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CustomGameDao {
 
-    @Query("")
-    fun getGameWithId(id: Int)
+    @Query("SELECT * FROM ${ChessClockDatabase.customGameTable}")
+    fun getAllGames() : Flow<List<CustomGameEntity>>
+
+    @Query("SELECT * FROM ${ChessClockDatabase.customGameTable} " +
+            "WHERE ${ChessClockDatabase.customGameTableIdColumn} = :id")
+    fun getGameWithId(id: Int) : Flow<CustomGameEntity>
 
     @Insert
-    fun addGame()
+    fun addGame(game: CustomGameEntity)
 
     @Update
-    fun updateGame()
+    fun updateGame(game: CustomGameEntity)
 
     @Delete
-    fun deleteGame()
+    fun deleteGame(game: CustomGameEntity)
 
 }

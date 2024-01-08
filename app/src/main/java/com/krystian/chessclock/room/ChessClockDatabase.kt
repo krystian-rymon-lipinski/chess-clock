@@ -16,6 +16,7 @@ abstract class ChessClockDatabase : RoomDatabase() {
         const val customGameTable = "custom_game_table"
 
         const val customMatchTableIdColumn = "id"
+        const val customGameTableIdColumn = "id"
         const val customGameTableMatchIdColumn = "match_id"
     }
 }
