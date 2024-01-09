@@ -12,8 +12,6 @@ import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.krystian.chessclock.customMatchPackage.CustomGameActivityList
-import com.krystian.chessclock.customMatchPackage.CustomMatchFragmentList
 import com.krystian.chessclock.customMatchPackage.CustomMatchDatabase
 import com.krystian.chessclock.customMatchPackage.CustomMatchDialogFragment
 import com.krystian.chessclock.timerPackage.TimerActivity
@@ -156,7 +154,10 @@ class MainActivity : AppCompatActivity(), OnSeekBarChangeListener, View.OnClickL
                 customDb.accessDatabase(this)
                 customDb.updateCustomGame(customMatchName, customGameNumber, gameSettings)
                 customDb.closeDatabase()
-                intent = Intent(this, CustomGameActivityList::class.java)
+
+                //TODO: pass parameter, navigate to fragment
+                /*
+                intent = Intent(this, CustomGameFragmentList::class.java)
                 intent.putExtra(
                     ExtraValues.CUSTOM_GAME_NUMBER,
                     customGameNumber
@@ -166,6 +167,7 @@ class MainActivity : AppCompatActivity(), OnSeekBarChangeListener, View.OnClickL
                     customMatchName
                 ) //games from which match to show
                 startActivity(intent)
+                 */
             }
         }
     }
