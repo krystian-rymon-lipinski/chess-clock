@@ -2,21 +2,21 @@ package com.krystian.chessclock
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.RadioButton
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import com.krystian.chessclock.customMatchPackage.CustomMatchDatabase
+import androidx.fragment.app.Fragment
 import com.krystian.chessclock.customMatchPackage.CustomMatchDialogFragment
 import com.krystianrymonlipinski.chessclock.R
 
-class MainActivity : AppCompatActivity(), OnSeekBarChangeListener, View.OnClickListener {
+class SettingsFragment : Fragment(), OnSeekBarChangeListener, View.OnClickListener {
     private var singleGame: RadioButton? = null
     private var chessMatch: RadioButton? = null
     private var differentTime: CheckBox? = null
@@ -34,35 +34,47 @@ class MainActivity : AppCompatActivity(), OnSeekBarChangeListener, View.OnClickL
     private var customGameNumber = 0 /*if 0 then it's a single game or a match with all games on the same terms;
                                     as opposed to customized match with possibly all games
                                     different with time and increment created by a user*/
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_settings, null, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        //TODO: retrieve passed arguments
+        /*
         customGameNumber = intent.getIntExtra(
             ExtraValues.CUSTOM_GAME_NUMBER,
             0
         ) //if it's a non-custom, set value as 0;
-        setViewComponents()
+         */
+        setViewComponents(view)
     }
 
-    private fun setViewComponents() {
-        singleGame = findViewById(R.id.single_game_radio_button) //radios/checkboxes
-        differentTime = findViewById(R.id.different_time_checkbox)
-        chessMatch = findViewById(R.id.chess_match_radio_button)
+    private fun setViewComponents(mainView: View) {
+        singleGame = mainView.findViewById(R.id.single_game_radio_button) //radios/checkboxes
+        differentTime = mainView.findViewById(R.id.different_time_checkbox)
+        chessMatch = mainView.findViewById(R.id.chess_match_radio_button)
         singleGame?.setOnClickListener(this)
         chessMatch?.setOnClickListener(this)
         differentTime?.setOnClickListener(this)
-        playButton = findViewById(R.id.play_button) //buttons
+        playButton = mainView.findViewById(R.id.play_button) //buttons
         playButton?.setOnClickListener(this)
-        playerTime = findViewById(R.id.game_time_text) //textViews
-        playerTwoTime = findViewById(R.id.game_time_two_text)
-        playerIncrement = findViewById(R.id.increment_text)
-        playerTwoIncrement = findViewById(R.id.increment_two_text)
-        numberOfGames = findViewById(R.id.games_text)
-        playerTimeBar = findViewById(R.id.game_time_seek_bar) //seekBars
-        playerTwoTimeBar = findViewById(R.id.game_time_two_seek_bar)
-        playerIncrementBar = findViewById(R.id.increment_seek_bar)
-        playerTwoIncrementBar = findViewById(R.id.increment_two_seek_bar)
-        numberOfGamesBar = findViewById(R.id.games_seek_bar)
+        playerTime = mainView.findViewById(R.id.game_time_text) //textViews
+        playerTwoTime = mainView.findViewById(R.id.game_time_two_text)
+        playerIncrement = mainView.findViewById(R.id.increment_text)
+        playerTwoIncrement = mainView.findViewById(R.id.increment_two_text)
+        numberOfGames = mainView.findViewById(R.id.games_text)
+        playerTimeBar = mainView.findViewById(R.id.game_time_seek_bar) //seekBars
+        playerTwoTimeBar = mainView.findViewById(R.id.game_time_two_seek_bar)
+        playerIncrementBar = mainView.findViewById(R.id.increment_seek_bar)
+        playerTwoIncrementBar = mainView.findViewById(R.id.increment_two_seek_bar)
+        numberOfGamesBar = mainView.findViewById(R.id.games_seek_bar)
         playerTimeBar?.setOnSeekBarChangeListener(this)
         playerTwoTimeBar?.setOnSeekBarChangeListener(this)
         playerIncrementBar?.setOnSeekBarChangeListener(this)
@@ -143,6 +155,9 @@ class MainActivity : AppCompatActivity(), OnSeekBarChangeListener, View.OnClickL
 
                  */
             } else { //edit custom game parameters, save it into database and go back to the list
+                //TODO: retrieve parameter
+
+                /*
                 val customMatchName = getIntent().extras!!.getString(ExtraValues.CUSTOM_MATCH_NAME)
                 val gameSettings = IntArray(4)
                 gameSettings[0] = playerTimeBar!!.progress + 1
@@ -158,6 +173,8 @@ class MainActivity : AppCompatActivity(), OnSeekBarChangeListener, View.OnClickL
                 customDb.accessDatabase(this)
                 customDb.updateCustomGame(customMatchName, customGameNumber, gameSettings)
                 customDb.closeDatabase()
+
+                 */
 
                 //TODO: pass parameter, navigate to fragment
                 /*
@@ -176,17 +193,21 @@ class MainActivity : AppCompatActivity(), OnSeekBarChangeListener, View.OnClickL
         }
     }
 
+    //TODO: show menu icons
+    /*
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.menu, menu)
         return true
     }
 
+     */
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val itemId = item.itemId //switch gives compilation error: "constant expression required"
         if (itemId == R.id.add_new_match) {
             val custom = CustomMatchDialogFragment()
-            custom.show(supportFragmentManager, "CustomMatchDialog")
+            custom.show(childFragmentManager, "CustomMatchDialog")
             return true
         } else if (itemId == R.id.choose_custom_match) {
 
@@ -199,5 +220,4 @@ class MainActivity : AppCompatActivity(), OnSeekBarChangeListener, View.OnClickL
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onBackPressed() {}
 }

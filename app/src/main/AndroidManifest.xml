@@ -9,7 +9,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:name="com.krystian.chessclock.ChessClockApplication">
-        <activity android:name="com.krystian.chessclock.MainActivity"
+        <activity android:name="com.krystian.chessclock.ClockActivity"
             android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
