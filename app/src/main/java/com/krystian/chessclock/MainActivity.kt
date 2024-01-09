@@ -13,7 +13,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.krystian.chessclock.customMatchPackage.CustomGameActivityList
-import com.krystian.chessclock.customMatchPackage.CustomMatchActivityList
+import com.krystian.chessclock.customMatchPackage.CustomMatchFragmentList
 import com.krystian.chessclock.customMatchPackage.CustomMatchDatabase
 import com.krystian.chessclock.customMatchPackage.CustomMatchDialogFragment
 import com.krystian.chessclock.timerPackage.TimerActivity
@@ -183,7 +183,11 @@ class MainActivity : AppCompatActivity(), OnSeekBarChangeListener, View.OnClickL
             custom.show(supportFragmentManager, "CustomMatchDialog")
             return true
         } else if (itemId == R.id.choose_custom_match) {
-            startActivity(Intent(this, CustomMatchActivityList::class.java))
+
+            //TODO: implement fragment navigation
+            /*
+            startActivity(Intent(this, CustomMatchFragmentList::class.java))
+             */
             return true
         }
         return super.onOptionsItemSelected(item)

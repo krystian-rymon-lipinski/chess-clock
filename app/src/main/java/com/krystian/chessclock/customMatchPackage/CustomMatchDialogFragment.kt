@@ -41,7 +41,11 @@ class CustomMatchDialogFragment : DialogFragment(), OnSeekBarChangeListener {
                         activity, R.string.match_created,
                         Toast.LENGTH_LONG
                     ).show()
-                    startActivity(Intent(context, CustomMatchActivityList::class.java))
+
+                    //TODO: navigate between fragments, not activities
+                    /*
+                    startActivity(Intent(context, CustomMatchFragmentList::class.java))
+                     */
                 }
             }
             .setNegativeButton(R.string.cancel_button) { dialog: DialogInterface?, which: Int -> }

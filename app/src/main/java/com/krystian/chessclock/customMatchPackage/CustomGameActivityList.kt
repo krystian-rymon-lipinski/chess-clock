@@ -80,15 +80,17 @@ class CustomGameActivityList : ListActivity() {
         startActivity(intent)
     }
 
+    //TODO: navigate between fragments, not activities
+    /*
     override fun onBackPressed() {
         startActivity(
             Intent(
                 this,
-                CustomMatchActivityList::class.java
+                CustomMatchFragmentList::class.java
             )
         ) //there's no other way to go back
     } //and it would push settings back if not overridden
-
+*/
     override fun onDestroy() {
         super.onDestroy()
         cursor!!.close()

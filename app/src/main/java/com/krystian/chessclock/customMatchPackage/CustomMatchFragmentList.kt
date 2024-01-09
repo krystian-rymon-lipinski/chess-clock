@@ -1,8 +1,6 @@
 package com.krystian.chessclock.customMatchPackage
 
 import android.app.AlertDialog
-import android.app.ListActivity
-import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
@@ -15,14 +13,13 @@ import android.widget.AdapterView.OnItemLongClickListener
 import android.widget.ListView
 import android.widget.SimpleCursorAdapter
 import android.widget.TextView
+import androidx.core.app.ActivityCompat.recreate
 import androidx.core.content.ContextCompat
-import com.krystian.chessclock.ExtraValues
-import com.krystian.chessclock.MainActivity
-import com.krystian.chessclock.timerPackage.TimerActivity
+import androidx.fragment.app.ListFragment
 import com.krystianrymonlipinski.chessclock.R
 import kotlin.math.floor
 
-class CustomMatchActivityList : ListActivity(), OnTouchListener {
+class CustomMatchFragmentList : ListFragment(), OnTouchListener {
     private var customDb: CustomMatchDatabase? = null
     private var cursor: Cursor? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,7 +27,7 @@ class CustomMatchActivityList : ListActivity(), OnTouchListener {
         val listView = listView
         listView.setOnTouchListener(this)
         customDb = CustomMatchDatabase()
-        displayCustomMatches(customDb!!.accessDatabase(this)!!)
+        displayCustomMatches(customDb!!.accessDatabase(requireContext())!!)
         setLongClick()
     }
 
@@ -38,7 +35,7 @@ class CustomMatchActivityList : ListActivity(), OnTouchListener {
         val query = "SELECT * FROM " + CustomMatchDatabase.CUSTOM_MATCHES_TABLE + ";"
         cursor = db.rawQuery(query, null)
         val adapter = SimpleCursorAdapter(
-            this,
+            requireContext(),
             R.layout.custom_match_list_item,
             cursor,
             arrayOf(CustomMatchDatabase.NAME, CustomMatchDatabase.NUMBER_OF_GAMES),
@@ -73,9 +70,13 @@ class CustomMatchActivityList : ListActivity(), OnTouchListener {
         super.onListItemClick(l, v, position, id)
         val name = v.findViewById<TextView>(R.id.custom_match_name)
         val matchName = name.text.toString()
+
+        //TODO: pass parameters
+        /*
         val intent = Intent(this, CustomGameActivityList::class.java)
         intent.putExtra(ExtraValues.CUSTOM_MATCH_NAME, matchName)
         startActivity(intent)
+         */
     }
 
     private fun setLongClick() { //to delete custom match if there's such need
@@ -84,16 +85,16 @@ class CustomMatchActivityList : ListActivity(), OnTouchListener {
             OnItemLongClickListener { parent: AdapterView<*>?, view: View, position: Int, id: Long ->
                 val customMatchText = view.findViewById<TextView>(R.id.custom_match_name)
                 val customMatchName = customMatchText.text.toString()
-                val builder = AlertDialog.Builder(this@CustomMatchActivityList)
+                val builder = AlertDialog.Builder(requireContext())
                 builder.setMessage(R.string.delete_match)
                     .setPositiveButton(R.string.ok_button) { dialog, which ->
                         val customDb = CustomMatchDatabase()
-                        customDb.accessDatabase(applicationContext)?.delete(
+                        customDb.accessDatabase(requireContext())?.delete(
                             CustomMatchDatabase.CUSTOM_MATCHES_TABLE,
                             CustomMatchDatabase.NAME + " = ?", arrayOf(customMatchName)
                         )
                         customDb.closeDatabase()
-                        recreate()
+                        recreate(requireActivity())
                     }
                     .setNegativeButton(R.string.cancel_button) { dialog, which -> }
                 builder.show()
@@ -143,13 +144,17 @@ class CustomMatchActivityList : ListActivity(), OnTouchListener {
                     if (itemTapped == itemReleased && xFinish - xStart > minSwipe) {
                         customMatchName.setTextColor(
                             ContextCompat.getColor(
-                                this,
+                                requireContext(),
                                 R.color.colorAccent
                             )
                         )
+
+                        //TODO: pass parameters
+                        /*
                         val intent = Intent(this, TimerActivity::class.java)
                         intent.putExtra(ExtraValues.CUSTOM_MATCH_NAME, name)
                         startActivity(intent)
+                         */
                         true //event consumed
                     } else { //user wants to change custom games, not to play a match
                         view.performClick()
@@ -162,9 +167,12 @@ class CustomMatchActivityList : ListActivity(), OnTouchListener {
         } else false
     }
 
+    //TODO: implement fragment navigation
+    /*
     override fun onBackPressed() {
         startActivity(Intent(this, MainActivity::class.java))
     }
+     */
 
     override fun onDestroy() {
         super.onDestroy()
