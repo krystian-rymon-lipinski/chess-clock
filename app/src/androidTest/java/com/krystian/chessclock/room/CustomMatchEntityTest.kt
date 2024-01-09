@@ -36,7 +36,7 @@ class CustomMatchEntityTest {
     @Test
     fun add() = runBlocking {
         matchDao.addMatch(matchEntity)
-        matchDao.getAll().take(1).collect {
+        matchDao.getAllWithGames().take(1).collect {
             assertEquals(1, it.size)
             assertEquals(1, it[0].matchEntity.id)
             assertEquals("example", it[0].matchEntity.name)
@@ -50,7 +50,7 @@ class CustomMatchEntityTest {
         val updatedEntity = matchEntity.copy(id = 1, name = "updated_example")
         matchDao.updateMatch(updatedEntity)
 
-        matchDao.getAll().take(1).collect {
+        matchDao.getAllWithGames().take(1).collect {
             assertEquals(1, it.size)
             assertEquals(1, it[0].matchEntity.id)
             assertEquals("updated_example", it[0].matchEntity.name)
@@ -66,7 +66,7 @@ class CustomMatchEntityTest {
         val entityToDelete = matchEntity.copy(id = 1)
         matchDao.deleteMatch(entityToDelete)
 
-        matchDao.getAll().take(1).collect {
+        matchDao.getAllWithGames().take(1).collect {
             assertEquals(1, it.size)
             assertEquals(2, it[0].matchEntity.id)
             assertEquals("other_example", it[0].matchEntity.name)
@@ -87,13 +87,13 @@ class CustomMatchEntityTest {
         gameDao.getAllGames().take(1).collect {
             assertEquals(2, it.size)
         }
-        matchDao.getAll().take(1).collect {
+        matchDao.getAllWithGames().take(1).collect {
             assertEquals(1, it.size)
             assertEquals(2, it[0].games.size)
         }
 
         matchDao.deleteMatch(matchEntity.copy(id = 1))
-        matchDao.getAll().take(1).collect {
+        matchDao.getAllWithGames().take(1).collect {
             assertEquals(0, it.size)
         }
         gameDao.getAllGames().take(1).collect {
