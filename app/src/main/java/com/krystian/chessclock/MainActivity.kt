@@ -14,7 +14,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.krystian.chessclock.customMatchPackage.CustomMatchDatabase
 import com.krystian.chessclock.customMatchPackage.CustomMatchDialogFragment
-import com.krystian.chessclock.timerPackage.TimerActivity
 import com.krystianrymonlipinski.chessclock.R
 
 class MainActivity : AppCompatActivity(), OnSeekBarChangeListener, View.OnClickListener {
@@ -125,7 +124,10 @@ class MainActivity : AppCompatActivity(), OnSeekBarChangeListener, View.OnClickL
         } else if (id == R.id.play_button) {
             val intent: Intent
             if (customGameNumber == 0) { //play a game - it's not custom game editor mode
-                intent = Intent(this, TimerActivity::class.java)
+
+                //TODO: navigate between fragments
+                /*
+                intent = Intent(this, TimerFragment::class.java)
                 intent.putExtra(ExtraValues.PLAYER_ONE_TIME, playerTimeBar!!.progress + 1)
                 intent.putExtra(ExtraValues.PLAYER_ONE_INCREMENT, playerIncrementBar!!.progress)
                 if (differentTime!!.isChecked) {
@@ -138,6 +140,8 @@ class MainActivity : AppCompatActivity(), OnSeekBarChangeListener, View.OnClickL
                 if (!singleGame!!.isChecked) //no possibility to uncheck in custom version
                     intent.putExtra(ExtraValues.NUMBER_OF_GAMES, numberOfGamesBar!!.progress + 1)
                 startActivity(intent)
+
+                 */
             } else { //edit custom game parameters, save it into database and go back to the list
                 val customMatchName = getIntent().extras!!.getString(ExtraValues.CUSTOM_MATCH_NAME)
                 val gameSettings = IntArray(4)

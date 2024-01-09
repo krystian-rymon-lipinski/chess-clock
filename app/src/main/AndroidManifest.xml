@@ -9,8 +9,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:name="com.krystian.chessclock.ChessClockApplication">
-        <activity android:name="com.krystian.chessclock.timerPackage.TimerActivity"
-            android:screenOrientation="portrait"> </activity>
         <activity android:name="com.krystian.chessclock.MainActivity"
             android:screenOrientation="portrait"
             android:exported="true">
