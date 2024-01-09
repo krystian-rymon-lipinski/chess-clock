@@ -11,9 +11,12 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface CustomMatchDao {
 
+    @Query("SELECT * FROM ${ChessClockDatabase.customMatchTable}")
+    fun getAll() : Flow<List<CustomMatchEntity>>
+
     @Transaction
     @Query("SELECT * FROM ${ChessClockDatabase.customMatchTable}")
-    fun getAll() : Flow<List<MatchWithGamesEntity>>
+    fun getAllWithGames() : Flow<List<MatchWithGamesEntity>>
 
     @Insert
     fun addMatch(match: CustomMatchEntity)
