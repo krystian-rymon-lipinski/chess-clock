@@ -4,7 +4,6 @@ import com.krystian.chessclock.model.CustomMatch
 import com.krystian.chessclock.room.CustomMatchDao
 import com.krystian.chessclock.room.CustomMatchEntity
 import junit.framework.TestCase.assertEquals
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.test.runTest
