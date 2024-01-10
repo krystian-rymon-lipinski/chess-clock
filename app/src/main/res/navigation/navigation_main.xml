@@ -52,5 +52,30 @@
         android:id="@+id/timerFragment"
         android:name="com.krystian.chessclock.timerPackage.TimerFragment"
         android:label="fragment_timer"
-        tools:layout="@layout/fragment_timer" />
+        tools:layout="@layout/fragment_timer" >
+        <argument
+            android:name="customMatchId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <argument
+            android:name="firstPlayerTime"
+            app:argType="integer"
+            android:defaultValue="15" />
+        <argument
+            android:name="firstPlayerIncrement"
+            app:argType="integer"
+            android:defaultValue="3" />
+        <argument
+            android:name="secondPlayerTime"
+            app:argType="integer"
+            android:defaultValue="15" />
+        <argument
+            android:name="secondPlayerIncrement"
+            app:argType="integer"
+            android:defaultValue="3" />
+        <argument
+            android:name="numberOfGames"
+            app:argType="integer"
+            android:defaultValue="3" />
+    </fragment>
 </navigation>

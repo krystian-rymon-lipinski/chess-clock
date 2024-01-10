@@ -12,6 +12,7 @@ import android.widget.TextView
 import android.widget.ToggleButton
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.krystian.chessclock.customMatchPackage.CustomMatchDatabase
 import com.krystianrymonlipinski.chessclock.R
 
@@ -77,11 +78,8 @@ class TimerFragment : Fragment(), View.OnClickListener {
     private val settings: Unit
         get() { //and store it into a match object
 
-            //TODO: retrieve passed parameters
-            val customMatchName = null
-            /*
-            val customMatchName = intent.getStringExtra(ExtraValues.CUSTOM_MATCH_NAME)
-             */
+            val customMatchName = arguments?.getInt("customMatchId")?.toString()
+
 
             var numberOfGames = 0
             val timeOnes = ArrayList<Int?>()
@@ -89,29 +87,19 @@ class TimerFragment : Fragment(), View.OnClickListener {
             val timeTwos = ArrayList<Int?>()
             val incrementTwos = ArrayList<Int?>()
             if (customMatchName == null) {
-                //TODO: retrieve passed parameters
-                /*
-                numberOfGames = intent.getIntExtra(
-                    ExtraValues.NUMBER_OF_GAMES,
-                    1
-                ) //if no extra send, it's a single game
-                val timeOne = intent.getIntExtra(ExtraValues.PLAYER_ONE_TIME, 15)
-                val timeTwo = intent.getIntExtra(
-                    ExtraValues.PLAYER_TWO_TIME,
-                    timeOne
-                ) //if there's no player two's extra, timeTwo = timeOne;
-                val incrementOne = intent.getIntExtra(ExtraValues.PLAYER_ONE_INCREMENT, 0)
-                val incrementTwo = intent.getIntExtra(
-                    ExtraValues.PLAYER_TWO_INCREMENT,
-                    incrementOne
-                ) //same as time
+
+                numberOfGames = arguments?.getInt("numberOfGames") ?: 1
+                val timeOne = arguments?.getInt("firstPlayerTime") ?: 15
+                val timeTwo = arguments?.getInt("secondPlayerTime") ?: 15
+                val incrementOne = arguments?.getInt("firstPlayerIncrement") ?: 3
+                val incrementTwo = arguments?.getInt("secondPlayerIncrement") ?: 3
                 for (i in 0 until numberOfGames) {
                     timeOnes.add(timeOne)
                     incrementOnes.add(incrementOne)
                     timeTwos.add(timeTwo)
                     incrementTwos.add(incrementTwo)
                 }
-                 */
+
             } else {
                 val customDb = CustomMatchDatabase()
                 val query = "SELECT * FROM $customMatchName;"
@@ -453,29 +441,17 @@ class TimerFragment : Fragment(), View.OnClickListener {
     }
 
     private fun showResults() {
-        val builder = AlertDialog.Builder(requireContext())
-        builder.setMessage(
-            getString(
-                R.string.results,
-                match!!.firstPlayerPoints, match!!.secondPlayerPoints
-            )
-        )
-            .setPositiveButton(R.string.ok_button) { dialog: DialogInterface?, which: Int ->
-
-                //TODO: navigate between fragments
-                /*
-                startActivity(
-                    Intent(this@TimerFragment, MainActivity::class.java)
+        AlertDialog.Builder(requireContext())
+            .setMessage(
+                getString(
+                    R.string.results,
+                    match!!.firstPlayerPoints, match!!.secondPlayerPoints
                 )
-                 */
+            )
+            .setPositiveButton(R.string.ok_button) { dialog: DialogInterface?, which: Int ->
+                findNavController().popBackStack()
             }
-        builder.show()
+            .show()
     }
 
-    //TODO: navigate between fragments
-    /*
-    override fun onBackPressed() {
-        startActivity(Intent(this, MainActivity::class.java))
-    }
-     */
 }
