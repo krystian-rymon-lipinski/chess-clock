@@ -1,6 +1,5 @@
 package com.krystian.chessclock
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -12,8 +11,11 @@ import android.widget.RadioButton
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.krystian.chessclock.customMatchPackage.CustomMatchDialogFragment
+import com.krystian.chessclock.model.CustomGame
 import com.krystianrymonlipinski.chessclock.R
 
 class SettingsFragment : Fragment(), OnSeekBarChangeListener, View.OnClickListener {
@@ -35,6 +37,9 @@ class SettingsFragment : Fragment(), OnSeekBarChangeListener, View.OnClickListen
                                     as opposed to customized match with possibly all games
                                     different with time and increment created by a user*/
 
+    private var customGameId: Int? = null
+    private var customMatchId: Int? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -46,14 +51,15 @@ class SettingsFragment : Fragment(), OnSeekBarChangeListener, View.OnClickListen
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //TODO: retrieve passed arguments
-        /*
-        customGameNumber = intent.getIntExtra(
-            ExtraValues.CUSTOM_GAME_NUMBER,
-            0
-        ) //if it's a non-custom, set value as 0;
-         */
+        checkForPassedData()
         setViewComponents(view)
+    }
+
+    private fun checkForPassedData() {
+        if (findNavController().previousBackStackEntry != null) { // not a start destination
+            customGameId = arguments?.getInt("customGameId")
+            customMatchId = arguments?.getInt("customMatchId")
+        }
     }
 
     private fun setViewComponents(mainView: View) {
@@ -134,61 +140,41 @@ class SettingsFragment : Fragment(), OnSeekBarChangeListener, View.OnClickListen
                 playerTwoIncrementBar!!.visibility = View.INVISIBLE
             }
         } else if (id == R.id.play_button) {
-            val intent: Intent
-            if (customGameNumber == 0) { //play a game - it's not custom game editor mode
-
-                //TODO: navigate between fragments
-                /*
-                intent = Intent(this, TimerFragment::class.java)
-                intent.putExtra(ExtraValues.PLAYER_ONE_TIME, playerTimeBar!!.progress + 1)
-                intent.putExtra(ExtraValues.PLAYER_ONE_INCREMENT, playerIncrementBar!!.progress)
-                if (differentTime!!.isChecked) {
-                    intent.putExtra(ExtraValues.PLAYER_TWO_TIME, playerTwoTimeBar!!.progress + 1)
-                    intent.putExtra(
-                        ExtraValues.PLAYER_TWO_INCREMENT,
-                        playerTwoIncrementBar!!.progress
+            if (customGameId == null) { //play a game - it's not custom game editor mode
+                val firstPlayerSettings = listOf(
+                    ExtraValues.PLAYER_ONE_TIME to playerTimeBar!!.progress + 1,
+                    ExtraValues.PLAYER_ONE_INCREMENT to playerIncrementBar!!.progress
+                )
+                val secondPlayerSettings = if (differentTime!!.isChecked) {
+                    listOf(
+                        ExtraValues.PLAYER_TWO_TIME to playerTwoTimeBar!!.progress + 1,
+                        ExtraValues.PLAYER_TWO_INCREMENT to playerTwoIncrementBar!!.progress
                     )
-                }
-                if (!singleGame!!.isChecked) //no possibility to uncheck in custom version
-                    intent.putExtra(ExtraValues.NUMBER_OF_GAMES, numberOfGamesBar!!.progress + 1)
-                startActivity(intent)
+                } else firstPlayerSettings
+                val numberOfGamesSettings = if (!singleGame!!.isChecked) {
+                    ExtraValues.NUMBER_OF_GAMES to numberOfGamesBar!!.progress + 1
+                } else ExtraValues.NUMBER_OF_GAMES to 1
 
-                 */
-            } else { //edit custom game parameters, save it into database and go back to the list
-                //TODO: retrieve parameter
+                val bundle = bundleOf(firstPlayerSettings[0], firstPlayerSettings[1],
+                    secondPlayerSettings[0], secondPlayerSettings[1], numberOfGamesSettings
 
-                /*
-                val customMatchName = getIntent().extras!!.getString(ExtraValues.CUSTOM_MATCH_NAME)
-                val gameSettings = IntArray(4)
-                gameSettings[0] = playerTimeBar!!.progress + 1
-                gameSettings[1] = playerIncrementBar!!.progress
-                if (differentTime!!.isChecked) {
-                    gameSettings[2] = playerTwoTimeBar!!.progress + 1
-                    gameSettings[3] = playerTwoIncrementBar!!.progress
-                } else {
-                    gameSettings[2] = gameSettings[0]
-                    gameSettings[3] = gameSettings[1]
-                }
-                val customDb = CustomMatchDatabase()
-                customDb.accessDatabase(this)
-                customDb.updateCustomGame(customMatchName, customGameNumber, gameSettings)
-                customDb.closeDatabase()
+                )
 
-                 */
+                findNavController().navigate(R.id.action_settingsFragment_to_timerFragment, bundle)
+            } else { // save custom game parameters to the database
 
-                //TODO: pass parameter, navigate to fragment
-                /*
-                intent = Intent(this, CustomGameFragmentList::class.java)
-                intent.putExtra(
-                    ExtraValues.CUSTOM_GAME_NUMBER,
-                    customGameNumber
-                ) //to show which game is being updated
-                intent.putExtra(
-                    ExtraValues.CUSTOM_MATCH_NAME,
-                    customMatchName
-                ) //games from which match to show
-                startActivity(intent)
-                 */
+                val customGameUpdated = CustomGame(
+                    id = customGameId ?: -1,
+                    whiteTime = playerTimeBar!!.progress + 1,
+                    whiteIncrement = playerIncrementBar!!.progress,
+                    blackTime = if (differentTime!!.isChecked) playerTwoTimeBar!!.progress + 1 else playerTimeBar!!.progress + 1,
+                    blackIncrement = if (differentTime!!.isChecked) playerTwoIncrementBar!!.progress else playerIncrementBar!!.progress,
+                    matchId = customMatchId ?: -1
+                )
+                //TODO: save change to database
+
+
+                findNavController().popBackStack()
             }
         }
     }
@@ -210,11 +196,7 @@ class SettingsFragment : Fragment(), OnSeekBarChangeListener, View.OnClickListen
             custom.show(childFragmentManager, "CustomMatchDialog")
             return true
         } else if (itemId == R.id.choose_custom_match) {
-
-            //TODO: implement fragment navigation
-            /*
-            startActivity(Intent(this, CustomMatchFragmentList::class.java))
-             */
+            findNavController().navigate(R.id.action_settingsFragment_to_customMatchFragmentList)
             return true
         }
         return super.onOptionsItemSelected(item)
