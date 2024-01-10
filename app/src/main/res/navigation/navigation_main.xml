@@ -39,7 +39,15 @@
     <fragment
         android:id="@+id/customGameListFragment"
         android:name="com.krystian.chessclock.customMatchPackage.CustomGameListFragment"
-        android:label="CustomGameListFragment" />
+        android:label="CustomGameListFragment" >
+        <action
+            android:id="@+id/action_customGameListFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+        <argument
+            android:name="customMatchId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+    </fragment>
     <fragment
         android:id="@+id/timerFragment"
         android:name="com.krystian.chessclock.timerPackage.TimerFragment"

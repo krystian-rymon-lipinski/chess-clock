@@ -8,7 +8,9 @@ import android.widget.ListView
 import android.widget.SimpleCursorAdapter
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.ListFragment
+import androidx.navigation.fragment.findNavController
 import com.krystianrymonlipinski.chessclock.R
 
 class CustomGameListFragment : ListFragment() {
@@ -19,11 +21,9 @@ class CustomGameListFragment : ListFragment() {
         super.onCreate(savedInstanceState)
         customDb = CustomMatchDatabase()
 
-        //TODO: retrieve passed parameter
-        /*
-        customMatchName =
-            intent.extras!!.getString(ExtraValues.CUSTOM_MATCH_NAME) //activity is launched only after clicking
-         */
+        //TODO: rework with matchId
+        customMatchName = arguments?.getInt("customMatchId").toString()
+
         displayCustomGames(customDb!!.accessDatabase(requireContext())!!) /*a custom match list item or setting custom game -
                                                             - there will be an extra */
     }
@@ -32,12 +32,8 @@ class CustomGameListFragment : ListFragment() {
         val query = "SELECT * FROM $customMatchName;"
         cursor = db.rawQuery(query, null)
 
-        //TODO: retrieve passed parameter
-        val gameChanged = 0
-        /*
-        val gameChanged =
-            intent.getIntExtra(ExtraValues.CUSTOM_GAME_NUMBER, 0) //to color the one being changed
-         */
+        val gameChanged = arguments?.getInt("customGameId")
+
         val adapter = SimpleCursorAdapter(
             requireContext(), R.layout.custom_game_list_item, cursor, arrayOf(
                 CustomMatchDatabase.GAME_NUMBER, CustomMatchDatabase.TIME_ONE,
@@ -78,29 +74,14 @@ class CustomGameListFragment : ListFragment() {
     override fun onListItemClick(l: ListView, v: View, position: Int, id: Long) {
         super.onListItemClick(l, v, position, id)
 
-        //TODO: pass parameters, navigate to fragment
-        /*
-        val intent = Intent(this, MainActivity::class.java)
-        intent.putExtra(
-            ExtraValues.CUSTOM_MATCH_NAME,
-            customMatchName
-        ) //to know where (in which match) to save the updates
-        intent.putExtra(ExtraValues.CUSTOM_GAME_NUMBER, position + 1)
-        startActivity(intent)
-         */
+        //TODO: rework parameters for proper IDs
+        val bundle = bundleOf(
+            "customMatchId" to customMatchName,
+            "customGameId" to position
+        )
+        findNavController().navigate(R.id.action_customGameListFragment_to_settingsFragment, bundle)
     }
 
-    //TODO: navigate between fragments, not activities
-    /*
-    override fun onBackPressed() {
-        startActivity(
-            Intent(
-                this,
-                CustomMatchFragmentList::class.java
-            )
-        ) //there's no other way to go back
-    } //and it would push settings back if not overridden
-*/
     override fun onDestroy() {
         super.onDestroy()
         cursor!!.close()
