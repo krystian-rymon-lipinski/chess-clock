@@ -15,7 +15,9 @@ import android.widget.SimpleCursorAdapter
 import android.widget.TextView
 import androidx.core.app.ActivityCompat.recreate
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.ListFragment
+import androidx.navigation.fragment.findNavController
 import com.krystianrymonlipinski.chessclock.R
 import kotlin.math.floor
 
@@ -71,12 +73,9 @@ class CustomMatchFragmentList : ListFragment(), OnTouchListener {
         val name = v.findViewById<TextView>(R.id.custom_match_name)
         val matchName = name.text.toString()
 
-        //TODO: pass parameters
-        /*
-        val intent = Intent(this, CustomGameActivityList::class.java)
-        intent.putExtra(ExtraValues.CUSTOM_MATCH_NAME, matchName)
-        startActivity(intent)
-         */
+        //TODO: pass id instead (after reworking list items)
+        val bundle = bundleOf("customMatchId" to matchName)
+        findNavController().navigate(R.id.action_customMatchFragmentList_to_customGameListFragment, bundle)
     }
 
     private fun setLongClick() { //to delete custom match if there's such need
@@ -149,12 +148,9 @@ class CustomMatchFragmentList : ListFragment(), OnTouchListener {
                             )
                         )
 
-                        //TODO: pass parameters
-                        /*
-                        val intent = Intent(this, TimerActivity::class.java)
-                        intent.putExtra(ExtraValues.CUSTOM_MATCH_NAME, name)
-                        startActivity(intent)
-                         */
+                        //TODO: pass id instead (after reworking list items)
+                        val bundle = bundleOf("customMatchId" to name)
+                        findNavController().navigate(R.id.action_customMatchFragmentList_to_timerFragment, bundle)
                         true //event consumed
                     } else { //user wants to change custom games, not to play a match
                         view.performClick()
@@ -166,13 +162,6 @@ class CustomMatchFragmentList : ListFragment(), OnTouchListener {
             }
         } else false
     }
-
-    //TODO: implement fragment navigation
-    /*
-    override fun onBackPressed() {
-        startActivity(Intent(this, MainActivity::class.java))
-    }
-     */
 
     override fun onDestroy() {
         super.onDestroy()
