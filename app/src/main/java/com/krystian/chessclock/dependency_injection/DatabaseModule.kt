@@ -2,7 +2,6 @@ package com.krystian.chessclock.dependency_injection
 
 import android.content.Context
 import androidx.room.Room
-import androidx.room.RoomDatabase
 import com.krystian.chessclock.room.ChessClockDatabase
 import dagger.Module
 import dagger.Provides
@@ -17,7 +16,7 @@ object DatabaseModule {
 
     @Singleton
     @Provides
-    fun provideRoomDatabase(@ApplicationContext context: Context) : RoomDatabase {
+    fun provideRoomDatabase(@ApplicationContext context: Context) : ChessClockDatabase {
         return Room.databaseBuilder(
             context,
             ChessClockDatabase::class.java,

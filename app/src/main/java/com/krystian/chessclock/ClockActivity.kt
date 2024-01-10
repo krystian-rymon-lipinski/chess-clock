@@ -5,7 +5,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.krystianrymonlipinski.chessclock.R
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ClockActivity : AppCompatActivity() {
 
     val navController: NavController by lazy { setNavController() }
