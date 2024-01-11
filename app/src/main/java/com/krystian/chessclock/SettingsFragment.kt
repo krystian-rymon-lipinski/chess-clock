@@ -2,6 +2,8 @@ package com.krystian.chessclock
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -12,13 +14,15 @@ import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
 import androidx.core.os.bundleOf
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import com.krystian.chessclock.customMatchPackage.CustomMatchDialogFragment
 import com.krystian.chessclock.model.CustomGame
 import com.krystianrymonlipinski.chessclock.R
 
-class SettingsFragment : Fragment(), OnSeekBarChangeListener, View.OnClickListener {
+class SettingsFragment : Fragment(), OnSeekBarChangeListener, View.OnClickListener, MenuProvider {
     private var singleGame: RadioButton? = null
     private var chessMatch: RadioButton? = null
     private var differentTime: CheckBox? = null
@@ -53,6 +57,7 @@ class SettingsFragment : Fragment(), OnSeekBarChangeListener, View.OnClickListen
 
         checkForPassedData()
         setViewComponents(view)
+        activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
     private fun checkForPassedData() {
@@ -179,27 +184,23 @@ class SettingsFragment : Fragment(), OnSeekBarChangeListener, View.OnClickListen
         }
     }
 
-    //TODO: show menu icons
-    /*
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val inflater = menuInflater
-        inflater.inflate(R.menu.menu, menu)
-        return true
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.menu, menu)
     }
 
-     */
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val itemId = item.itemId //switch gives compilation error: "constant expression required"
-        if (itemId == R.id.add_new_match) {
-            val custom = CustomMatchDialogFragment()
-            custom.show(childFragmentManager, "CustomMatchDialog")
-            return true
-        } else if (itemId == R.id.choose_custom_match) {
-            findNavController().navigate(R.id.action_settingsFragment_to_customMatchFragmentList)
-            return true
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        return when (menuItem.itemId) {
+            R.id.add_new_match -> {
+                val custom = CustomMatchDialogFragment()
+                custom.show(childFragmentManager, "CustomMatchDialog")
+                true
+            }
+            R.id.choose_custom_match -> {
+                findNavController().navigate(R.id.action_settingsFragment_to_customMatchFragmentList)
+                true
+            }
+            else -> false
         }
-        return super.onOptionsItemSelected(item)
     }
 
 }
