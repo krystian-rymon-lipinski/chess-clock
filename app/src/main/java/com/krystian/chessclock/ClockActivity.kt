@@ -1,6 +1,7 @@
 package com.krystian.chessclock
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -11,6 +12,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class ClockActivity : AppCompatActivity() {
 
     val navController: NavController by lazy { setNavController() }
+    val viewModel: MainActivityViewModel by viewModels<MainActivityViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
