@@ -17,8 +17,10 @@ class CustomGameListFragment : ListFragment() {
     private var customDb: CustomMatchDatabase? = null
     private var cursor: Cursor? = null
     private var customMatchName: String? = null
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         customDb = CustomMatchDatabase()
 
         //TODO: rework with matchId

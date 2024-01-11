@@ -24,9 +24,10 @@ import kotlin.math.floor
 class CustomMatchFragmentList : ListFragment(), OnTouchListener {
     private var customDb: CustomMatchDatabase? = null
     private var cursor: Cursor? = null
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val listView = listView
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         listView.setOnTouchListener(this)
         customDb = CustomMatchDatabase()
         displayCustomMatches(customDb!!.accessDatabase(requireContext())!!)
