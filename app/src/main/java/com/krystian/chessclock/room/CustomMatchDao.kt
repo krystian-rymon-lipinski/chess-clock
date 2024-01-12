@@ -19,7 +19,7 @@ interface CustomMatchDao {
     fun getAllWithGames() : Flow<List<MatchWithGamesEntity>>
 
     @Insert
-    fun addMatch(match: CustomMatchEntity)
+    fun addMatch(match: CustomMatchEntity): Long
 
     @Update
     fun updateMatch(match: CustomMatchEntity)

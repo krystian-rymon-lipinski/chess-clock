@@ -13,15 +13,19 @@ import android.widget.RadioButton
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import com.krystian.chessclock.customMatchPackage.CustomMatchDialogFragment
 import com.krystian.chessclock.model.CustomGame
 import com.krystianrymonlipinski.chessclock.R
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SettingsFragment : Fragment(), OnSeekBarChangeListener, View.OnClickListener, MenuProvider {
     private var singleGame: RadioButton? = null
     private var chessMatch: RadioButton? = null
@@ -41,8 +45,10 @@ class SettingsFragment : Fragment(), OnSeekBarChangeListener, View.OnClickListen
                                     as opposed to customized match with possibly all games
                                     different with time and increment created by a user*/
 
-    private var customGameId: Int? = null
-    private var customMatchId: Int? = null
+    private var customGameId: Long? = null
+    private var customMatchId: Long? = null
+
+    private val activityViewModel: MainActivityViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,8 +68,8 @@ class SettingsFragment : Fragment(), OnSeekBarChangeListener, View.OnClickListen
 
     private fun checkForPassedData() {
         if (findNavController().previousBackStackEntry != null) { // not a start destination
-            customGameId = arguments?.getInt("customGameId")
-            customMatchId = arguments?.getInt("customMatchId")
+            customGameId = arguments?.getLong("customGameId")
+            customMatchId = arguments?.getLong("customMatchId")
         }
     }
 
@@ -191,7 +197,7 @@ class SettingsFragment : Fragment(), OnSeekBarChangeListener, View.OnClickListen
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         return when (menuItem.itemId) {
             R.id.add_new_match -> {
-                val custom = CustomMatchDialogFragment()
+                val custom = CustomMatchDialogFragment(newMatchCreatedCallback)
                 custom.show(childFragmentManager, "CustomMatchDialog")
                 true
             }
@@ -201,6 +207,15 @@ class SettingsFragment : Fragment(), OnSeekBarChangeListener, View.OnClickListen
             }
             else -> false
         }
+    }
+
+    private val newMatchCreatedCallback = object : CustomMatchDialogFragment.Callback {
+        override fun onNewMatchCreated(name: String, numberOfGames: Int) {
+            activityViewModel.addCustomMatchWithGames(name, numberOfGames)
+            Toast.makeText(activity, R.string.match_created, Toast.LENGTH_LONG).show()
+            findNavController().navigate(R.id.action_settingsFragment_to_customMatchFragmentList)
+        }
+
     }
 
 }
