@@ -1,72 +1,73 @@
 package com.krystian.chessclock.customMatchPackage
 
 import android.app.AlertDialog
-import android.database.Cursor
-import android.database.sqlite.SQLiteDatabase
-import android.graphics.Color
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
+import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemLongClickListener
+import android.widget.ArrayAdapter
 import android.widget.ListView
-import android.widget.SimpleCursorAdapter
 import android.widget.TextView
 import androidx.core.app.ActivityCompat.recreate
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.ListFragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.krystian.chessclock.MainActivityViewModel
+import com.krystian.chessclock.model.CustomMatch
 import com.krystianrymonlipinski.chessclock.R
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import kotlin.math.floor
 
+@AndroidEntryPoint
 class CustomMatchFragmentList : ListFragment(), OnTouchListener {
-    private var customDb: CustomMatchDatabase? = null
-    private var cursor: Cursor? = null
+
+    private val activityViewModel: MainActivityViewModel by viewModels<MainActivityViewModel>()
+    private var customMatches = mutableListOf<CustomMatch>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         listView.setOnTouchListener(this)
-        customDb = CustomMatchDatabase()
-        displayCustomMatches(customDb!!.accessDatabase(requireContext())!!)
+        observeChanges()
+        customMatches.addAll(activityViewModel.allMatches.value)
+        setupAdapter()
         setLongClick()
     }
 
-    private fun displayCustomMatches(db: SQLiteDatabase) {
-        val query = "SELECT * FROM " + CustomMatchDatabase.CUSTOM_MATCHES_TABLE + ";"
-        cursor = db.rawQuery(query, null)
-        val adapter = SimpleCursorAdapter(
-            requireContext(),
-            R.layout.custom_match_list_item,
-            cursor,
-            arrayOf(CustomMatchDatabase.NAME, CustomMatchDatabase.NUMBER_OF_GAMES),
-            intArrayOf(R.id.custom_match_name, R.id.custom_match_games)
-        )
-        adapter.viewBinder =
-            SimpleCursorAdapter.ViewBinder { view: View, cursor: Cursor, columnIndex: Int ->
-                when (columnIndex) {
-                    1 -> {
-                        val matchName = cursor.getString(columnIndex)
-                        val customMatchName = view as TextView
-                        customMatchName.text =
-                            String.format(getString(R.string.custom_match_name), matchName)
-                        customMatchName.setTextColor(Color.rgb(30, 30, 30))
-                        true
-                    }
-
-                    2 -> {
-                        val matchGames = cursor.getInt(columnIndex)
-                        val customMatchGames = view as TextView
-                        customMatchGames.text =
-                            String.format(getString(R.string.number_of_games), matchGames)
-                        true
-                    }
-                }
-                false
+    private fun observeChanges() {
+        lifecycleScope.launch {
+            activityViewModel.allMatches.collect {
+                customMatches = it.toMutableList()
+                setupAdapter()
             }
-        listAdapter = adapter
+        }
+    }
+
+    private fun setupAdapter() {
+        listAdapter = CustomMatchAdapter()
+    }
+
+    private inner class CustomMatchAdapter : ArrayAdapter<CustomMatch>(context!!, R.layout.custom_match_list_item, customMatches) {
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+            val viewToReturn = convertView ?:
+                LayoutInflater.from(context).inflate(R.layout.custom_match_list_item, null ,false)
+
+            getItem(position)?.let {
+                val matchNameTextView = viewToReturn?.findViewById<TextView>(R.id.custom_match_name)
+                matchNameTextView?.text = it.name
+                val gamesTextView = viewToReturn?.findViewById<TextView>(R.id.custom_match_games)
+                gamesTextView?.text = String.format(getString(R.string.number_of_games), it.games.size)
+            }
+            return viewToReturn
+        }
     }
 
     override fun onListItemClick(l: ListView, v: View, position: Int, id: Long) {
@@ -162,11 +163,5 @@ class CustomMatchFragmentList : ListFragment(), OnTouchListener {
                 else -> false
             }
         } else false
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        cursor!!.close()
-        customDb!!.closeDatabase()
     }
 }

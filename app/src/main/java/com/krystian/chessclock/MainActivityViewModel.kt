@@ -8,6 +8,9 @@ import com.krystian.chessclock.model.CustomGame
 import com.krystian.chessclock.model.CustomMatch
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,6 +19,13 @@ class MainActivityViewModel @Inject constructor(
     private val customMatchDataSource: CustomMatchDataSource,
     private val customGameDataSource: CustomGameDataSource
 ) : ViewModel() {
+
+    val allMatches: StateFlow<List<CustomMatch>> = customMatchDataSource.getAll()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyList()
+        )
 
     fun getAllCustomMatches() : Flow<List<CustomMatch>> = customMatchDataSource.getAll()
 
