@@ -99,6 +99,6 @@ class CustomGameEntityTest {
     }
 
     companion object {
-        const val MATCH_ID = 1
+        const val MATCH_ID = 1L
     }
 }
