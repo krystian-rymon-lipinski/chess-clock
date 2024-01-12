@@ -33,12 +33,16 @@ class MainActivityViewModel @Inject constructor(
         customMatchDataSource.addMatch(match)
     }
 
-    fun addCustomMatchWithGames(name: String, numberOfGames: Int) = viewModelScope.launch {
+    fun addCustomMatchWithDefaultGames(name: String, numberOfGames: Int) = viewModelScope.launch {
         val createdMatchId = customMatchDataSource.addMatch(CustomMatch(name = name))
 
         for (i in 0 until numberOfGames) {
             customGameDataSource.addGame(CustomGame.buildDefaultGame(createdMatchId))
         }
+    }
+
+    fun getAllGamesForCustomMatchStream(matchId: Long) : Flow<List<CustomGame>> {
+        return customGameDataSource.getAllWithMatchId(matchId)
     }
 
     fun updateCustomMatch(match: CustomMatch) = viewModelScope.launch {

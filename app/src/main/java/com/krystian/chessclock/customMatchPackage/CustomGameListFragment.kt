@@ -1,76 +1,73 @@
 package com.krystian.chessclock.customMatchPackage
 
-import android.database.Cursor
-import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.ListView
-import android.widget.SimpleCursorAdapter
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.ListFragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.krystian.chessclock.MainActivityViewModel
+import com.krystian.chessclock.model.CustomGame
 import com.krystianrymonlipinski.chessclock.R
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class CustomGameListFragment : ListFragment() {
-    private var customDb: CustomMatchDatabase? = null
-    private var cursor: Cursor? = null
     private var customMatchName: String? = null
+
+    private val activityViewModel: MainActivityViewModel by viewModels()
+    private var games: List<CustomGame> = emptyList()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val customMatchId = arguments?.getLong("customMatchId")
+        observeChanges(customMatchId)
 
-        customDb = CustomMatchDatabase()
-
-        //TODO: rework with matchId
-        customMatchName = arguments?.getInt("customMatchId").toString()
-
-        displayCustomGames(customDb!!.accessDatabase(requireContext())!!) /*a custom match list item or setting custom game -
-                                                            - there will be an extra */
+        setupAdapter()
     }
 
-    private fun displayCustomGames(db: SQLiteDatabase) {
-        val query = "SELECT * FROM $customMatchName;"
-        cursor = db.rawQuery(query, null)
+    private fun setupAdapter() {
+        listAdapter = CustomGameAdapter()
+    }
 
-        val gameChanged = arguments?.getInt("customGameId")
-
-        val adapter = SimpleCursorAdapter(
-            requireContext(), R.layout.custom_game_list_item, cursor, arrayOf(
-                CustomMatchDatabase.GAME_NUMBER, CustomMatchDatabase.TIME_ONE,
-                CustomMatchDatabase.INCREMENT_ONE, CustomMatchDatabase.TIME_TWO,
-                CustomMatchDatabase.INCREMENT_TWO
-            ), intArrayOf(R.id.custom_game_number, R.id.custom_game)
-        )
-        adapter.viewBinder =
-            SimpleCursorAdapter.ViewBinder { view: View, cursor: Cursor, columnIndex: Int ->
-                if (columnIndex == 1) {
-                    val gameNumber = cursor.getInt(columnIndex)
-                    val customGameNumber = view as TextView
-                    customGameNumber.text =
-                        String.format(getString(R.string.number_of_custom_game), gameNumber)
-                    if (cursor.position + 1 == gameChanged) customGameNumber.setTextColor(
-                        ContextCompat.getColor(requireContext(), R.color.colorAccent)
-                    )
-                    true
-                } else if (columnIndex == 2) { //set string once
-                    val customGame = view as TextView
-                    customGame.text = String.format(
-                        getString(R.string.custom_game), cursor.getInt(2),
-                        cursor.getInt(3), cursor.getInt(4), cursor.getInt(5)
-                    )
-                    if (cursor.position + 1 == gameChanged) customGame.setTextColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.colorAccent
-                        )
-                    )
-                    true
+    private fun observeChanges(customMatchId: Long?) {
+        customMatchId?.let { matchId ->
+            viewLifecycleOwner.lifecycleScope.launch {
+                activityViewModel.getAllGamesForCustomMatchStream(matchId).collect {
+                    games = it
+                    setupAdapter()
                 }
-                false
             }
-        listAdapter = adapter
+        }
+    }
+
+    private inner class CustomGameAdapter : ArrayAdapter<CustomGame>(context!!, R.layout.custom_game_list_item, games) {
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+            val viewToReturn = convertView ?:
+                LayoutInflater.from(context).inflate(R.layout.custom_game_list_item, null, false)
+
+            getItem(position)?.let {
+                val gameNumberTextView = viewToReturn.findViewById<TextView>(R.id.custom_game_number)
+                gameNumberTextView.text = StringBuilder().append(position + 1).toString()
+                val gameDescriptionTextView = viewToReturn.findViewById<TextView>(R.id.custom_game)
+                gameDescriptionTextView.text = String.format(
+                    getString(R.string.custom_game),
+                    it.whiteTime,
+                    it.whiteIncrement,
+                    it.blackTime,
+                    it.blackIncrement
+                )
+            }
+
+            return viewToReturn
+        }
     }
 
     override fun onListItemClick(l: ListView, v: View, position: Int, id: Long) {
@@ -82,11 +79,5 @@ class CustomGameListFragment : ListFragment() {
             "customGameId" to position
         )
         findNavController().navigate(R.id.action_customGameListFragment_to_settingsFragment, bundle)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        cursor!!.close()
-        customDb!!.closeDatabase()
     }
 }

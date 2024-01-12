@@ -37,7 +37,6 @@ class CustomMatchFragmentList : ListFragment(), OnTouchListener {
 
         listView.setOnTouchListener(this)
         observeChanges()
-        customMatches.addAll(activityViewModel.allMatches.value)
         setupAdapter()
         setLongClick()
     }
@@ -72,11 +71,8 @@ class CustomMatchFragmentList : ListFragment(), OnTouchListener {
 
     override fun onListItemClick(l: ListView, v: View, position: Int, id: Long) {
         super.onListItemClick(l, v, position, id)
-        val name = v.findViewById<TextView>(R.id.custom_match_name)
-        val matchName = name.text.toString()
 
-        //TODO: pass id instead (after reworking list items)
-        val bundle = bundleOf("customMatchId" to matchName)
+        val bundle = bundleOf("customMatchId" to customMatches[position].id)
         findNavController().navigate(R.id.action_customMatchFragmentList_to_customGameListFragment, bundle)
     }
 

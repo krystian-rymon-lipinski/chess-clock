@@ -211,7 +211,7 @@ class SettingsFragment : Fragment(), OnSeekBarChangeListener, View.OnClickListen
 
     private val newMatchCreatedCallback = object : CustomMatchDialogFragment.Callback {
         override fun onNewMatchCreated(name: String, numberOfGames: Int) {
-            activityViewModel.addCustomMatchWithGames(name, numberOfGames)
+            activityViewModel.addCustomMatchWithDefaultGames(name, numberOfGames)
             Toast.makeText(activity, R.string.match_created, Toast.LENGTH_LONG).show()
             findNavController().navigate(R.id.action_settingsFragment_to_customMatchFragmentList)
         }
