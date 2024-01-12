@@ -11,6 +11,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
+import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.Captor
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
@@ -47,7 +48,16 @@ class CustomMatchDataSourceImplTest {
             assertEquals(expectedRetrievedMatches, it)
         }
         verify(customMatchDao).getAll()
+    }
 
+    @Test
+    fun getById() = runTest {
+        val expectedMatch = customMatch
+        whenever(customMatchDao.getById(anyLong())).thenReturn(flowOf(expectedCustomMatchEntity))
+
+        testObj.getById(12).take(1).collect {
+            assertEquals(expectedMatch, it)
+        }
     }
 
     @Test

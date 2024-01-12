@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 interface CustomMatchDataSource {
 
     fun getAll() : Flow<List<CustomMatch>>
+    fun getById(matchId: Long) : Flow<CustomMatch>
     suspend fun addMatch(match: CustomMatch) : Long
     suspend fun updateMatch(match: CustomMatch)
     suspend fun deleteMatch(match: CustomMatch)

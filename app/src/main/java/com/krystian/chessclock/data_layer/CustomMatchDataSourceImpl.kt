@@ -19,6 +19,10 @@ class CustomMatchDataSourceImpl @Inject constructor(
         }
     }
 
+    override fun getById(matchId: Long) : Flow<CustomMatch> {
+        return customMatchDao.getById(matchId).map { convertFromEntity(it) }
+    }
+
     override suspend fun addMatch(match: CustomMatch) = withContext(Dispatchers.IO) {
         customMatchDao.addMatch(convertToEntity(match))
     }

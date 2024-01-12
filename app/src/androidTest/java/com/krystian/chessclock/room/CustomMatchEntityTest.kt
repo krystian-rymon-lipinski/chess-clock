@@ -101,4 +101,14 @@ class CustomMatchEntityTest {
         }
     }
 
+    @Test
+    fun getById() = runBlocking {
+        matchDao.addMatch(matchEntity)
+        matchDao.addMatch(matchEntity)
+        matchDao.getById(2).take(1).collect {
+            assertEquals(2, it.id)
+            assertEquals(matchEntity.name, it.name)
+        }
+    }
+
 }
