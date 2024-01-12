@@ -6,6 +6,6 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = ChessClockDatabase.customMatchTable)
 data class CustomMatchEntity(
-    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = ChessClockDatabase.customMatchTableIdColumn) val id: Int = 0,
+    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = ChessClockDatabase.customMatchTableIdColumn) val id: Long = 0,
     val name: String
 )
