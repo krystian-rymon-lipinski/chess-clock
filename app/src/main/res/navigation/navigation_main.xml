@@ -18,12 +18,12 @@
             app:destination="@id/timerFragment" />
         <argument
             android:name="customGameId"
-            app:argType="integer"
-            android:defaultValue="-1" />
+            app:argType="long"
+            android:defaultValue="-1L" />
         <argument
             android:name="customMatchId"
-            app:argType="integer"
-            android:defaultValue="-1" />
+            app:argType="long"
+            android:defaultValue="-1L" />
     </fragment>
     <fragment
         android:id="@+id/customMatchFragmentList"
@@ -45,8 +45,8 @@
             app:destination="@id/settingsFragment" />
         <argument
             android:name="customMatchId"
-            app:argType="integer"
-            android:defaultValue="-1" />
+            app:argType="long"
+            android:defaultValue="-1L" />
     </fragment>
     <fragment
         android:id="@+id/timerFragment"
@@ -55,8 +55,8 @@
         tools:layout="@layout/fragment_timer" >
         <argument
             android:name="customMatchId"
-            app:argType="integer"
-            android:defaultValue="-1" />
+            app:argType="long"
+            android:defaultValue="-1L" />
         <argument
             android:name="firstPlayerTime"
             app:argType="integer"
