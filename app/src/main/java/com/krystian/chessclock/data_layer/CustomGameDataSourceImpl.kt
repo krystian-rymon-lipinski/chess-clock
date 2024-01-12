@@ -4,6 +4,8 @@ import com.krystian.chessclock.model.CustomGame
 import com.krystian.chessclock.room.CustomGameDao
 import com.krystian.chessclock.room.CustomGameEntity
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -11,6 +13,11 @@ class CustomGameDataSourceImpl @Inject constructor(
     private val customGameDao: CustomGameDao
 ) : CustomGameDataSource {
 
+    override fun getAllWithMatchId(matchId: Long) : Flow<List<CustomGame>> {
+        return customGameDao.getAllWithMatchId(matchId).map { list ->
+            list.map { convertFromEntity(it) }
+        }
+    }
 
     override suspend fun addGame(game: CustomGame) = withContext(Dispatchers.IO) {
         customGameDao.addGame(convertToEntity(game))
@@ -33,6 +40,17 @@ class CustomGameDataSourceImpl @Inject constructor(
             blackTime = game.blackTime,
             blackIncrement = game.blackIncrement,
             matchId = game.matchId
+        )
+    }
+
+    private fun convertFromEntity(entity: CustomGameEntity) : CustomGame {
+        return CustomGame(
+            id = entity.id,
+            whiteTime = entity.whiteTime,
+            whiteIncrement = entity.whiteIncrement,
+            blackTime = entity.blackTime,
+            blackIncrement = entity.blackIncrement,
+            matchId = entity.matchId
         )
     }
 }

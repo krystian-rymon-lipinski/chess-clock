@@ -14,6 +14,10 @@ interface CustomGameDao {
     fun getAllGames() : Flow<List<CustomGameEntity>>
 
     @Query("SELECT * FROM ${ChessClockDatabase.customGameTable} " +
+            "WHERE ${ChessClockDatabase.customGameTableMatchIdColumn} = :matchId")
+    fun getAllWithMatchId(matchId: Long) : Flow<List<CustomGameEntity>>
+
+    @Query("SELECT * FROM ${ChessClockDatabase.customGameTable} " +
             "WHERE ${ChessClockDatabase.customGameTableIdColumn} = :id")
     fun getGameWithId(id: Int) : Flow<CustomGameEntity>
 
