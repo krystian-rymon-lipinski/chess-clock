@@ -153,18 +153,18 @@ class SettingsFragment : Fragment(), OnSeekBarChangeListener, View.OnClickListen
         } else if (id == R.id.play_button) {
             if (customGameId == null) { //play a game - it's not custom game editor mode
                 val firstPlayerSettings = listOf(
-                    ExtraValues.PLAYER_ONE_TIME to playerTimeBar!!.progress + 1,
-                    ExtraValues.PLAYER_ONE_INCREMENT to playerIncrementBar!!.progress
+                    "firstPlayerTime" to playerTimeBar!!.progress + 1,
+                    "firstPlayerIncrement" to playerIncrementBar!!.progress
                 )
                 val secondPlayerSettings = if (differentTime!!.isChecked) {
                     listOf(
-                        ExtraValues.PLAYER_TWO_TIME to playerTwoTimeBar!!.progress + 1,
-                        ExtraValues.PLAYER_TWO_INCREMENT to playerTwoIncrementBar!!.progress
+                        "secondPlayerTime" to playerTwoTimeBar!!.progress + 1,
+                        "secondPlayerIncrement" to playerTwoIncrementBar!!.progress
                     )
                 } else firstPlayerSettings
                 val numberOfGamesSettings = if (!singleGame!!.isChecked) {
-                    ExtraValues.NUMBER_OF_GAMES to numberOfGamesBar!!.progress + 1
-                } else ExtraValues.NUMBER_OF_GAMES to 1
+                    "numberOfGames" to numberOfGamesBar!!.progress + 1
+                } else "numberOfGames" to 1
 
                 val bundle = bundleOf(firstPlayerSettings[0], firstPlayerSettings[1],
                     secondPlayerSettings[0], secondPlayerSettings[1], numberOfGamesSettings
@@ -183,7 +183,6 @@ class SettingsFragment : Fragment(), OnSeekBarChangeListener, View.OnClickListen
                     matchId = customMatchId ?: -1
                 )
                 //TODO: save change to database
-
 
                 findNavController().popBackStack()
             }
