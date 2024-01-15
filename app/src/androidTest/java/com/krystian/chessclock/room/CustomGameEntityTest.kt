@@ -90,6 +90,15 @@ class CustomGameEntityTest {
         }
     }
 
+    @Test
+    fun getGamesWithMatchId() = runBlocking {
+        dao.addGame(gameEntity)
+        dao.addGame(gameEntity)
+        dao.getAllWithMatchId(MATCH_ID).take(1).collect {
+            assertEquals(2, it.size)
+        }
+    }
+
     private fun assertEqualsGameEntity(expected: CustomGameEntity, actual: CustomGameEntity) {
         assertEquals(expected.whiteTime, actual.whiteTime)
         assertEquals(expected.whiteIncrement, actual.whiteIncrement)
@@ -99,6 +108,6 @@ class CustomGameEntityTest {
     }
 
     companion object {
-        const val MATCH_ID = 1
+        const val MATCH_ID = 1L
     }
 }

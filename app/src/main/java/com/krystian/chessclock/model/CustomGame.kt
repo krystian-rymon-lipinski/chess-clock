@@ -1,10 +1,22 @@
 package com.krystian.chessclock.model
 
 data class CustomGame(
-    val id: Int = 0,
+    val id: Long = 0,
     val whiteTime: Int,
     val whiteIncrement: Int,
     val blackTime: Int,
     val blackIncrement: Int,
-    val matchId: Int
-)
+    val matchId: Long
+) {
+
+    companion object {
+        fun buildDefaultGame(matchId: Long) = CustomGame(
+            whiteTime = 15,
+            whiteIncrement = 3,
+            blackTime = 15,
+            blackIncrement = 3,
+            matchId = matchId
+        )
+    }
+}
+

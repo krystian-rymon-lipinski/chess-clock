@@ -15,10 +15,10 @@ import androidx.room.PrimaryKey
     )]
 )
 data class CustomGameEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(name = "white_time") val whiteTime: Int,
     @ColumnInfo(name = "white_increment") val whiteIncrement: Int,
     @ColumnInfo(name = "black_time") val blackTime: Int,
     @ColumnInfo(name = "black_increment") val blackIncrement: Int,
-    @ColumnInfo(name = ChessClockDatabase.customGameTableMatchIdColumn, index = true) val matchId: Int
+    @ColumnInfo(name = ChessClockDatabase.customGameTableMatchIdColumn, index = true) val matchId: Long
 )

@@ -1,8 +1,10 @@
 package com.krystian.chessclock.data_layer
 
 import com.krystian.chessclock.model.CustomMatch
+import com.krystian.chessclock.room.CustomGameEntity
 import com.krystian.chessclock.room.CustomMatchDao
 import com.krystian.chessclock.room.CustomMatchEntity
+import com.krystian.chessclock.room.MatchWithGamesEntity
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.take
@@ -11,6 +13,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
+import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.Captor
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
@@ -47,7 +50,33 @@ class CustomMatchDataSourceImplTest {
             assertEquals(expectedRetrievedMatches, it)
         }
         verify(customMatchDao).getAll()
+    }
 
+    @Test
+    fun getAllWithGames() = runTest {
+        val entities = listOf(MatchWithGamesEntity(
+            matchEntity = expectedCustomMatchEntity,
+            games = listOf(CustomGameEntity(1, 2, 3, 4, 5, 6))
+        ))
+        whenever(customMatchDao.getAllWithGames()).thenReturn(flowOf(entities))
+
+        testObj.getAllWithGames().take(1).collect {
+            assertEquals(1, it.size)
+            assertEquals(entities[0].matchEntity.id, it[0].id)
+            assertEquals(entities[0].matchEntity.name, it[0].name)
+            assertEquals(entities[0].games.size, it[0].games.size)
+        }
+        verify(customMatchDao).getAllWithGames()
+    }
+
+    @Test
+    fun getById() = runTest {
+        val expectedMatch = customMatch
+        whenever(customMatchDao.getById(anyLong())).thenReturn(flowOf(expectedCustomMatchEntity))
+
+        testObj.getById(12).take(1).collect {
+            assertEquals(expectedMatch, it)
+        }
     }
 
     @Test

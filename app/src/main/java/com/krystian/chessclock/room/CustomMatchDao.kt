@@ -14,12 +14,16 @@ interface CustomMatchDao {
     @Query("SELECT * FROM ${ChessClockDatabase.customMatchTable}")
     fun getAll() : Flow<List<CustomMatchEntity>>
 
+    @Query("SELECT * FROM ${ChessClockDatabase.customMatchTable} " +
+            "WHERE ${ChessClockDatabase.customMatchTableIdColumn} = :matchId")
+    fun getById(matchId: Long) : Flow<CustomMatchEntity>
+
     @Transaction
     @Query("SELECT * FROM ${ChessClockDatabase.customMatchTable}")
     fun getAllWithGames() : Flow<List<MatchWithGamesEntity>>
 
     @Insert
-    fun addMatch(match: CustomMatchEntity)
+    fun addMatch(match: CustomMatchEntity): Long
 
     @Update
     fun updateMatch(match: CustomMatchEntity)

@@ -3,7 +3,6 @@ package com.krystian.chessclock.customMatchPackage
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.DialogInterface
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
@@ -14,7 +13,9 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.krystianrymonlipinski.chessclock.R
 
-class CustomMatchDialogFragment : DialogFragment(), OnSeekBarChangeListener {
+class CustomMatchDialogFragment(
+    private val callback: Callback
+) : DialogFragment(), OnSeekBarChangeListener {
     private var dialogView: View? = null
     private var numberOfGamesBar: SeekBar? = null
     private var numberOfGamesText: TextView? = null
@@ -28,20 +29,10 @@ class CustomMatchDialogFragment : DialogFragment(), OnSeekBarChangeListener {
             .setTitle(R.string.add_new_match)
             .setPositiveButton(R.string.ok_button) { dialog: DialogInterface?, id: Int ->
                 val name = matchName!!.text.toString()
-                if (name.isEmpty()) Toast.makeText(
-                    activity,
-                    R.string.no_name_chosen,
-                    Toast.LENGTH_SHORT
-                ).show() else {
-                    val customDb = CustomMatchDatabase()
-                    customDb.accessDatabase(context)
-                    customDb.createNewCustomMatch(name, numberOfGamesBar!!.progress + 2)
-                    customDb.closeDatabase()
-                    Toast.makeText(
-                        activity, R.string.match_created,
-                        Toast.LENGTH_LONG
-                    ).show()
-                    startActivity(Intent(context, CustomMatchActivityList::class.java))
+                if (name.isEmpty()) {
+                    Toast.makeText(activity, R.string.no_name_chosen, Toast.LENGTH_SHORT).show()
+                } else {
+                    callback.onNewMatchCreated(name, numberOfGamesBar!!.progress + 2)
                 }
             }
             .setNegativeButton(R.string.cancel_button) { dialog: DialogInterface?, which: Int -> }
@@ -66,4 +57,8 @@ class CustomMatchDialogFragment : DialogFragment(), OnSeekBarChangeListener {
 
     override fun onStartTrackingTouch(seekBar: SeekBar) {}
     override fun onStopTrackingTouch(seekBar: SeekBar) {}
+
+    interface Callback {
+        fun onNewMatchCreated(name: String, numberOfGames: Int)
+    }
 }

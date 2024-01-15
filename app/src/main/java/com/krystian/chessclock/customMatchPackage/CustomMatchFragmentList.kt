@@ -1,81 +1,79 @@
 package com.krystian.chessclock.customMatchPackage
 
 import android.app.AlertDialog
-import android.app.ListActivity
-import android.content.Intent
-import android.database.Cursor
-import android.database.sqlite.SQLiteDatabase
-import android.graphics.Color
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
+import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemLongClickListener
+import android.widget.ArrayAdapter
 import android.widget.ListView
-import android.widget.SimpleCursorAdapter
 import android.widget.TextView
+import androidx.core.app.ActivityCompat.recreate
 import androidx.core.content.ContextCompat
-import com.krystian.chessclock.ExtraValues
-import com.krystian.chessclock.MainActivity
-import com.krystian.chessclock.timerPackage.TimerActivity
+import androidx.core.os.bundleOf
+import androidx.fragment.app.ListFragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.krystian.chessclock.MainActivityViewModel
+import com.krystian.chessclock.model.CustomMatch
 import com.krystianrymonlipinski.chessclock.R
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import kotlin.math.floor
 
-class CustomMatchActivityList : ListActivity(), OnTouchListener {
-    private var customDb: CustomMatchDatabase? = null
-    private var cursor: Cursor? = null
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val listView = listView
+@AndroidEntryPoint
+class CustomMatchFragmentList : ListFragment(), OnTouchListener {
+
+    private val activityViewModel: MainActivityViewModel by viewModels<MainActivityViewModel>()
+    private var customMatches = mutableListOf<CustomMatch>()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         listView.setOnTouchListener(this)
-        customDb = CustomMatchDatabase()
-        displayCustomMatches(customDb!!.accessDatabase(this)!!)
+        observeChanges()
+        setupAdapter()
         setLongClick()
     }
 
-    private fun displayCustomMatches(db: SQLiteDatabase) {
-        val query = "SELECT * FROM " + CustomMatchDatabase.CUSTOM_MATCHES_TABLE + ";"
-        cursor = db.rawQuery(query, null)
-        val adapter = SimpleCursorAdapter(
-            this,
-            R.layout.custom_match_list_item,
-            cursor,
-            arrayOf(CustomMatchDatabase.NAME, CustomMatchDatabase.NUMBER_OF_GAMES),
-            intArrayOf(R.id.custom_match_name, R.id.custom_match_games)
-        )
-        adapter.viewBinder =
-            SimpleCursorAdapter.ViewBinder { view: View, cursor: Cursor, columnIndex: Int ->
-                when (columnIndex) {
-                    1 -> {
-                        val matchName = cursor.getString(columnIndex)
-                        val customMatchName = view as TextView
-                        customMatchName.text =
-                            String.format(getString(R.string.custom_match_name), matchName)
-                        customMatchName.setTextColor(Color.rgb(30, 30, 30))
-                        true
-                    }
-
-                    2 -> {
-                        val matchGames = cursor.getInt(columnIndex)
-                        val customMatchGames = view as TextView
-                        customMatchGames.text =
-                            String.format(getString(R.string.number_of_games), matchGames)
-                        true
-                    }
-                }
-                false
+    private fun observeChanges() {
+        lifecycleScope.launch {
+            activityViewModel.allMatches.collect {
+                customMatches = it.toMutableList()
+                setupAdapter()
             }
-        listAdapter = adapter
+        }
+    }
+
+    private fun setupAdapter() {
+        listAdapter = CustomMatchAdapter()
+    }
+
+    private inner class CustomMatchAdapter : ArrayAdapter<CustomMatch>(context!!, R.layout.custom_match_list_item, customMatches) {
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+            val viewToReturn = convertView ?:
+                LayoutInflater.from(context).inflate(R.layout.custom_match_list_item, null ,false)
+
+            getItem(position)?.let {
+                val matchNameTextView = viewToReturn?.findViewById<TextView>(R.id.custom_match_name)
+                matchNameTextView?.text = it.name
+                val gamesTextView = viewToReturn?.findViewById<TextView>(R.id.custom_match_games)
+                gamesTextView?.text = String.format(getString(R.string.number_of_games), it.games.size)
+            }
+            return viewToReturn
+        }
     }
 
     override fun onListItemClick(l: ListView, v: View, position: Int, id: Long) {
         super.onListItemClick(l, v, position, id)
-        val name = v.findViewById<TextView>(R.id.custom_match_name)
-        val matchName = name.text.toString()
-        val intent = Intent(this, CustomGameActivityList::class.java)
-        intent.putExtra(ExtraValues.CUSTOM_MATCH_NAME, matchName)
-        startActivity(intent)
+
+        val bundle = bundleOf("customMatchId" to customMatches[position].id)
+        findNavController().navigate(R.id.action_customMatchFragmentList_to_customGameListFragment, bundle)
     }
 
     private fun setLongClick() { //to delete custom match if there's such need
@@ -84,16 +82,16 @@ class CustomMatchActivityList : ListActivity(), OnTouchListener {
             OnItemLongClickListener { parent: AdapterView<*>?, view: View, position: Int, id: Long ->
                 val customMatchText = view.findViewById<TextView>(R.id.custom_match_name)
                 val customMatchName = customMatchText.text.toString()
-                val builder = AlertDialog.Builder(this@CustomMatchActivityList)
+                val builder = AlertDialog.Builder(requireContext())
                 builder.setMessage(R.string.delete_match)
                     .setPositiveButton(R.string.ok_button) { dialog, which ->
                         val customDb = CustomMatchDatabase()
-                        customDb.accessDatabase(applicationContext)?.delete(
+                        customDb.accessDatabase(requireContext())?.delete(
                             CustomMatchDatabase.CUSTOM_MATCHES_TABLE,
                             CustomMatchDatabase.NAME + " = ?", arrayOf(customMatchName)
                         )
                         customDb.closeDatabase()
-                        recreate()
+                        recreate(requireActivity())
                     }
                     .setNegativeButton(R.string.cancel_button) { dialog, which -> }
                 builder.show()
@@ -139,17 +137,16 @@ class CustomMatchActivityList : ListActivity(), OnTouchListener {
                         listView.getChildAt(itemReleased - itemsScrolledFinish) //which item is being swiped
                     val customMatchName =
                         view.findViewById<TextView>(R.id.custom_match_name)
-                    val name = customMatchName.text.toString()
                     if (itemTapped == itemReleased && xFinish - xStart > minSwipe) {
                         customMatchName.setTextColor(
                             ContextCompat.getColor(
-                                this,
+                                requireContext(),
                                 R.color.colorAccent
                             )
                         )
-                        val intent = Intent(this, TimerActivity::class.java)
-                        intent.putExtra(ExtraValues.CUSTOM_MATCH_NAME, name)
-                        startActivity(intent)
+
+                        val bundle = bundleOf("customMatchId" to customMatches[itemReleased].id)
+                        findNavController().navigate(R.id.action_customMatchFragmentList_to_timerFragment, bundle)
                         true //event consumed
                     } else { //user wants to change custom games, not to play a match
                         view.performClick()
@@ -160,15 +157,5 @@ class CustomMatchActivityList : ListActivity(), OnTouchListener {
                 else -> false
             }
         } else false
-    }
-
-    override fun onBackPressed() {
-        startActivity(Intent(this, MainActivity::class.java))
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        cursor!!.close()
-        customDb!!.closeDatabase()
     }
 }

@@ -6,6 +6,7 @@ plugins{
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -83,4 +84,7 @@ dependencies {
 
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
     testImplementation("org.mockito:mockito-inline:4.11.0")
+
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.6")
+
 }

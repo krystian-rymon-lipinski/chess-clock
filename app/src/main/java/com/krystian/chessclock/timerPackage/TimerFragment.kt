@@ -2,21 +2,27 @@ package com.krystian.chessclock.timerPackage
 
 import android.app.AlertDialog
 import android.content.DialogInterface
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.ToggleButton
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.krystian.chessclock.ExtraValues
-import com.krystian.chessclock.MainActivity
-import com.krystian.chessclock.customMatchPackage.CustomMatchDatabase
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.krystian.chessclock.MainActivityViewModel
 import com.krystianrymonlipinski.chessclock.R
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.launch
 
-class TimerActivity : AppCompatActivity(), View.OnClickListener {
+@AndroidEntryPoint
+class TimerFragment : Fragment(), View.OnClickListener {
     private var gameNumberText: TextView? = null
     private var gameNumberTextRotated: TextView? = null
     private var pointsText: TextView? = null
@@ -33,30 +39,41 @@ class TimerActivity : AppCompatActivity(), View.OnClickListener {
     private var resignButtonRotated: Button? = null
     private var newGameButton: Button? = null
     private var match: Match? = null
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_timer)
-        setViewComponents() //find views and attach listeners
-        settings //find match parameters ((non)-custom, time, increments, number of games) and store it in match object
-        setMatchGame() //set n-th game with its parameters
+
+    private val activityViewModel: MainActivityViewModel by viewModels()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_timer, null, false)
     }
 
-    private fun setViewComponents() {
-        gameNumberText = findViewById(R.id.game_number_text)
-        gameNumberTextRotated = findViewById(R.id.game_number_text_rotated)
-        pointsText = findViewById(R.id.points_text)
-        pointsTextRotated = findViewById(R.id.points_text_rotated)
-        timerText = findViewById(R.id.timer_text)
-        timerTextRotated = findViewById(R.id.timer_text_rotated)
-        firstMoveText = findViewById(R.id.first_move_text)
-        firstMoveTextRotated = findViewById(R.id.first_move_text_rotated)
-        drawButton = findViewById(R.id.draw_button)
-        drawButtonRotated = findViewById(R.id.draw_button_rotated)
-        moveButton = findViewById(R.id.move_button)
-        moveButtonRotated = findViewById(R.id.move_button_rotated)
-        resignButton = findViewById(R.id.resign_button)
-        resignButtonRotated = findViewById(R.id.resign_button_rotated)
-        newGameButton = findViewById(R.id.new_game_button)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setViewComponents(view) //find views and attach listeners
+        setupMatch()
+
+    }
+
+    private fun setViewComponents(mainView: View) {
+        gameNumberText = mainView.findViewById(R.id.game_number_text)
+        gameNumberTextRotated = mainView.findViewById(R.id.game_number_text_rotated)
+        pointsText = mainView.findViewById(R.id.points_text)
+        pointsTextRotated = mainView.findViewById(R.id.points_text_rotated)
+        timerText = mainView.findViewById(R.id.timer_text)
+        timerTextRotated = mainView.findViewById(R.id.timer_text_rotated)
+        firstMoveText = mainView.findViewById(R.id.first_move_text)
+        firstMoveTextRotated = mainView.findViewById(R.id.first_move_text_rotated)
+        drawButton = mainView.findViewById(R.id.draw_button)
+        drawButtonRotated = mainView.findViewById(R.id.draw_button_rotated)
+        moveButton = mainView.findViewById(R.id.move_button)
+        moveButtonRotated = mainView.findViewById(R.id.move_button_rotated)
+        resignButton = mainView.findViewById(R.id.resign_button)
+        resignButtonRotated = mainView.findViewById(R.id.resign_button_rotated)
+        newGameButton = mainView.findViewById(R.id.new_game_button)
         newGameButton?.setOnClickListener(this)
         resignButtonRotated?.setOnClickListener(this)
         resignButton?.setOnClickListener(this)
@@ -66,53 +83,48 @@ class TimerActivity : AppCompatActivity(), View.OnClickListener {
         drawButton?.setOnClickListener(this)
     }
 
-    private val settings: Unit
-        get() { //and store it into a match object
-            val customMatchName = intent.getStringExtra(ExtraValues.CUSTOM_MATCH_NAME)
-            val numberOfGames: Int
-            val timeOnes = ArrayList<Int?>()
-            val incrementOnes = ArrayList<Int?>()
-            val timeTwos = ArrayList<Int?>()
-            val incrementTwos = ArrayList<Int?>()
-            if (customMatchName == null) {
-                numberOfGames = intent.getIntExtra(
-                    ExtraValues.NUMBER_OF_GAMES,
-                    1
-                ) //if no extra send, it's a single game
-                val timeOne = intent.getIntExtra(ExtraValues.PLAYER_ONE_TIME, 15)
-                val timeTwo = intent.getIntExtra(
-                    ExtraValues.PLAYER_TWO_TIME,
-                    timeOne
-                ) //if there's no player two's extra, timeTwo = timeOne;
-                val incrementOne = intent.getIntExtra(ExtraValues.PLAYER_ONE_INCREMENT, 0)
-                val incrementTwo = intent.getIntExtra(
-                    ExtraValues.PLAYER_TWO_INCREMENT,
-                    incrementOne
-                ) //same as time
-                for (i in 0 until numberOfGames) {
-                    timeOnes.add(timeOne)
-                    incrementOnes.add(incrementOne)
-                    timeTwos.add(timeTwo)
-                    incrementTwos.add(incrementTwo)
-                }
-            } else {
-                val customDb = CustomMatchDatabase()
-                val query = "SELECT * FROM $customMatchName;"
-                val cursor = customDb.accessDatabase(this)!!
-                    .rawQuery(query, null)
-                numberOfGames = cursor.count
-                cursor.moveToFirst()
-                do {
-                    timeOnes.add(cursor.getInt(2))
-                    incrementOnes.add(cursor.getInt(3))
-                    timeTwos.add(cursor.getInt(4))
-                    incrementTwos.add(cursor.getInt(5))
-                } while (cursor.moveToNext())
-                cursor.close()
-                customDb.closeDatabase()
+    private fun setupMatch() {
+        val matchId = arguments?.getLong("customMatchId")
+
+        var numberOfGames = 0
+        val timeOnes = ArrayList<Int?>()
+        val incrementOnes = ArrayList<Int?>()
+        val timeTwos = ArrayList<Int?>()
+        val incrementTwos = ArrayList<Int?>()
+        if (matchId == NO_ARGUMENT_MATCH_ID_FOUND) {
+
+            numberOfGames = arguments?.getInt("numberOfGames") ?: 1
+            val timeOne = arguments?.getInt("firstPlayerTime") ?: 15
+            val timeTwo = arguments?.getInt("secondPlayerTime") ?: 15
+            val incrementOne = arguments?.getInt("firstPlayerIncrement") ?: 3
+            val incrementTwo = arguments?.getInt("secondPlayerIncrement") ?: 3
+            for (i in 0 until numberOfGames) {
+                timeOnes.add(timeOne)
+                incrementOnes.add(incrementOne)
+                timeTwos.add(timeTwo)
+                incrementTwos.add(incrementTwo)
             }
+
             match = Match(numberOfGames, timeOnes, incrementOnes, timeTwos, incrementTwos)
+            setMatchGame() //set n-th game with its parameters
+
+        } else {
+            viewLifecycleOwner.lifecycleScope.launch {
+                activityViewModel.getMatchByIdWithGames(matchId!!).take(1).collect {
+                    for (game in it.games) {
+                        timeOnes.add(game.whiteTime)
+                        incrementOnes.add(game.whiteIncrement)
+                        timeTwos.add(game.blackTime)
+                        incrementTwos.add(game.blackIncrement)
+                    }
+
+                    match = Match(numberOfGames, timeOnes, incrementOnes, timeTwos, incrementTwos)
+                    setMatchGame() //set n-th game with its parameters
+                }
+            }
         }
+
+    }
 
     private fun setMatchGame() {
         val game = match!!.gameNumber
@@ -255,41 +267,42 @@ class TimerActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun setButtonColors() {
+        val context = requireContext()
         if (match!!.gameNumber % 2 != 0) {
-            moveButton!!.background = ContextCompat.getDrawable(this, R.drawable.timer_white_button)
-            moveButton!!.background = ContextCompat.getDrawable(this, R.drawable.timer_white_button)
-            drawButton!!.background = ContextCompat.getDrawable(this, R.drawable.timer_white_button)
+            moveButton!!.background = ContextCompat.getDrawable(context, R.drawable.timer_white_button)
+            moveButton!!.background = ContextCompat.getDrawable(context, R.drawable.timer_white_button)
+            drawButton!!.background = ContextCompat.getDrawable(context, R.drawable.timer_white_button)
             resignButton!!.background =
-                ContextCompat.getDrawable(this, R.drawable.timer_white_button)
-            moveButton!!.setTextColor(ContextCompat.getColor(this, R.color.blackColor))
-            drawButton!!.setTextColor(ContextCompat.getColor(this, R.color.blackColor))
-            resignButton!!.setTextColor(ContextCompat.getColor(this, R.color.blackColor))
+                ContextCompat.getDrawable(context, R.drawable.timer_white_button)
+            moveButton!!.setTextColor(ContextCompat.getColor(context, R.color.blackColor))
+            drawButton!!.setTextColor(ContextCompat.getColor(context, R.color.blackColor))
+            resignButton!!.setTextColor(ContextCompat.getColor(context, R.color.blackColor))
             moveButtonRotated!!.background =
-                ContextCompat.getDrawable(this, R.drawable.timer_black_button)
+                ContextCompat.getDrawable(context, R.drawable.timer_black_button)
             drawButtonRotated!!.background =
-                ContextCompat.getDrawable(this, R.drawable.timer_black_button)
+                ContextCompat.getDrawable(context, R.drawable.timer_black_button)
             resignButtonRotated!!.background =
-                ContextCompat.getDrawable(this, R.drawable.timer_black_button)
-            moveButtonRotated!!.setTextColor(ContextCompat.getColor(this, R.color.whiteColor))
-            drawButtonRotated!!.setTextColor(ContextCompat.getColor(this, R.color.whiteColor))
-            resignButtonRotated!!.setTextColor(ContextCompat.getColor(this, R.color.whiteColor))
+                ContextCompat.getDrawable(context, R.drawable.timer_black_button)
+            moveButtonRotated!!.setTextColor(ContextCompat.getColor(context, R.color.whiteColor))
+            drawButtonRotated!!.setTextColor(ContextCompat.getColor(context, R.color.whiteColor))
+            resignButtonRotated!!.setTextColor(ContextCompat.getColor(context, R.color.whiteColor))
         } else {
             moveButtonRotated!!.background =
-                ContextCompat.getDrawable(this, R.drawable.timer_white_button)
+                ContextCompat.getDrawable(context, R.drawable.timer_white_button)
             drawButtonRotated!!.background =
-                ContextCompat.getDrawable(this, R.drawable.timer_white_button)
+                ContextCompat.getDrawable(context, R.drawable.timer_white_button)
             resignButtonRotated!!.background =
-                ContextCompat.getDrawable(this, R.drawable.timer_white_button)
-            moveButtonRotated!!.setTextColor(ContextCompat.getColor(this, R.color.blackColor))
-            drawButtonRotated!!.setTextColor(ContextCompat.getColor(this, R.color.blackColor))
-            resignButtonRotated!!.setTextColor(ContextCompat.getColor(this, R.color.blackColor))
-            moveButton!!.background = ContextCompat.getDrawable(this, R.drawable.timer_black_button)
-            drawButton!!.background = ContextCompat.getDrawable(this, R.drawable.timer_black_button)
+                ContextCompat.getDrawable(context, R.drawable.timer_white_button)
+            moveButtonRotated!!.setTextColor(ContextCompat.getColor(context, R.color.blackColor))
+            drawButtonRotated!!.setTextColor(ContextCompat.getColor(context, R.color.blackColor))
+            resignButtonRotated!!.setTextColor(ContextCompat.getColor(context, R.color.blackColor))
+            moveButton!!.background = ContextCompat.getDrawable(context, R.drawable.timer_black_button)
+            drawButton!!.background = ContextCompat.getDrawable(context, R.drawable.timer_black_button)
             resignButton!!.background =
-                ContextCompat.getDrawable(this, R.drawable.timer_black_button)
-            moveButton!!.setTextColor(ContextCompat.getColor(this, R.color.whiteColor))
-            drawButton!!.setTextColor(ContextCompat.getColor(this, R.color.whiteColor))
-            resignButton!!.setTextColor(ContextCompat.getColor(this, R.color.whiteColor))
+                ContextCompat.getDrawable(context, R.drawable.timer_black_button)
+            moveButton!!.setTextColor(ContextCompat.getColor(context, R.color.whiteColor))
+            drawButton!!.setTextColor(ContextCompat.getColor(context, R.color.whiteColor))
+            resignButton!!.setTextColor(ContextCompat.getColor(context, R.color.whiteColor))
         }
     }
 
@@ -435,22 +448,21 @@ class TimerActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun showResults() {
-        val builder = AlertDialog.Builder(this)
-        builder.setMessage(
-            getString(
-                R.string.results,
-                match!!.firstPlayerPoints, match!!.secondPlayerPoints
-            )
-        )
-            .setPositiveButton(R.string.ok_button) { dialog: DialogInterface?, which: Int ->
-                startActivity(
-                    Intent(this@TimerActivity, MainActivity::class.java)
+        AlertDialog.Builder(requireContext())
+            .setMessage(
+                getString(
+                    R.string.results,
+                    match!!.firstPlayerPoints, match!!.secondPlayerPoints
                 )
+            )
+            .setPositiveButton(R.string.ok_button) { dialog: DialogInterface?, which: Int ->
+                findNavController().popBackStack()
             }
-        builder.show()
+            .show()
     }
 
-    override fun onBackPressed() {
-        startActivity(Intent(this, MainActivity::class.java))
+    companion object {
+        private const val NO_ARGUMENT_MATCH_ID_FOUND = -1L
     }
+
 }

@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     grid:columnCount="3"
     grid:alignmentMode="alignBounds"
-    tools:context="com.krystian.chessclock.timerPackage.TimerActivity" >
+    tools:context="com.krystian.chessclock.timerPackage.TimerFragment" >
 
     <TextView android:id="@+id/points_text_rotated"
         style = "@style/TimerTextView"
