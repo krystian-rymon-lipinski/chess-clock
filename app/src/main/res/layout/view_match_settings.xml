@@ -5,6 +5,7 @@
     android:layout_height="match_parent">
 
     <RadioGroup
+        android:id="@+id/match_settings_radio_group"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -80,7 +81,7 @@
             android:text="@string/number_of_games"
             android:visibility="invisible"/>
 
-        <SeekBar android:id="@+id/games_seek_bar"
+        <SeekBar android:id="@+id/number_of_games_seek_bar"
             style = "@style/SettingsSeekBar"
             android:max="29"
             android:visibility="invisible"/>
