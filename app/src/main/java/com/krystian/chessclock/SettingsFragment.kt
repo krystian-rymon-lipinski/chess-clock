@@ -173,7 +173,6 @@ class SettingsFragment : Fragment(), OnSeekBarChangeListener, View.OnClickListen
 
                 findNavController().navigate(R.id.action_settingsFragment_to_timerFragment, bundle)
             } else { // save custom game parameters to the database
-
                 val customGameUpdated = CustomGame(
                     id = customGameId ?: -1,
                     whiteTime = playerTimeBar!!.progress + 1,
@@ -182,8 +181,8 @@ class SettingsFragment : Fragment(), OnSeekBarChangeListener, View.OnClickListen
                     blackIncrement = if (differentTime!!.isChecked) playerTwoIncrementBar!!.progress else playerIncrementBar!!.progress,
                     matchId = customMatchId ?: -1
                 )
-                //TODO: save change to database
 
+                activityViewModel.updateCustomGame(customGameUpdated)
                 findNavController().popBackStack()
             }
         }

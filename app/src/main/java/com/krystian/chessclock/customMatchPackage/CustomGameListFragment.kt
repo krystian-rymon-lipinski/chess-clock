@@ -20,14 +20,14 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class CustomGameListFragment : ListFragment() {
-    private var customMatchName: String? = null
 
     private val activityViewModel: MainActivityViewModel by viewModels()
     private var games: List<CustomGame> = emptyList()
+    private var customMatchId: Long? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val customMatchId = arguments?.getLong("customMatchId")
+        customMatchId = arguments?.getLong("customMatchId")
         observeChanges(customMatchId)
 
         setupAdapter()
@@ -73,10 +73,9 @@ class CustomGameListFragment : ListFragment() {
     override fun onListItemClick(l: ListView, v: View, position: Int, id: Long) {
         super.onListItemClick(l, v, position, id)
 
-        //TODO: rework parameters for proper IDs
         val bundle = bundleOf(
-            "customMatchId" to customMatchName,
-            "customGameId" to position
+            "customMatchId" to customMatchId,
+            "customGameId" to games[position].id
         )
         findNavController().navigate(R.id.action_customGameListFragment_to_settingsFragment, bundle)
     }
