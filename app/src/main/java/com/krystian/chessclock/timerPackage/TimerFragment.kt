@@ -12,10 +12,16 @@ import android.widget.TextView
 import android.widget.ToggleButton
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.krystian.chessclock.customMatchPackage.CustomMatchDatabase
+import com.krystian.chessclock.MainActivityViewModel
 import com.krystianrymonlipinski.chessclock.R
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class TimerFragment : Fragment(), View.OnClickListener {
     private var gameNumberText: TextView? = null
     private var gameNumberTextRotated: TextView? = null
@@ -34,6 +40,8 @@ class TimerFragment : Fragment(), View.OnClickListener {
     private var newGameButton: Button? = null
     private var match: Match? = null
 
+    private val activityViewModel: MainActivityViewModel by viewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -46,8 +54,8 @@ class TimerFragment : Fragment(), View.OnClickListener {
         super.onViewCreated(view, savedInstanceState)
 
         setViewComponents(view) //find views and attach listeners
-        settings //find match parameters ((non)-custom, time, increments, number of games) and store it in match object
-        setMatchGame() //set n-th game with its parameters
+        setupMatch()
+
     }
 
     private fun setViewComponents(mainView: View) {
@@ -75,49 +83,48 @@ class TimerFragment : Fragment(), View.OnClickListener {
         drawButton?.setOnClickListener(this)
     }
 
-    private val settings: Unit
-        get() { //and store it into a match object
+    private fun setupMatch() {
+        val matchId = arguments?.getLong("customMatchId")
 
-            val customMatchName = arguments?.getInt("customMatchId")?.toString()
+        var numberOfGames = 0
+        val timeOnes = ArrayList<Int?>()
+        val incrementOnes = ArrayList<Int?>()
+        val timeTwos = ArrayList<Int?>()
+        val incrementTwos = ArrayList<Int?>()
+        if (matchId == NO_ARGUMENT_MATCH_ID_FOUND) {
 
-
-            var numberOfGames = 0
-            val timeOnes = ArrayList<Int?>()
-            val incrementOnes = ArrayList<Int?>()
-            val timeTwos = ArrayList<Int?>()
-            val incrementTwos = ArrayList<Int?>()
-            if (customMatchName == null) {
-
-                numberOfGames = arguments?.getInt("numberOfGames") ?: 1
-                val timeOne = arguments?.getInt("firstPlayerTime") ?: 15
-                val timeTwo = arguments?.getInt("secondPlayerTime") ?: 15
-                val incrementOne = arguments?.getInt("firstPlayerIncrement") ?: 3
-                val incrementTwo = arguments?.getInt("secondPlayerIncrement") ?: 3
-                for (i in 0 until numberOfGames) {
-                    timeOnes.add(timeOne)
-                    incrementOnes.add(incrementOne)
-                    timeTwos.add(timeTwo)
-                    incrementTwos.add(incrementTwo)
-                }
-
-            } else {
-                val customDb = CustomMatchDatabase()
-                val query = "SELECT * FROM $customMatchName;"
-                val cursor = customDb.accessDatabase(requireContext())!!
-                    .rawQuery(query, null)
-                numberOfGames = cursor.count
-                cursor.moveToFirst()
-                do {
-                    timeOnes.add(cursor.getInt(2))
-                    incrementOnes.add(cursor.getInt(3))
-                    timeTwos.add(cursor.getInt(4))
-                    incrementTwos.add(cursor.getInt(5))
-                } while (cursor.moveToNext())
-                cursor.close()
-                customDb.closeDatabase()
+            numberOfGames = arguments?.getInt("numberOfGames") ?: 1
+            val timeOne = arguments?.getInt("firstPlayerTime") ?: 15
+            val timeTwo = arguments?.getInt("secondPlayerTime") ?: 15
+            val incrementOne = arguments?.getInt("firstPlayerIncrement") ?: 3
+            val incrementTwo = arguments?.getInt("secondPlayerIncrement") ?: 3
+            for (i in 0 until numberOfGames) {
+                timeOnes.add(timeOne)
+                incrementOnes.add(incrementOne)
+                timeTwos.add(timeTwo)
+                incrementTwos.add(incrementTwo)
             }
+
             match = Match(numberOfGames, timeOnes, incrementOnes, timeTwos, incrementTwos)
+            setMatchGame() //set n-th game with its parameters
+
+        } else {
+            viewLifecycleOwner.lifecycleScope.launch {
+                activityViewModel.getMatchByIdWithGames(matchId!!).take(1).collect {
+                    for (game in it.games) {
+                        timeOnes.add(game.whiteTime)
+                        incrementOnes.add(game.whiteIncrement)
+                        timeTwos.add(game.blackTime)
+                        incrementTwos.add(game.blackIncrement)
+                    }
+
+                    match = Match(numberOfGames, timeOnes, incrementOnes, timeTwos, incrementTwos)
+                    setMatchGame() //set n-th game with its parameters
+                }
+            }
         }
+
+    }
 
     private fun setMatchGame() {
         val game = match!!.gameNumber
@@ -452,6 +459,10 @@ class TimerFragment : Fragment(), View.OnClickListener {
                 findNavController().popBackStack()
             }
             .show()
+    }
+
+    companion object {
+        private const val NO_ARGUMENT_MATCH_ID_FOUND = -1L
     }
 
 }

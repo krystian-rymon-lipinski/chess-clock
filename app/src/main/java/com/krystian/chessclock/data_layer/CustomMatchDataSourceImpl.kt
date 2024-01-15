@@ -1,8 +1,11 @@
 package com.krystian.chessclock.data_layer
 
+import com.krystian.chessclock.model.CustomGame
 import com.krystian.chessclock.model.CustomMatch
+import com.krystian.chessclock.room.CustomGameEntity
 import com.krystian.chessclock.room.CustomMatchDao
 import com.krystian.chessclock.room.CustomMatchEntity
+import com.krystian.chessclock.room.MatchWithGamesEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -16,6 +19,12 @@ class CustomMatchDataSourceImpl @Inject constructor(
     override fun getAll() : Flow<List<CustomMatch>> {
         return customMatchDao.getAll().map { list ->
             list.map { entity -> convertFromEntity(entity) }
+        }
+    }
+
+    override fun getAllWithGames() : Flow<List<CustomMatch>> {
+        return customMatchDao.getAllWithGames().map { list ->
+            list.map { entityWithGames -> convertFromEntityWithGames(entityWithGames) }
         }
     }
 
@@ -46,6 +55,25 @@ class CustomMatchDataSourceImpl @Inject constructor(
         return CustomMatch(
             id = entity.id,
             name = entity.name
+        )
+    }
+
+    private fun convertFromEntityWithGames(entityWithGames: MatchWithGamesEntity) : CustomMatch {
+        return CustomMatch(
+            id = entityWithGames.matchEntity.id,
+            name = entityWithGames.matchEntity.name,
+            games = entityWithGames.games.map { convertFromGameEntity(it) }
+        )
+    }
+
+    private fun convertFromGameEntity(entity: CustomGameEntity) : CustomGame {
+        return CustomGame(
+            id = entity.id,
+            whiteTime = entity.whiteTime,
+            whiteIncrement = entity.whiteIncrement,
+            blackTime = entity.blackTime,
+            blackIncrement = entity.blackIncrement,
+            matchId = entity.matchId
         )
     }
 }

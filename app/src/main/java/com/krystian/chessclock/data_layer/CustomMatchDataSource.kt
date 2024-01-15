@@ -7,6 +7,7 @@ interface CustomMatchDataSource {
 
     fun getAll() : Flow<List<CustomMatch>>
     fun getById(matchId: Long) : Flow<CustomMatch>
+    fun getAllWithGames() : Flow<List<CustomMatch>>
     suspend fun addMatch(match: CustomMatch) : Long
     suspend fun updateMatch(match: CustomMatch)
     suspend fun deleteMatch(match: CustomMatch)

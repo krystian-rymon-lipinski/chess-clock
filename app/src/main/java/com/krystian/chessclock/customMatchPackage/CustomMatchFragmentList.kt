@@ -137,7 +137,6 @@ class CustomMatchFragmentList : ListFragment(), OnTouchListener {
                         listView.getChildAt(itemReleased - itemsScrolledFinish) //which item is being swiped
                     val customMatchName =
                         view.findViewById<TextView>(R.id.custom_match_name)
-                    val name = customMatchName.text.toString()
                     if (itemTapped == itemReleased && xFinish - xStart > minSwipe) {
                         customMatchName.setTextColor(
                             ContextCompat.getColor(
@@ -146,8 +145,7 @@ class CustomMatchFragmentList : ListFragment(), OnTouchListener {
                             )
                         )
 
-                        //TODO: pass id instead (after reworking list items)
-                        val bundle = bundleOf("customMatchId" to name)
+                        val bundle = bundleOf("customMatchId" to customMatches[itemReleased].id)
                         findNavController().navigate(R.id.action_customMatchFragmentList_to_timerFragment, bundle)
                         true //event consumed
                     } else { //user wants to change custom games, not to play a match
