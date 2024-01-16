@@ -8,8 +8,16 @@ import android.widget.LinearLayout
 import android.widget.RadioGroup
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.krystian.chessclock.states.MatchSettingUiState
 import com.krystianrymonlipinski.chessclock.R
 import com.krystianrymonlipinski.chessclock.databinding.ViewMatchSettingsBinding
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class MatchSettingsView @JvmOverloads constructor(
     context: Context,
@@ -18,16 +26,31 @@ class MatchSettingsView @JvmOverloads constructor(
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
     private val _binding = ViewMatchSettingsBinding.inflate(LayoutInflater.from(context), this, true)
+    private val _viewState: MutableStateFlow<MatchSettingUiState> = MutableStateFlow(MatchSettingUiState())
+    val viewState = _viewState.asStateFlow()
 
-    private var customGameNumber = 0 /*if 0 then it's a single game or a match with all games on the same terms;
-                                    as opposed to customized match with possibly all games
-                                    different with time and increment created by a user*/
 
     override fun onFinishInflate() {
         super.onFinishInflate()
-
         setupListeners()
-        showInitialValues()
+    }
+
+
+    fun setInitialState(state: MatchSettingUiState) {
+        setTextViews(state)
+        setSeekBarsProgress(state)
+        setVisibilities(state)
+    }
+
+    fun observeState(owner: LifecycleOwner) {
+        owner.lifecycleScope.launch {
+            owner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                _viewState.collect { state ->
+                    setTextViews(state)
+                    setVisibilities(state)
+                }
+            }
+        }
     }
 
     private fun setupListeners() {
@@ -43,27 +66,51 @@ class MatchSettingsView @JvmOverloads constructor(
         }
     }
 
-    private fun showInitialValues() {
+    private fun setTextViews(state: MatchSettingUiState) {
         _binding.apply {
-            gameTimeSeekBar.progress = 14
-            gameTimeTwoSeekBar.progress = 14
+            gameTimeText.text = String.format(context.getString(R.string.game_time), state.firstPlayerGameTime)
+            incrementText.text = String.format(context.getString(R.string.increment), state.firstPlayerIncrement)
+            gameTimeTwoText.text = String.format(context.getString(R.string.game_time_two), state.secondPlayerGameTime)
+            incrementTwoText.text = String.format(context.getString(R.string.increment_two), state.secondPlayerIncrement)
+            gamesText.text = String.format(context.getString(R.string.number_of_games), state.numberOfGames)
+        }
+    }
 
-            incrementText.text = String.format(context.getString(R.string.increment), 0)
-            incrementTwoText.text = String.format(context.getString(R.string.increment_two), 0)
-            gamesText.text = String.format(context.getString(R.string.number_of_games), 1)
+    private fun setSeekBarsProgress(state: MatchSettingUiState) {
+        _binding.apply {
+            gameTimeSeekBar.progress = state.firstPlayerGameTime - 1
+            incrementSeekBar.progress = state.firstPlayerIncrement - 1
+            gameTimeTwoSeekBar.progress = state.secondPlayerGameTime - 1
+            incrementTwoSeekBar.progress = state.secondPlayerIncrement - 1
+            numberOfGamesSeekBar.progress = state.numberOfGames - 1
+        }
+    }
 
-            if (customGameNumber != 0) {
-                chessMatchRadioButton.visibility = View.INVISIBLE
-            }
+    private fun setVisibilities(state: MatchSettingUiState) {
+        _binding.apply {
+            gameTimeTwoText.visibility =
+                if (state.isTimeDifferentChecked) View.VISIBLE else View.INVISIBLE
+            gameTimeTwoSeekBar.visibility =
+                if (state.isTimeDifferentChecked) View.VISIBLE else View.INVISIBLE
+            incrementTwoText.visibility =
+                if (state.isTimeDifferentChecked) View.VISIBLE else View.INVISIBLE
+            incrementTwoSeekBar.visibility =
+                if (state.isTimeDifferentChecked) View.VISIBLE else View.INVISIBLE
+
+            gamesText.visibility =
+                if (state.isSingleGameChecked) View.INVISIBLE else View.VISIBLE
+            numberOfGamesSeekBar.visibility =
+                if (state.isSingleGameChecked) View.INVISIBLE else View.VISIBLE
+
+            differentTimeCheckbox.isChecked = state.isTimeDifferentChecked
+            chessMatchRadioButton.isEnabled = state.mode == MatchSettingUiState.Mode.MATCH_SETTING
         }
     }
 
 
-    //TODO: handle UI changes through state changes
-
     private val firstPlayerGameTimeSeekBarListener = object : OnSeekBarChangeListener {
         override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-            _binding.gameTimeText.text = String.format(context.getString(R.string.game_time), progress + 1)
+            _viewState.value = _viewState.value.changeFirstPlayerGameTime(newValue = progress + 1)
         }
         override fun onStartTrackingTouch(seekBar: SeekBar?) {}
         override fun onStopTrackingTouch(seekBar: SeekBar?) {}
@@ -71,7 +118,7 @@ class MatchSettingsView @JvmOverloads constructor(
 
     private val firstPlayerIncrementSeekBarListener = object : OnSeekBarChangeListener {
         override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-            _binding.incrementText.text = String.format(context.getString(R.string.increment), progress)
+            _viewState.value = _viewState.value.changeFirstPlayerIncrement(newValue = progress)
         }
         override fun onStartTrackingTouch(seekBar: SeekBar?) {}
         override fun onStopTrackingTouch(seekBar: SeekBar?) {}
@@ -79,7 +126,7 @@ class MatchSettingsView @JvmOverloads constructor(
 
     private val secondPlayerGameTimeSeekBarListener = object : OnSeekBarChangeListener {
         override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-            _binding.gameTimeTwoText.text = String.format(context.getString(R.string.game_time_two), progress + 1)
+            _viewState.value = _viewState.value.changeSecondPlayerGameTime(newValue = progress + 1)
         }
         override fun onStartTrackingTouch(seekBar: SeekBar?) {}
         override fun onStopTrackingTouch(seekBar: SeekBar?) {}
@@ -87,7 +134,7 @@ class MatchSettingsView @JvmOverloads constructor(
 
     private val secondPlayerIncrementSeekBarListener = object : OnSeekBarChangeListener {
         override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-            _binding.incrementTwoText.text = String.format(context.getString(R.string.increment_two), progress)
+            _viewState.value = _viewState.value.changeSecondPlayerIncrement(newValue = progress)
         }
         override fun onStartTrackingTouch(seekBar: SeekBar?) {}
         override fun onStopTrackingTouch(seekBar: SeekBar?) {}
@@ -95,33 +142,18 @@ class MatchSettingsView @JvmOverloads constructor(
 
     private val numberOfGamesSeekbarListener = object : OnSeekBarChangeListener {
         override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-            _binding.gamesText.text = String.format(context.getString(R.string.number_of_games), progress + 1)
+            _viewState.value = _viewState.value.changeNumberOfGames(newValue = progress + 1)
         }
         override fun onStartTrackingTouch(seekBar: SeekBar?) {}
         override fun onStopTrackingTouch(seekBar: SeekBar?) {}
     }
 
     private val onDifferentTimeCheckboxClicked = OnClickListener {
-        _binding.apply {
-            gameTimeTwoText.visibility =
-                if (differentTimeCheckbox.isChecked) View.VISIBLE else View.INVISIBLE
-            gameTimeTwoSeekBar.visibility =
-                if (differentTimeCheckbox.isChecked) View.VISIBLE else View.INVISIBLE
-            incrementTwoText.visibility =
-                if (differentTimeCheckbox.isChecked) View.VISIBLE else View.INVISIBLE
-            incrementTwoSeekBar.visibility =
-                if (differentTimeCheckbox.isChecked) View.VISIBLE else View.INVISIBLE
-        }
-
+        _viewState.value = _viewState.value.toggleIsTimeDifferentChecked()
     }
 
     private val onMatchSettingCheckedChangedListener = RadioGroup.OnCheckedChangeListener { _, checkedId ->
-        _binding.apply {
-            gamesText.visibility =
-                if (checkedId == R.id.single_game_radio_button) View.INVISIBLE else View.VISIBLE
-            numberOfGamesSeekBar.visibility =
-                if (checkedId == R.id.single_game_radio_button) View.INVISIBLE else View.VISIBLE
-        }
+        _viewState.value = _viewState.value.changeIsSingleGameChecked(checkedId == R.id.single_game_radio_button)
     }
 
 }

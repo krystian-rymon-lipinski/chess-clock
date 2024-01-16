@@ -14,13 +14,16 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import com.krystian.chessclock.customMatchPackage.CustomMatchDialogFragment
+import com.krystian.chessclock.states.MatchSettingUiState
 import com.krystianrymonlipinski.chessclock.R
+import com.krystianrymonlipinski.chessclock.databinding.FragmentSettingsBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class SettingsFragment : Fragment(), View.OnClickListener, MenuProvider {
 
     private val activityViewModel: MainActivityViewModel by viewModels()
+    private lateinit var _binding: FragmentSettingsBinding
 
     private var customGameId: Long? = null
     private var customMatchId: Long? = null
@@ -29,8 +32,9 @@ class SettingsFragment : Fragment(), View.OnClickListener, MenuProvider {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_settings, null, false)
+    ): View {
+        _binding = FragmentSettingsBinding.inflate(layoutInflater)
+        return _binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -38,6 +42,10 @@ class SettingsFragment : Fragment(), View.OnClickListener, MenuProvider {
 
         checkForPassedData()
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        _binding.settingsView.also {
+            it.setInitialState(MatchSettingUiState())
+            it.observeState(viewLifecycleOwner)
+        }
     }
 
     private fun checkForPassedData() {
