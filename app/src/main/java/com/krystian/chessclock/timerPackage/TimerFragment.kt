@@ -8,8 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.TextView
-import android.widget.ToggleButton
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -17,70 +15,46 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.krystian.chessclock.MainActivityViewModel
 import com.krystianrymonlipinski.chessclock.R
+import com.krystianrymonlipinski.chessclock.databinding.FragmentTimerBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class TimerFragment : Fragment(), View.OnClickListener {
-    private var gameNumberText: TextView? = null
-    private var gameNumberTextRotated: TextView? = null
-    private var pointsText: TextView? = null
-    private var pointsTextRotated: TextView? = null
-    private var timerText: TextView? = null
-    private var timerTextRotated: TextView? = null
-    private var firstMoveText: TextView? = null
-    private var firstMoveTextRotated: TextView? = null
-    private var drawButton: ToggleButton? = null
-    private var drawButtonRotated: ToggleButton? = null
-    private var moveButton: Button? = null
-    private var moveButtonRotated: Button? = null
-    private var resignButton: Button? = null
-    private var resignButtonRotated: Button? = null
-    private var newGameButton: Button? = null
+
     private var match: Match? = null
 
     private val activityViewModel: MainActivityViewModel by viewModels()
+    private lateinit var _binding: FragmentTimerBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_timer, null, false)
+    ): View {
+        _binding = FragmentTimerBinding.inflate(inflater)
+        return _binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setViewComponents(view) //find views and attach listeners
+        setClickListeners()
         setupMatch()
 
     }
 
-    private fun setViewComponents(mainView: View) {
-        gameNumberText = mainView.findViewById(R.id.game_number_text)
-        gameNumberTextRotated = mainView.findViewById(R.id.game_number_text_rotated)
-        pointsText = mainView.findViewById(R.id.points_text)
-        pointsTextRotated = mainView.findViewById(R.id.points_text_rotated)
-        timerText = mainView.findViewById(R.id.timer_text)
-        timerTextRotated = mainView.findViewById(R.id.timer_text_rotated)
-        firstMoveText = mainView.findViewById(R.id.first_move_text)
-        firstMoveTextRotated = mainView.findViewById(R.id.first_move_text_rotated)
-        drawButton = mainView.findViewById(R.id.draw_button)
-        drawButtonRotated = mainView.findViewById(R.id.draw_button_rotated)
-        moveButton = mainView.findViewById(R.id.move_button)
-        moveButtonRotated = mainView.findViewById(R.id.move_button_rotated)
-        resignButton = mainView.findViewById(R.id.resign_button)
-        resignButtonRotated = mainView.findViewById(R.id.resign_button_rotated)
-        newGameButton = mainView.findViewById(R.id.new_game_button)
-        newGameButton?.setOnClickListener(this)
-        resignButtonRotated?.setOnClickListener(this)
-        resignButton?.setOnClickListener(this)
-        moveButtonRotated?.setOnClickListener(this)
-        moveButton?.setOnClickListener(this)
-        drawButtonRotated?.setOnClickListener(this)
-        drawButton?.setOnClickListener(this)
+    private fun setClickListeners() {
+        _binding.apply {
+            drawButton.setOnClickListener(this@TimerFragment)
+            drawButtonRotated.setOnClickListener(this@TimerFragment)
+            moveButton.setOnClickListener(this@TimerFragment)
+            moveButtonRotated.setOnClickListener(this@TimerFragment)
+            resignButton.setOnClickListener(this@TimerFragment)
+            resignButtonRotated.setOnClickListener(this@TimerFragment)
+            newGameButton.setOnClickListener(this@TimerFragment)
+        }
     }
 
     private fun setupMatch() {
@@ -164,11 +138,11 @@ class TimerFragment : Fragment(), View.OnClickListener {
             makeBlackMove()
         } else if (id == R.id.draw_button) {
             setButton(
-                drawButton,
+                _binding.drawButton,
                 false
             ) //a draw can be offered only once a move and during your own
         } else if (id == R.id.draw_button_rotated) {
-            setButton(drawButtonRotated, false)
+            setButton(_binding.drawButtonRotated, false)
         } else if (id == R.id.resign_button) {
             match!!.currentGame!!.gameState = GameState.LOST
         } else if (id == R.id.resign_button_rotated) {
@@ -201,58 +175,63 @@ class TimerFragment : Fragment(), View.OnClickListener {
     }
 */
     private fun setTextViews() {
-        timerText!!.text = String.format(
-            getString(R.string.time), match!!.currentGame!!.firstTimer / 3600,
-            match!!.currentGame!!.firstTimer / 60 % 60, match!!.currentGame!!.firstTimer % 60
-        )
-        timerTextRotated!!.text = String.format(
-            getString(R.string.time), match!!.currentGame!!.secondTimer / 3600,
-            match!!.currentGame!!.secondTimer / 60 % 60, match!!.currentGame!!.secondTimer % 60
-        )
-        firstMoveText!!.text = String.format(getString(R.string.first_move_text), 30)
-        firstMoveTextRotated!!.text = String.format(getString(R.string.first_move_text), 30)
-        pointsText!!.text = String.format(
-            getString(R.string.points), match!!.firstPlayerPoints,
-            match!!.secondPlayerPoints
-        )
-        pointsTextRotated!!.text = String.format(
-            getString(R.string.points), match!!.secondPlayerPoints,
-            match!!.firstPlayerPoints
-        )
-        gameNumberText!!.text = String.format(
-            getString(R.string.game_number), match!!.gameNumber,
-            match!!.numberOfGames
-        )
-        gameNumberTextRotated!!.text = String.format(
-            getString(R.string.game_number), match!!.gameNumber,
-            match!!.numberOfGames
-        )
-        moveButton!!.text =
-            String.format(getString(R.string.move_number), match!!.currentGame!!.moveNumber)
-        moveButtonRotated!!.text = String.format(
-            getString(R.string.move_number),
-            match!!.currentGame!!.moveNumberRotated
-        )
-        firstMoveText!!.visibility = View.VISIBLE
-        firstMoveTextRotated!!.visibility = View.VISIBLE
+        _binding.apply {
+            timerText.text = String.format(
+                getString(R.string.time), match!!.currentGame!!.firstTimer / 3600,
+                match!!.currentGame!!.firstTimer / 60 % 60, match!!.currentGame!!.firstTimer % 60
+            )
+            timerTextRotated.text = String.format(
+                getString(R.string.time), match!!.currentGame!!.secondTimer / 3600,
+                match!!.currentGame!!.secondTimer / 60 % 60, match!!.currentGame!!.secondTimer % 60
+            )
+            firstMoveText.text = String.format(getString(R.string.first_move_text), 30)
+            firstMoveTextRotated.text = String.format(getString(R.string.first_move_text), 30)
+            pointsText.text = String.format(
+                getString(R.string.points), match!!.firstPlayerPoints,
+                match!!.secondPlayerPoints
+            )
+            pointsTextRotated.text = String.format(
+                getString(R.string.points), match!!.secondPlayerPoints,
+                match!!.firstPlayerPoints
+            )
+            gameNumberText.text = String.format(
+                getString(R.string.game_number), match!!.gameNumber,
+                match!!.numberOfGames
+            )
+            gameNumberTextRotated.text = String.format(
+                getString(R.string.game_number), match!!.gameNumber,
+                match!!.numberOfGames
+            )
+            moveButton.text =
+                String.format(getString(R.string.move_number), match!!.currentGame!!.moveNumber)
+            moveButtonRotated.text = String.format(
+                getString(R.string.move_number),
+                match!!.currentGame!!.moveNumberRotated
+            )
+            firstMoveText.visibility = View.VISIBLE
+            firstMoveTextRotated.visibility = View.VISIBLE
+        }
+
     }
 
     private fun setButtons() {
-        newGameButton!!.visibility = View.INVISIBLE
-        drawButton!!.isChecked = false
-        drawButtonRotated!!.isChecked = false
-        setButton(resignButton, true)
-        setButton(resignButtonRotated, true)
-        if (match!!.currentGame?.isFirstPlayerMove == true) {
-            setButton(moveButton, true)
-            setButton(drawButton, true)
-            setButton(moveButtonRotated, false)
-            setButton(drawButtonRotated, false)
-        } else {
-            setButton(moveButton, false)
-            setButton(drawButton, false)
-            setButton(moveButtonRotated, true)
-            setButton(drawButtonRotated, true)
+        _binding.apply {
+            newGameButton.visibility = View.INVISIBLE
+            drawButton.isChecked = false
+            drawButtonRotated.isChecked = false
+            setButton(resignButton, true)
+            setButton(resignButtonRotated, true)
+            if (match!!.currentGame?.isFirstPlayerMove == true) {
+                setButton(moveButton, true)
+                setButton(drawButton, true)
+                setButton(moveButtonRotated, false)
+                setButton(drawButtonRotated, false)
+            } else {
+                setButton(moveButton, false)
+                setButton(drawButton, false)
+                setButton(moveButtonRotated, true)
+                setButton(drawButtonRotated, true)
+            }
         }
     }
 
@@ -268,140 +247,153 @@ class TimerFragment : Fragment(), View.OnClickListener {
 
     private fun setButtonColors() {
         val context = requireContext()
-        if (match!!.gameNumber % 2 != 0) {
-            moveButton!!.background = ContextCompat.getDrawable(context, R.drawable.timer_white_button)
-            moveButton!!.background = ContextCompat.getDrawable(context, R.drawable.timer_white_button)
-            drawButton!!.background = ContextCompat.getDrawable(context, R.drawable.timer_white_button)
-            resignButton!!.background =
-                ContextCompat.getDrawable(context, R.drawable.timer_white_button)
-            moveButton!!.setTextColor(ContextCompat.getColor(context, R.color.blackColor))
-            drawButton!!.setTextColor(ContextCompat.getColor(context, R.color.blackColor))
-            resignButton!!.setTextColor(ContextCompat.getColor(context, R.color.blackColor))
-            moveButtonRotated!!.background =
-                ContextCompat.getDrawable(context, R.drawable.timer_black_button)
-            drawButtonRotated!!.background =
-                ContextCompat.getDrawable(context, R.drawable.timer_black_button)
-            resignButtonRotated!!.background =
-                ContextCompat.getDrawable(context, R.drawable.timer_black_button)
-            moveButtonRotated!!.setTextColor(ContextCompat.getColor(context, R.color.whiteColor))
-            drawButtonRotated!!.setTextColor(ContextCompat.getColor(context, R.color.whiteColor))
-            resignButtonRotated!!.setTextColor(ContextCompat.getColor(context, R.color.whiteColor))
-        } else {
-            moveButtonRotated!!.background =
-                ContextCompat.getDrawable(context, R.drawable.timer_white_button)
-            drawButtonRotated!!.background =
-                ContextCompat.getDrawable(context, R.drawable.timer_white_button)
-            resignButtonRotated!!.background =
-                ContextCompat.getDrawable(context, R.drawable.timer_white_button)
-            moveButtonRotated!!.setTextColor(ContextCompat.getColor(context, R.color.blackColor))
-            drawButtonRotated!!.setTextColor(ContextCompat.getColor(context, R.color.blackColor))
-            resignButtonRotated!!.setTextColor(ContextCompat.getColor(context, R.color.blackColor))
-            moveButton!!.background = ContextCompat.getDrawable(context, R.drawable.timer_black_button)
-            drawButton!!.background = ContextCompat.getDrawable(context, R.drawable.timer_black_button)
-            resignButton!!.background =
-                ContextCompat.getDrawable(context, R.drawable.timer_black_button)
-            moveButton!!.setTextColor(ContextCompat.getColor(context, R.color.whiteColor))
-            drawButton!!.setTextColor(ContextCompat.getColor(context, R.color.whiteColor))
-            resignButton!!.setTextColor(ContextCompat.getColor(context, R.color.whiteColor))
+
+        _binding.apply {
+            if (match!!.gameNumber % 2 != 0) {
+                moveButton.background = ContextCompat.getDrawable(context, R.drawable.timer_white_button)
+                moveButton.background = ContextCompat.getDrawable(context, R.drawable.timer_white_button)
+                drawButton.background = ContextCompat.getDrawable(context, R.drawable.timer_white_button)
+                resignButton.background =
+                    ContextCompat.getDrawable(context, R.drawable.timer_white_button)
+                moveButton.setTextColor(ContextCompat.getColor(context, R.color.blackColor))
+                drawButton.setTextColor(ContextCompat.getColor(context, R.color.blackColor))
+                resignButton.setTextColor(ContextCompat.getColor(context, R.color.blackColor))
+                moveButtonRotated.background =
+                    ContextCompat.getDrawable(context, R.drawable.timer_black_button)
+                drawButtonRotated.background =
+                    ContextCompat.getDrawable(context, R.drawable.timer_black_button)
+                resignButtonRotated.background =
+                    ContextCompat.getDrawable(context, R.drawable.timer_black_button)
+                moveButtonRotated.setTextColor(ContextCompat.getColor(context, R.color.whiteColor))
+                drawButtonRotated.setTextColor(ContextCompat.getColor(context, R.color.whiteColor))
+                resignButtonRotated.setTextColor(ContextCompat.getColor(context, R.color.whiteColor))
+            } else {
+                moveButtonRotated.background =
+                    ContextCompat.getDrawable(context, R.drawable.timer_white_button)
+                drawButtonRotated.background =
+                    ContextCompat.getDrawable(context, R.drawable.timer_white_button)
+                resignButtonRotated.background =
+                    ContextCompat.getDrawable(context, R.drawable.timer_white_button)
+                moveButtonRotated.setTextColor(ContextCompat.getColor(context, R.color.blackColor))
+                drawButtonRotated.setTextColor(ContextCompat.getColor(context, R.color.blackColor))
+                resignButtonRotated.setTextColor(ContextCompat.getColor(context, R.color.blackColor))
+                moveButton.background = ContextCompat.getDrawable(context, R.drawable.timer_black_button)
+                drawButton.background = ContextCompat.getDrawable(context, R.drawable.timer_black_button)
+                resignButton.background =
+                    ContextCompat.getDrawable(context, R.drawable.timer_black_button)
+                moveButton.setTextColor(ContextCompat.getColor(context, R.color.whiteColor))
+                drawButton.setTextColor(ContextCompat.getColor(context, R.color.whiteColor))
+                resignButton.setTextColor(ContextCompat.getColor(context, R.color.whiteColor))
+            }
         }
     }
 
     fun calculateTime() { //and display it
-        if (match!!.currentGame?.isFirstPlayerMove == true) {
-            if (match!!.currentGame!!.moveNumber == 1) {
-                match!!.currentGame!!.firstMoveTime = match!!.currentGame!!.firstMoveTime - 1
-                firstMoveText!!.text = String.format(
-                    getString(R.string.first_move_text),
-                    match!!.currentGame!!.firstMoveTime
-                )
+        _binding.apply {
+            if (match!!.currentGame?.isFirstPlayerMove == true) {
+                if (match!!.currentGame!!.moveNumber == 1) {
+                    match!!.currentGame!!.firstMoveTime = match!!.currentGame!!.firstMoveTime - 1
+                    firstMoveText.text = String.format(
+                        getString(R.string.first_move_text),
+                        match!!.currentGame!!.firstMoveTime
+                    )
+                } else {
+                    match!!.currentGame!!.firstTimer = match!!.currentGame!!.firstTimer - 1
+                    timerText.text = String.format(
+                        getString(R.string.time),
+                        match!!.currentGame!!.firstTimer / 3600,
+                        match!!.currentGame!!.firstTimer / 60 % 60,
+                        match!!.currentGame!!.firstTimer % 60
+                    )
+                }
             } else {
-                match!!.currentGame!!.firstTimer = match!!.currentGame!!.firstTimer - 1
-                timerText!!.text = String.format(
-                    getString(R.string.time),
-                    match!!.currentGame!!.firstTimer / 3600,
-                    match!!.currentGame!!.firstTimer / 60 % 60,
-                    match!!.currentGame!!.firstTimer % 60
-                )
-            }
-        } else {
-            if (match!!.currentGame!!.moveNumberRotated == 1) {
-                match!!.currentGame!!.firstMoveTimeRotated =
-                    match!!.currentGame!!.firstMoveTimeRotated - 1
-                firstMoveTextRotated!!.text = String.format(
-                    getString(R.string.first_move_text),
-                    match!!.currentGame!!.firstMoveTimeRotated
-                )
-            } else {
-                match!!.currentGame!!.secondTimer = match!!.currentGame!!.secondTimer - 1
-                timerTextRotated!!.text = String.format(
-                    getString(R.string.time),
-                    match!!.currentGame!!.secondTimer / 3600,
-                    match!!.currentGame!!.secondTimer / 60 % 60,
-                    match!!.currentGame!!.secondTimer % 60
-                )
+                if (match!!.currentGame!!.moveNumberRotated == 1) {
+                    match!!.currentGame!!.firstMoveTimeRotated =
+                        match!!.currentGame!!.firstMoveTimeRotated - 1
+                    firstMoveTextRotated.text = String.format(
+                        getString(R.string.first_move_text),
+                        match!!.currentGame!!.firstMoveTimeRotated
+                    )
+                } else {
+                    match!!.currentGame!!.secondTimer = match!!.currentGame!!.secondTimer - 1
+                    timerTextRotated.text = String.format(
+                        getString(R.string.time),
+                        match!!.currentGame!!.secondTimer / 3600,
+                        match!!.currentGame!!.secondTimer / 60 % 60,
+                        match!!.currentGame!!.secondTimer % 60
+                    )
+                }
             }
         }
+
     }
 
     private fun makeWhiteMove() {
-        match!!.currentGame?.isFirstPlayerMove = false
-        match!!.currentGame!!.moveNumberRotated = match!!.currentGame!!.moveNumberRotated + 1
-        setButton(moveButton, false)
-        setButton(drawButton, false)
-        setButton(moveButtonRotated, true)
-        setButton(drawButtonRotated, true) //making a move declines a draw offer
-        drawButtonRotated!!.isChecked =
-            false //a player must re-offer a draw every single time after it being declined
-        moveButtonRotated!!.text = String.format(
-            getString(R.string.move_number),
-            match!!.currentGame!!.moveNumberRotated
-        )
-        if (match!!.currentGame!!.moveNumber > 1) {
-            if (match!!.currentGame!!.firstIncrement != 0) {
-                match!!.currentGame!!.firstTimer =
-                    match!!.currentGame!!.firstTimer + match!!.currentGame!!.firstIncrement
-                timerText!!.text = String.format(
-                    getString(R.string.time),
-                    match!!.currentGame!!.firstTimer / 3600,
-                    match!!.currentGame!!.firstTimer / 60 % 60,
-                    match!!.currentGame!!.firstTimer % 60
-                )
-            }
-        } else firstMoveText!!.visibility =
-            View.INVISIBLE //text no longer needed - first move already made
+        _binding.apply {
+            match!!.currentGame?.isFirstPlayerMove = false
+            match!!.currentGame!!.moveNumberRotated = match!!.currentGame!!.moveNumberRotated + 1
+            setButton(moveButton, false)
+            setButton(drawButton, false)
+            setButton(moveButtonRotated, true)
+            setButton(drawButtonRotated, true) //making a move declines a draw offer
+            drawButtonRotated.isChecked =
+                false //a player must re-offer a draw every single time after it being declined
+            moveButtonRotated.text = String.format(
+                getString(R.string.move_number),
+                match!!.currentGame!!.moveNumberRotated
+            )
+            if (match!!.currentGame!!.moveNumber > 1) {
+                if (match!!.currentGame!!.firstIncrement != 0) {
+                    match!!.currentGame!!.firstTimer =
+                        match!!.currentGame!!.firstTimer + match!!.currentGame!!.firstIncrement
+                    timerText.text = String.format(
+                        getString(R.string.time),
+                        match!!.currentGame!!.firstTimer / 3600,
+                        match!!.currentGame!!.firstTimer / 60 % 60,
+                        match!!.currentGame!!.firstTimer % 60
+                    )
+                }
+            } else firstMoveText.visibility =
+                View.INVISIBLE //text no longer needed - first move already made
+        }
     }
 
     private fun makeBlackMove() {
-        match!!.currentGame?.isFirstPlayerMove = true
-        match!!.currentGame!!.moveNumber = match!!.currentGame!!.moveNumber + 1
-        setButton(moveButton, true)
-        setButton(drawButton, true)
-        setButton(moveButtonRotated, false)
-        setButton(drawButtonRotated, false)
-        drawButton!!.isChecked = false
-        moveButton!!.text = String.format(
-            getString(R.string.move_number),
-            match!!.currentGame!!.moveNumber
-        )
-        if (match!!.currentGame!!.moveNumberRotated > 1) {
-            if (match!!.currentGame!!.secondIncrement != 0) {
-                match!!.currentGame!!.secondTimer =
-                    match!!.currentGame!!.secondTimer + match!!.currentGame!!.secondIncrement
-                timerTextRotated!!.text = String.format(
-                    getString(R.string.time),
-                    match!!.currentGame!!.secondTimer / 3600,
-                    match!!.currentGame!!.secondTimer / 60 % 60,
-                    match!!.currentGame!!.secondTimer % 60
-                )
-            }
-        } else firstMoveTextRotated!!.visibility = View.INVISIBLE
+        _binding.apply {
+            match!!.currentGame?.isFirstPlayerMove = true
+            match!!.currentGame!!.moveNumber = match!!.currentGame!!.moveNumber + 1
+            setButton(moveButton, true)
+            setButton(drawButton, true)
+            setButton(moveButtonRotated, false)
+            setButton(drawButtonRotated, false)
+            drawButton.isChecked = false
+            moveButton.text = String.format(
+                getString(R.string.move_number),
+                match!!.currentGame!!.moveNumber
+            )
+            if (match!!.currentGame!!.moveNumberRotated > 1) {
+                if (match!!.currentGame!!.secondIncrement != 0) {
+                    match!!.currentGame!!.secondTimer =
+                        match!!.currentGame!!.secondTimer + match!!.currentGame!!.secondIncrement
+                    timerTextRotated.text = String.format(
+                        getString(R.string.time),
+                        match!!.currentGame!!.secondTimer / 3600,
+                        match!!.currentGame!!.secondTimer / 60 % 60,
+                        match!!.currentGame!!.secondTimer % 60
+                    )
+                }
+            } else firstMoveTextRotated.visibility = View.INVISIBLE
+        }
+
     }
 
     fun checkForResult() {
-        if (match!!.currentGame!!.firstMoveTime == 0 || match!!.currentGame!!.firstTimer == 0) match!!.currentGame!!.gameState =
-            GameState.LOST else if (match!!.currentGame!!.firstMoveTimeRotated == 0 || match!!.currentGame!!.secondTimer == 0) match!!.currentGame!!.gameState =
-            GameState.WON else if (drawButton!!.isChecked && drawButtonRotated!!.isChecked) match!!.currentGame!!.gameState =
-            GameState.DRAWN
+        _binding.apply {
+            if (match!!.currentGame!!.firstMoveTime == 0 || match!!.currentGame!!.firstTimer == 0) match!!.currentGame!!.gameState =
+                GameState.LOST else if (match!!.currentGame!!.firstMoveTimeRotated == 0 || match!!.currentGame!!.secondTimer == 0) match!!.currentGame!!.gameState =
+                GameState.WON else if (drawButton!!.isChecked && drawButtonRotated!!.isChecked) match!!.currentGame!!.gameState =
+                GameState.DRAWN
+        }
     }
 
     fun finishGame() {
@@ -416,35 +408,41 @@ class TimerFragment : Fragment(), View.OnClickListener {
             GameState.LOST -> match!!.secondPlayerPoints = match!!.secondPlayerPoints + 1
             else -> {}
         }
-        pointsText!!.text = String.format(
-            getString(R.string.points),
-            match!!.firstPlayerPoints, match!!.secondPlayerPoints
-        )
-        pointsTextRotated!!.text = String.format(
-            getString(R.string.points),
-            match!!.secondPlayerPoints, match!!.firstPlayerPoints
-        )
-        if (match!!.numberOfGames == 1) {
-            newGameButton!!.text = getString(R.string.new_game)
-            newGameButton!!.visibility = View.VISIBLE
-        } else {
-            if (match!!.gameNumber < match!!.numberOfGames) {
-                newGameButton!!.text = getString(R.string.next_game)
-                newGameButton!!.visibility = View.VISIBLE
+
+        _binding.apply {
+            pointsText.text = String.format(
+                getString(R.string.points),
+                match!!.firstPlayerPoints, match!!.secondPlayerPoints
+            )
+            pointsTextRotated.text = String.format(
+                getString(R.string.points),
+                match!!.secondPlayerPoints, match!!.firstPlayerPoints
+            )
+            if (match!!.numberOfGames == 1) {
+                newGameButton.text = getString(R.string.new_game)
+                newGameButton.visibility = View.VISIBLE
             } else {
-                newGameButton!!.visibility = View.INVISIBLE
-                showResults() //in Alert Dialog; end of a match
+                if (match!!.gameNumber < match!!.numberOfGames) {
+                    newGameButton.text = getString(R.string.next_game)
+                    newGameButton.visibility = View.VISIBLE
+                } else {
+                    newGameButton.visibility = View.INVISIBLE
+                    showResults() //in Alert Dialog; end of a match
+                }
             }
         }
+
     }
 
     private fun disableAllButtons() {
-        setButton(moveButton, false)
-        setButton(drawButton, false)
-        setButton(resignButton, false)
-        setButton(moveButtonRotated, false)
-        setButton(drawButtonRotated, false)
-        setButton(resignButtonRotated, false)
+        _binding.apply {
+            setButton(moveButton, false)
+            setButton(drawButton, false)
+            setButton(resignButton, false)
+            setButton(moveButtonRotated, false)
+            setButton(drawButtonRotated, false)
+            setButton(resignButtonRotated, false)
+        }
     }
 
     private fun showResults() {
