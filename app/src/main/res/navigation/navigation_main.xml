@@ -16,14 +16,6 @@
         <action
             android:id="@+id/action_settingsFragment_to_timerFragment"
             app:destination="@id/timerFragment" />
-        <argument
-            android:name="customGameId"
-            app:argType="long"
-            android:defaultValue="-1L" />
-        <argument
-            android:name="customMatchId"
-            app:argType="long"
-            android:defaultValue="-1L" />
     </fragment>
     <fragment
         android:id="@+id/customMatchFragmentList"
@@ -40,13 +32,13 @@
         android:id="@+id/customGameListFragment"
         android:name="com.krystian.chessclock.customMatchPackage.CustomGameListFragment"
         android:label="CustomGameListFragment" >
-        <action
-            android:id="@+id/action_customGameListFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
         <argument
             android:name="customMatchId"
             app:argType="long"
             android:defaultValue="-1L" />
+        <action
+            android:id="@+id/action_customGameListFragment_to_gameUpdateFragment"
+            app:destination="@id/gameUpdateFragment" />
     </fragment>
     <fragment
         android:id="@+id/timerFragment"
@@ -78,4 +70,20 @@
             app:argType="integer"
             android:defaultValue="3" />
     </fragment>
+    <fragment
+        android:id="@+id/gameUpdateFragment"
+        android:name="com.krystian.chessclock.GameUpdateFragment"
+        android:label="GameUpdateFragment"
+        tools:layout="@layout/fragment_settings">
+        <argument
+            android:name="customGameId"
+            app:argType="long"
+            android:defaultValue="-1L" />
+        <argument
+            android:name="customMatchId"
+            app:argType="long"
+            android:defaultValue="-1L" />
+    </fragment>
+
+
 </navigation>

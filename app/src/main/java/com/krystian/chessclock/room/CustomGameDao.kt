@@ -19,7 +19,7 @@ interface CustomGameDao {
 
     @Query("SELECT * FROM ${ChessClockDatabase.customGameTable} " +
             "WHERE ${ChessClockDatabase.customGameTableIdColumn} = :id")
-    fun getGameWithId(id: Int) : Flow<CustomGameEntity>
+    fun getGameWithId(id: Long) : Flow<CustomGameEntity>
 
     @Insert
     fun addGame(game: CustomGameEntity)

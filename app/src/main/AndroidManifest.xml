@@ -15,7 +15,6 @@
         android:supportsRtl="true">
 
         <activity android:name="com.krystian.chessclock.ClockActivity"
-            android:screenOrientation="portrait"
             android:exported="true">
 
             <intent-filter>
