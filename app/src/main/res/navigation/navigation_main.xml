@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_main"
+    app:startDestination="@id/settingsFragment">
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.krystian.chessclock.fragments.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/action_settingsFragment_to_customMatchFragmentList"
+            app:destination="@id/customMatchFragmentList" />
+        <action
+            android:id="@+id/action_settingsFragment_to_timerFragment"
+            app:destination="@id/timerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/customMatchFragmentList"
+        android:name="com.krystian.chessclock.fragments.CustomMatchesFragment"
+        android:label="CustomMatchFragmentList"
+        tools:layout="@layout/fragment_custom_matches">
+        <action
+            android:id="@+id/action_customMatchFragmentList_to_timerFragment"
+            app:destination="@id/timerFragment" />
+        <action
+            android:id="@+id/action_customMatchFragmentList_to_customGameListFragment"
+            app:destination="@id/customGameListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/customGameListFragment"
+        android:name="com.krystian.chessclock.fragments.CustomGamesFragment"
+        android:label="CustomGameListFragment"
+        tools:layout="@layout/fragment_custom_games">
+        <argument
+            android:name="customMatchId"
+            app:argType="long"
+            android:defaultValue="-1L" />
+        <action
+            android:id="@+id/action_customGameListFragment_to_gameUpdateFragment"
+            app:destination="@id/gameUpdateFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/timerFragment"
+        android:name="com.krystian.chessclock.fragments.TimerFragment"
+        android:label="fragment_timer"
+        tools:layout="@layout/fragment_timer" >
+        <argument
+            android:name="customMatchId"
+            app:argType="long"
+            android:defaultValue="-1L" />
+        <argument
+            android:name="firstPlayerTime"
+            app:argType="integer"
+            android:defaultValue="15" />
+        <argument
+            android:name="firstPlayerIncrement"
+            app:argType="integer"
+            android:defaultValue="3" />
+        <argument
+            android:name="secondPlayerTime"
+            app:argType="integer"
+            android:defaultValue="15" />
+        <argument
+            android:name="secondPlayerIncrement"
+            app:argType="integer"
+            android:defaultValue="3" />
+        <argument
+            android:name="numberOfGames"
+            app:argType="integer"
+            android:defaultValue="3" />
+    </fragment>
+    <fragment
+        android:id="@+id/gameUpdateFragment"
+        android:name="com.krystian.chessclock.fragments.GameUpdateFragment"
+        android:label="GameUpdateFragment"
+        tools:layout="@layout/fragment_settings">
+        <argument
+            android:name="customGameId"
+            app:argType="long"
+            android:defaultValue="-1L" />
+        <argument
+            android:name="customMatchId"
+            app:argType="long"
+            android:defaultValue="-1L" />
+    </fragment>
+
+
+</navigation>
