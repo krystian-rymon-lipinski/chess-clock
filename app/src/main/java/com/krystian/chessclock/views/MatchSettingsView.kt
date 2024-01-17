@@ -37,17 +37,18 @@ class MatchSettingsView @JvmOverloads constructor(
 
 
     fun setInitialState(state: MatchSettingUiState) {
-        setTextViews(state)
-        setSeekBarsProgress(state)
-        setVisibilities(state)
+        _viewState.value = state
+        setTextViews()
+        setSeekBarsProgress()
+        setVisibilities()
     }
 
     fun observeState(owner: LifecycleOwner) {
         owner.lifecycleScope.launch {
             owner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                _viewState.collect { state ->
-                    setTextViews(state)
-                    setVisibilities(state)
+                _viewState.collect { _ ->
+                    setTextViews()
+                    setVisibilities()
                 }
             }
         }
@@ -66,7 +67,8 @@ class MatchSettingsView @JvmOverloads constructor(
         }
     }
 
-    private fun setTextViews(state: MatchSettingUiState) {
+    private fun setTextViews() {
+        val state = _viewState.value
         _binding.apply {
             gameTimeText.text = String.format(context.getString(R.string.game_time), state.firstPlayerGameTime)
             incrementText.text = String.format(context.getString(R.string.increment), state.firstPlayerIncrement)
@@ -76,7 +78,8 @@ class MatchSettingsView @JvmOverloads constructor(
         }
     }
 
-    private fun setSeekBarsProgress(state: MatchSettingUiState) {
+    private fun setSeekBarsProgress() {
+        val state = _viewState.value
         _binding.apply {
             gameTimeSeekBar.progress = state.firstPlayerGameTime - 1
             incrementSeekBar.progress = state.firstPlayerIncrement - 1
@@ -86,7 +89,8 @@ class MatchSettingsView @JvmOverloads constructor(
         }
     }
 
-    private fun setVisibilities(state: MatchSettingUiState) {
+    private fun setVisibilities() {
+        val state = _viewState.value
         _binding.apply {
             gameTimeTwoText.visibility =
                 if (state.isTimeDifferentChecked) View.VISIBLE else View.INVISIBLE

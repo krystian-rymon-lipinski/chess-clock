@@ -35,6 +35,8 @@ class MainActivityViewModel @Inject constructor(
     fun getMatchByIdWithGames(matchId: Long) : Flow<CustomMatch> = customMatchDataSource.getAllWithGames()
         .map { list -> list.first { it.id == matchId } }
 
+    fun getGameById(gameId: Long) : Flow<CustomGame> = customGameDataSource.getById(gameId)
+
     fun addCustomMatch(match: CustomMatch) = viewModelScope.launch {
         customMatchDataSource.addMatch(match)
     }

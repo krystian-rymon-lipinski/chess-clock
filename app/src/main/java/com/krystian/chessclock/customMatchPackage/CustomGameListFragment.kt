@@ -77,6 +77,6 @@ class CustomGameListFragment : ListFragment() {
             "customMatchId" to customMatchId,
             "customGameId" to games[position].id
         )
-        findNavController().navigate(R.id.action_customGameListFragment_to_settingsFragment, bundle)
+        findNavController().navigate(R.id.action_customGameListFragment_to_gameUpdateFragment, bundle)
     }
 }

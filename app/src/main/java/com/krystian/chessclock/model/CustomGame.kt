@@ -9,6 +9,8 @@ data class CustomGame(
     val matchId: Long
 ) {
 
+    fun areTimeSettingsDifferent() = (whiteTime != blackTime || whiteIncrement != blackIncrement)
+
     companion object {
         fun buildDefaultGame(matchId: Long) = CustomGame(
             whiteTime = 15,

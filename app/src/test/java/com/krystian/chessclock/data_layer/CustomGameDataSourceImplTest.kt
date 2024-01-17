@@ -71,4 +71,14 @@ class CustomGameDataSourceImplTest {
         verify(customGameDao).getAllWithMatchId(11)
     }
 
+    @Test
+    fun getById() = runTest {
+        val expectedGame = customGame
+        whenever(customGameDao.getGameWithId(anyLong())).thenReturn(flowOf(expectedCapturedEntity))
+
+        testObj.getById(12).take(1).collect {
+            assertEquals(expectedGame, it)
+        }
+    }
+
 }

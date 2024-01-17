@@ -6,8 +6,10 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -20,13 +22,10 @@ import com.krystianrymonlipinski.chessclock.databinding.FragmentSettingsBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SettingsFragment : Fragment(), View.OnClickListener, MenuProvider {
+class SettingsFragment : Fragment(), MenuProvider {
 
     private val activityViewModel: MainActivityViewModel by viewModels()
     private lateinit var _binding: FragmentSettingsBinding
-
-    private var customGameId: Long? = null
-    private var customMatchId: Long? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,67 +39,29 @@ class SettingsFragment : Fragment(), View.OnClickListener, MenuProvider {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        checkForPassedData()
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        _binding.playButton.setOnClickListener(onPlayButtonClicked)
         _binding.settingsView.also {
             it.setInitialState(MatchSettingUiState())
             it.observeState(viewLifecycleOwner)
         }
     }
 
-    private fun checkForPassedData() {
-        if (findNavController().previousBackStackEntry != null) { // not a start destination
-            customGameId = arguments?.getLong("customGameId")
-            customMatchId = arguments?.getLong("customMatchId")
-        }
+    private val onPlayButtonClicked = OnClickListener {
+        val bundle = produceBundleFromViewState()
+        findNavController().navigate(R.id.action_settingsFragment_to_timerFragment, bundle)
     }
 
+    private fun produceBundleFromViewState() : Bundle {
+        val viewState = _binding.settingsView.viewState.value
 
-
-
-    override fun onClick(v: View) {
-
-        //TODO: retrieve state from view
-        /*
-        val id = v.id //switch gives compilation error: "constant expression required"
-        if (id == R.id.play_button) {
-            if (customGameId == null) { //play a game - it's not custom game editor mode
-                val firstPlayerSettings = listOf(
-                    "firstPlayerTime" to playerTimeBar!!.progress + 1,
-                    "firstPlayerIncrement" to playerIncrementBar!!.progress
-                )
-                val secondPlayerSettings = if (differentTime!!.isChecked) {
-                    listOf(
-                        "secondPlayerTime" to playerTwoTimeBar!!.progress + 1,
-                        "secondPlayerIncrement" to playerTwoIncrementBar!!.progress
-                    )
-                } else firstPlayerSettings
-                val numberOfGamesSettings = if (!singleGame!!.isChecked) {
-                    "numberOfGames" to numberOfGamesBar!!.progress + 1
-                } else "numberOfGames" to 1
-
-                val bundle = bundleOf(firstPlayerSettings[0], firstPlayerSettings[1],
-                    secondPlayerSettings[0], secondPlayerSettings[1], numberOfGamesSettings
-
-                )
-
-                findNavController().navigate(R.id.action_settingsFragment_to_timerFragment, bundle)
-            } else { // save custom game parameters to the database
-                val customGameUpdated = CustomGame(
-                    id = customGameId ?: -1,
-                    whiteTime = playerTimeBar!!.progress + 1,
-                    whiteIncrement = playerIncrementBar!!.progress,
-                    blackTime = if (differentTime!!.isChecked) playerTwoTimeBar!!.progress + 1 else playerTimeBar!!.progress + 1,
-                    blackIncrement = if (differentTime!!.isChecked) playerTwoIncrementBar!!.progress else playerIncrementBar!!.progress,
-                    matchId = customMatchId ?: -1
-                )
-
-                activityViewModel.updateCustomGame(customGameUpdated)
-                findNavController().popBackStack()
-            }
-        }
-
-         */
+        return bundleOf(
+            "firstPlayerTime" to viewState.firstPlayerGameTime,
+            "firstPlayerIncrement" to viewState.firstPlayerIncrement,
+            "secondPlayerTime" to viewState.secondPlayerGameTime,
+            "secondPlayerIncrement" to viewState.secondPlayerIncrement,
+            "numberOfGames" to viewState.numberOfGames
+        )
     }
 
 

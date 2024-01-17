@@ -19,6 +19,12 @@ class CustomGameDataSourceImpl @Inject constructor(
         }
     }
 
+    override fun getById(gameId: Long): Flow<CustomGame> {
+        return customGameDao.getGameWithId(gameId).map {
+            convertFromEntity(it)
+        }
+    }
+
     override suspend fun addGame(game: CustomGame) = withContext(Dispatchers.IO) {
         customGameDao.addGame(convertToEntity(game))
     }
