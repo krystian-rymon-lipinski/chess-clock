@@ -1,5 +1,9 @@
 package com.krystian.chessclock.states
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class MatchSettingUiState(
     val mode: Mode = Mode.MATCH_SETTING,
     val firstPlayerGameTime: Int = 15,
@@ -9,7 +13,7 @@ data class MatchSettingUiState(
     val numberOfGames: Int = 5,
     val isSingleGameChecked: Boolean = true,
     val isTimeDifferentChecked: Boolean = false
-) {
+) : Parcelable {
 
     enum class Mode {
         MATCH_SETTING,

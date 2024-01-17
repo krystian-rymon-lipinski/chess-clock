@@ -1,5 +1,6 @@
 package com.krystian.chessclock
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -38,21 +39,24 @@ class SettingsFragment : Fragment(), MenuProvider {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val savedUiSetting = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            savedInstanceState?.getParcelable("settingsUiState", MatchSettingUiState::class.java)
+        } else savedInstanceState?.getParcelable("settingsUiState") as? MatchSettingUiState
 
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         _binding.playButton.setOnClickListener(onPlayButtonClicked)
         _binding.settingsView.also {
-            it.setInitialState(MatchSettingUiState())
+            it.setInitialState(savedUiSetting ?: MatchSettingUiState())
             it.observeState(viewLifecycleOwner)
         }
     }
 
     private val onPlayButtonClicked = OnClickListener {
-        val bundle = produceBundleFromViewState()
+        val bundle = produceArgumentBundleFromViewState()
         findNavController().navigate(R.id.action_settingsFragment_to_timerFragment, bundle)
     }
 
-    private fun produceBundleFromViewState() : Bundle {
+    private fun produceArgumentBundleFromViewState() : Bundle {
         val viewState = _binding.settingsView.viewState.value
 
         return bundleOf(
@@ -90,7 +94,11 @@ class SettingsFragment : Fragment(), MenuProvider {
             Toast.makeText(activity, R.string.match_created, Toast.LENGTH_LONG).show()
             findNavController().navigate(R.id.action_settingsFragment_to_customMatchFragmentList)
         }
+    }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelable("settingsUiState", _binding.settingsView.viewState.value)
     }
 
 }

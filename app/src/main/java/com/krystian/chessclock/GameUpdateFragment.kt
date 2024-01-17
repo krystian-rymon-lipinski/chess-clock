@@ -1,5 +1,6 @@
 package com.krystian.chessclock
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -38,11 +39,15 @@ class GameUpdateFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val savedUiSetting = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            savedInstanceState?.getParcelable("settingsUiState", MatchSettingUiState::class.java)
+        } else savedInstanceState?.getParcelable("settingsUiState") as? MatchSettingUiState
 
         customGameId = arguments?.getLong("customGameId") ?: GAME_ID_ARGUMENT_NOT_FOUND
         customMatchId = arguments?.getLong("customMatchId") ?: MATCH_ID_ARGUMENT_NOT_FOUND
         setupUi()
-        collectGameData()
+
+        savedUiSetting?.let { setupViewState(it) } ?: collectGameData()
     }
 
     private fun setupUi() {
@@ -56,25 +61,15 @@ class GameUpdateFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 activityViewModel.getGameById(customGameId).collect {
-                    setupViewState(it)
+                    setupViewState(produceViewStateFromDatabaseObject(it))
                 }
             }
         }
     }
 
-    private fun setupViewState(game: CustomGame) {
+    private fun setupViewState(state: MatchSettingUiState) {
         _binding.settingsView.also {
-            it.setInitialState(MatchSettingUiState(
-                mode = MatchSettingUiState.Mode.GAME_UPDATE,
-                firstPlayerGameTime = game.whiteTime,
-                firstPlayerIncrement = game.whiteIncrement,
-                secondPlayerGameTime = game.blackTime,
-                secondPlayerIncrement = game.blackIncrement,
-                numberOfGames = 1,
-                isSingleGameChecked = true,
-                isTimeDifferentChecked = game.areTimeSettingsDifferent()
-
-            ))
+            it.setInitialState(state)
             it.observeState(viewLifecycleOwner)
         }
     }
@@ -99,6 +94,24 @@ class GameUpdateFragment : Fragment() {
             blackIncrement = viewState.secondPlayerIncrement,
             matchId = customMatchId
         )
+    }
+
+    private fun produceViewStateFromDatabaseObject(game: CustomGame) : MatchSettingUiState {
+        return MatchSettingUiState(
+            mode = MatchSettingUiState.Mode.GAME_UPDATE,
+            firstPlayerGameTime = game.whiteTime,
+            firstPlayerIncrement = game.whiteIncrement,
+            secondPlayerGameTime = game.blackTime,
+            secondPlayerIncrement = game.blackIncrement,
+            numberOfGames = 1,
+            isSingleGameChecked = true,
+            isTimeDifferentChecked = game.areTimeSettingsDifferent()
+        )
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelable("settingsUiState", _binding.settingsView.viewState.value)
     }
 
 
