@@ -19,7 +19,7 @@
     </fragment>
     <fragment
         android:id="@+id/customMatchFragmentList"
-        android:name="com.krystian.chessclock.customMatchPackage.CustomMatchFragmentList"
+        android:name="com.krystian.chessclock.customMatchPackage.CustomMatchesFragment"
         android:label="CustomMatchFragmentList" >
         <action
             android:id="@+id/action_customMatchFragmentList_to_timerFragment"
