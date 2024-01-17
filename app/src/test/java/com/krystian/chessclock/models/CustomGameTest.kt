@@ -1,6 +1,5 @@
 package com.krystian.chessclock.models
 
-import com.krystian.chessclock.model.CustomGame
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import org.junit.Test

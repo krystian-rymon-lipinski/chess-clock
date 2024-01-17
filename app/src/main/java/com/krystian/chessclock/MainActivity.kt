@@ -9,7 +9,7 @@ import com.krystianrymonlipinski.chessclock.R
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ClockActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
     val navController: NavController by lazy { setNavController() }
     val viewModel: MainActivityViewModel by viewModels<MainActivityViewModel>()

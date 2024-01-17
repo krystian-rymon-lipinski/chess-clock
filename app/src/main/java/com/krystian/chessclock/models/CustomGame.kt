@@ -1,4 +1,4 @@
-package com.krystian.chessclock.model
+package com.krystian.chessclock.models
 
 data class CustomGame(
     val id: Long = 0,

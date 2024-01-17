@@ -1,4 +1,4 @@
-package com.krystian.chessclock.timerPackage
+package com.krystian.chessclock.models
 
 class Match @JvmOverloads constructor(@JvmField var numberOfGames: Int = 1) {
     @JvmField

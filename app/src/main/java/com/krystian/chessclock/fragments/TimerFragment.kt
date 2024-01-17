@@ -1,4 +1,4 @@
-package com.krystian.chessclock.timerPackage
+package com.krystian.chessclock.fragments
 
 import android.app.AlertDialog
 import android.content.DialogInterface
@@ -14,6 +14,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.krystian.chessclock.MainActivityViewModel
+import com.krystian.chessclock.models.Game
+import com.krystian.chessclock.models.GameState
+import com.krystian.chessclock.models.Match
 import com.krystianrymonlipinski.chessclock.R
 import com.krystianrymonlipinski.chessclock.databinding.FragmentTimerBinding
 import dagger.hilt.android.AndroidEntryPoint

@@ -1,6 +1,6 @@
 package com.krystian.chessclock.data_layer
 
-import com.krystian.chessclock.model.CustomMatch
+import com.krystian.chessclock.models.CustomMatch
 import kotlinx.coroutines.flow.Flow
 
 interface CustomMatchDataSource {

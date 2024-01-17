@@ -1,4 +1,4 @@
-package com.krystian.chessclock.customMatchPackage
+package com.krystian.chessclock.dialogs
 
 import android.app.AlertDialog
 import android.app.Dialog

@@ -1,4 +1,4 @@
-package com.krystian.chessclock.customMatchPackage
+package com.krystian.chessclock.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater

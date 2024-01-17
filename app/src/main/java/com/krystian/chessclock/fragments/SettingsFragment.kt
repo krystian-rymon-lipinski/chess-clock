@@ -1,4 +1,4 @@
-package com.krystian.chessclock
+package com.krystian.chessclock.fragments
 
 import android.os.Build
 import android.os.Bundle
@@ -16,7 +16,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
-import com.krystian.chessclock.customMatchPackage.CustomMatchDialogFragment
+import com.krystian.chessclock.MainActivityViewModel
+import com.krystian.chessclock.dialogs.CustomMatchDialogFragment
 import com.krystian.chessclock.states.MatchSettingUiState
 import com.krystianrymonlipinski.chessclock.R
 import com.krystianrymonlipinski.chessclock.databinding.FragmentSettingsBinding

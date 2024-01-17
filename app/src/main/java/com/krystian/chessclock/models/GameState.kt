@@ -1,4 +1,4 @@
-package com.krystian.chessclock.timerPackage
+package com.krystian.chessclock.models
 
 enum class GameState {
     RUNNING,

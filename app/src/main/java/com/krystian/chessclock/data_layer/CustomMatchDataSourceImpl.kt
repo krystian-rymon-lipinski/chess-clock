@@ -1,7 +1,7 @@
 package com.krystian.chessclock.data_layer
 
-import com.krystian.chessclock.model.CustomGame
-import com.krystian.chessclock.model.CustomMatch
+import com.krystian.chessclock.models.CustomGame
+import com.krystian.chessclock.models.CustomMatch
 import com.krystian.chessclock.room.CustomGameEntity
 import com.krystian.chessclock.room.CustomMatchDao
 import com.krystian.chessclock.room.CustomMatchEntity

@@ -1,4 +1,4 @@
-package com.krystian.chessclock.customMatchPackage
+package com.krystian.chessclock.fragments
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.VERTICAL
 import com.krystian.chessclock.MainActivityViewModel
 import com.krystian.chessclock.adapters.CustomMatchAdapter
-import com.krystian.chessclock.model.CustomMatch
+import com.krystian.chessclock.models.CustomMatch
 import com.krystianrymonlipinski.chessclock.R
 import com.krystianrymonlipinski.chessclock.databinding.FragmentCustomMatchesBinding
 import dagger.hilt.android.AndroidEntryPoint

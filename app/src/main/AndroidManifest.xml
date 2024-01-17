@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme"
         android:supportsRtl="true">
 
-        <activity android:name="com.krystian.chessclock.ClockActivity"
+        <activity android:name="com.krystian.chessclock.MainActivity"
             android:exported="true">
 
             <intent-filter>

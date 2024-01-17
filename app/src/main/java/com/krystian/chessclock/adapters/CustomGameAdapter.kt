@@ -3,7 +3,7 @@ package com.krystian.chessclock.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.krystian.chessclock.model.CustomGame
+import com.krystian.chessclock.models.CustomGame
 import com.krystianrymonlipinski.chessclock.R
 import com.krystianrymonlipinski.chessclock.databinding.ListItemCustomGameBinding
 

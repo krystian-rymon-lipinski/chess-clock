@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.krystian.chessclock.SettingsFragment"
+        android:name="com.krystian.chessclock.fragments.SettingsFragment"
         android:label="fragment_settings"
         tools:layout="@layout/fragment_settings" >
         <action
@@ -19,7 +19,7 @@
     </fragment>
     <fragment
         android:id="@+id/customMatchFragmentList"
-        android:name="com.krystian.chessclock.customMatchPackage.CustomMatchesFragment"
+        android:name="com.krystian.chessclock.fragments.CustomMatchesFragment"
         android:label="CustomMatchFragmentList"
         tools:layout="@layout/fragment_custom_matches">
         <action
@@ -31,7 +31,7 @@
     </fragment>
     <fragment
         android:id="@+id/customGameListFragment"
-        android:name="com.krystian.chessclock.customMatchPackage.CustomGamesFragment"
+        android:name="com.krystian.chessclock.fragments.CustomGamesFragment"
         android:label="CustomGameListFragment"
         tools:layout="@layout/fragment_custom_games">
         <argument
@@ -44,7 +44,7 @@
     </fragment>
     <fragment
         android:id="@+id/timerFragment"
-        android:name="com.krystian.chessclock.timerPackage.TimerFragment"
+        android:name="com.krystian.chessclock.fragments.TimerFragment"
         android:label="fragment_timer"
         tools:layout="@layout/fragment_timer" >
         <argument
@@ -74,7 +74,7 @@
     </fragment>
     <fragment
         android:id="@+id/gameUpdateFragment"
-        android:name="com.krystian.chessclock.GameUpdateFragment"
+        android:name="com.krystian.chessclock.fragments.GameUpdateFragment"
         android:label="GameUpdateFragment"
         tools:layout="@layout/fragment_settings">
         <argument

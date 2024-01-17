@@ -1,6 +1,6 @@
 package com.krystian.chessclock.data_layer
 
-import com.krystian.chessclock.model.CustomGame
+import com.krystian.chessclock.models.CustomGame
 import com.krystian.chessclock.room.CustomGameDao
 import com.krystian.chessclock.room.CustomGameEntity
 import junit.framework.TestCase.assertEquals

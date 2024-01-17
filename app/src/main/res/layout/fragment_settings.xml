@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.krystian.chessclock.SettingsFragment">
+    tools:context="com.krystian.chessclock.fragments.SettingsFragment">
 
 
     <com.krystian.chessclock.views.MatchSettingsView
