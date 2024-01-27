@@ -91,5 +91,6 @@ dependencies {
     testImplementation("org.mockito:mockito-inline:4.11.0")
 
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.6")
+    implementation("com.google.android.material:material:1.11.0")
 
 }
