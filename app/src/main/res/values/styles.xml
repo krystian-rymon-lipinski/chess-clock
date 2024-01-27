@@ -10,24 +10,17 @@
     </style>
 
     <!-- Settings - TextViews -->
-    <style name="SettingsText">
-        <item name="android:layout_width">wrap_content</item>
+    <style name="SettingsText" parent="TextAppearance.Material3.BodyMedium">
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">12sp</item>
-        <item name="android:layout_marginTop">2dp</item>
-        <item name="android:layout_marginBottom">2dp</item>
-        <item name="android:layout_marginLeft">24dp</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:textColor">@color/blackColor</item>
     </style>
 
-    <!-- Settings - SeekBars -->
+    <!-- Settings - Sliders -->
     <style name="SettingsSeekBar">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">2dp</item>
-        <item name="android:layout_marginBottom">2dp</item>
-        <item name="android:layout_marginLeft">24dp</item>
-        <item name="android:layout_marginRight">24dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
     </style>
 
     <!-- Timer - Views -->

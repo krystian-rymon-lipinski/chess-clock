@@ -5,9 +5,6 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
-import android.widget.RadioGroup
-import android.widget.SeekBar
-import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
@@ -39,7 +36,7 @@ class MatchSettingsView @JvmOverloads constructor(
     fun setInitialState(state: MatchSettingUiState) {
         _viewState.value = state
         setTextViews()
-        setSeekBarsProgress()
+        setSliders()
         setVisibilities()
     }
 
@@ -56,108 +53,73 @@ class MatchSettingsView @JvmOverloads constructor(
 
     private fun setupListeners() {
         _binding.apply {
-            gameTimeSeekBar.setOnSeekBarChangeListener(firstPlayerGameTimeSeekBarListener)
-            incrementSeekBar.setOnSeekBarChangeListener(firstPlayerIncrementSeekBarListener)
-            gameTimeTwoSeekBar.setOnSeekBarChangeListener(secondPlayerGameTimeSeekBarListener)
-            incrementTwoSeekBar.setOnSeekBarChangeListener(secondPlayerIncrementSeekBarListener)
-            numberOfGamesSeekBar.setOnSeekBarChangeListener(numberOfGamesSeekbarListener)
+            slGameTimeOne.addOnChangeListener { _, value, _ ->
+                _viewState.value = _viewState.value.changeFirstPlayerGameTime(newValue = value.toInt())
+            }
+            slIncrementOne.addOnChangeListener { _, value, _ ->
+                _viewState.value = _viewState.value.changeFirstPlayerIncrement(newValue = value.toInt())
+            }
+            slGameTimeTwo.addOnChangeListener { _, value, _ ->
+                _viewState.value = _viewState.value.changeSecondPlayerGameTime(newValue = value.toInt())
+            }
+            slIncrementTwo.addOnChangeListener { _, value, _ ->
+                _viewState.value = _viewState.value.changeSecondPlayerIncrement(newValue = value.toInt())
+            }
+            slNumberOfGames.addOnChangeListener { _, value, _ ->
+                _viewState.value = _viewState.value.changeNumberOfGames(newValue = value.toInt())
+            }
 
-            differentTimeCheckbox.setOnClickListener(onDifferentTimeCheckboxClicked)
-            matchSettingsRadioGroup.setOnCheckedChangeListener(onMatchSettingCheckedChangedListener)
+            differentTimeCheckbox.setOnClickListener {
+                _viewState.value = _viewState.value.toggleIsTimeDifferentChecked()
+            }
+            matchSettingsRadioGroup.setOnCheckedChangeListener { _, checkedId ->
+                _viewState.value = _viewState.value.changeIsSingleGameChecked(checkedId == R.id.single_game_radio_button)
+            }
         }
     }
 
     private fun setTextViews() {
         val state = _viewState.value
         _binding.apply {
-            gameTimeText.text = String.format(context.getString(R.string.game_time), state.firstPlayerGameTime)
-            incrementText.text = String.format(context.getString(R.string.increment), state.firstPlayerIncrement)
-            gameTimeTwoText.text = String.format(context.getString(R.string.game_time_two), state.secondPlayerGameTime)
-            incrementTwoText.text = String.format(context.getString(R.string.increment_two), state.secondPlayerIncrement)
-            gamesText.text = String.format(context.getString(R.string.number_of_games), state.numberOfGames)
+            tvGameTimeOne.text = String.format(context.getString(R.string.game_time), state.firstPlayerGameTime)
+            tvIncrementOne.text = String.format(context.getString(R.string.increment), state.firstPlayerIncrement)
+            tvGameTimeTwo.text = String.format(context.getString(R.string.game_time_two), state.secondPlayerGameTime)
+            tvIncrementTwo.text = String.format(context.getString(R.string.increment_two), state.secondPlayerIncrement)
+            tvNumberOfGames.text = String.format(context.getString(R.string.number_of_games), state.numberOfGames)
         }
     }
 
-    private fun setSeekBarsProgress() {
+    private fun setSliders() {
         val state = _viewState.value
         _binding.apply {
-            gameTimeSeekBar.progress = state.firstPlayerGameTime - 1
-            incrementSeekBar.progress = state.firstPlayerIncrement - 1
-            gameTimeTwoSeekBar.progress = state.secondPlayerGameTime - 1
-            incrementTwoSeekBar.progress = state.secondPlayerIncrement - 1
-            numberOfGamesSeekBar.progress = state.numberOfGames - 1
+            slGameTimeOne.value = (state.firstPlayerGameTime).toFloat()
+            slIncrementOne.value = (state.firstPlayerIncrement).toFloat()
+            slGameTimeTwo.value = (state.secondPlayerGameTime).toFloat()
+            slIncrementTwo.value = (state.secondPlayerIncrement).toFloat()
+            slNumberOfGames.value = (state.numberOfGames).toFloat()
         }
     }
 
     private fun setVisibilities() {
         val state = _viewState.value
         _binding.apply {
-            gameTimeTwoText.visibility =
-                if (state.isTimeDifferentChecked) View.VISIBLE else View.INVISIBLE
-            gameTimeTwoSeekBar.visibility =
-                if (state.isTimeDifferentChecked) View.VISIBLE else View.INVISIBLE
-            incrementTwoText.visibility =
-                if (state.isTimeDifferentChecked) View.VISIBLE else View.INVISIBLE
-            incrementTwoSeekBar.visibility =
-                if (state.isTimeDifferentChecked) View.VISIBLE else View.INVISIBLE
+            tvGameTimeTwo.visibility =
+                if (state.isTimeDifferentChecked) View.VISIBLE else View.GONE
+            slGameTimeTwo.visibility =
+                if (state.isTimeDifferentChecked) View.VISIBLE else View.GONE
+            tvIncrementTwo.visibility =
+                if (state.isTimeDifferentChecked) View.VISIBLE else View.GONE
+            slIncrementTwo.visibility =
+                if (state.isTimeDifferentChecked) View.VISIBLE else View.GONE
 
-            gamesText.visibility =
+            tvNumberOfGames.visibility =
                 if (state.isSingleGameChecked) View.INVISIBLE else View.VISIBLE
-            numberOfGamesSeekBar.visibility =
+            slNumberOfGames.visibility =
                 if (state.isSingleGameChecked) View.INVISIBLE else View.VISIBLE
 
             differentTimeCheckbox.isChecked = state.isTimeDifferentChecked
             chessMatchRadioButton.isEnabled = state.mode == MatchSettingUiState.Mode.MATCH_SETTING
         }
-    }
-
-
-    private val firstPlayerGameTimeSeekBarListener = object : OnSeekBarChangeListener {
-        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-            _viewState.value = _viewState.value.changeFirstPlayerGameTime(newValue = progress + 1)
-        }
-        override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-        override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-    }
-
-    private val firstPlayerIncrementSeekBarListener = object : OnSeekBarChangeListener {
-        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-            _viewState.value = _viewState.value.changeFirstPlayerIncrement(newValue = progress)
-        }
-        override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-        override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-    }
-
-    private val secondPlayerGameTimeSeekBarListener = object : OnSeekBarChangeListener {
-        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-            _viewState.value = _viewState.value.changeSecondPlayerGameTime(newValue = progress + 1)
-        }
-        override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-        override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-    }
-
-    private val secondPlayerIncrementSeekBarListener = object : OnSeekBarChangeListener {
-        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-            _viewState.value = _viewState.value.changeSecondPlayerIncrement(newValue = progress)
-        }
-        override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-        override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-    }
-
-    private val numberOfGamesSeekbarListener = object : OnSeekBarChangeListener {
-        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-            _viewState.value = _viewState.value.changeNumberOfGames(newValue = progress + 1)
-        }
-        override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-        override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-    }
-
-    private val onDifferentTimeCheckboxClicked = OnClickListener {
-        _viewState.value = _viewState.value.toggleIsTimeDifferentChecked()
-    }
-
-    private val onMatchSettingCheckedChangedListener = RadioGroup.OnCheckedChangeListener { _, checkedId ->
-        _viewState.value = _viewState.value.changeIsSingleGameChecked(checkedId == R.id.single_game_radio_button)
     }
 
 }

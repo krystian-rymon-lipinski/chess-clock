@@ -1,6 +1,13 @@
 <resources>
     <string name="app_name">Chess Clock</string>
 
+    <!-- Content descriptions -->
+    <string name="slider_game_time_one">Slider game time one</string>
+    <string name="slider_increment_one">Slider increment one</string>
+    <string name="slider_game_time_two">Slider game time two</string>
+    <string name="slider_increment_two">Slider increment two</string>
+    <string name="slider_number_of_games">Slider number of games</string>
+
     <!-- SETTINGS -->
     <string name="single_game">Pojedyncza partia</string>
     <string name="chess_match">Mecz szachowy</string>
