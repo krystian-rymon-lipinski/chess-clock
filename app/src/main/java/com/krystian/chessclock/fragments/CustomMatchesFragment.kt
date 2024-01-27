@@ -43,11 +43,6 @@ class CustomMatchesFragment : Fragment() {
 
         observeChanges()
         setupAdapter()
-
-        /*
-        _binding.rvCustomMatchesList.setOnTouchListener(onTouchListener)
-
-         */
     }
 
     private fun observeChanges() {
@@ -74,9 +69,13 @@ class CustomMatchesFragment : Fragment() {
     private val adapterCallback: CustomMatchAdapter.Callback = object : CustomMatchAdapter.Callback {
         override fun onMatchClicked(matchId: Long) {
             val bundle = bundleOf("customMatchId" to matchId)
+            findNavController().navigate(R.id.action_customMatchFragmentList_to_timerFragment, bundle)
+        }
+        override fun onEditMatchClicked(matchId: Long) {
+            val bundle = bundleOf("customMatchId" to matchId)
             findNavController().navigate(R.id.action_customMatchFragmentList_to_customGameListFragment, bundle)
         }
-        override fun onMatchLongClicked(match: CustomMatch) {
+        override fun onDeleteMatchClicked(match: CustomMatch) {
             buildDeleteMatchAlertDialog(match)
         }
     }
@@ -91,75 +90,5 @@ class CustomMatchesFragment : Fragment() {
             .setNegativeButton(R.string.cancel_button) { dialog, _ -> dialog.dismiss()}
             .show()
     }
-
-
-    //TODO: rework playing custom matches
-    /*
-    private val onTouchListener = object : OnTouchListener {
-        private var xStart = 0f
-        private var  itemTapped = 0
-
-        override fun onTouch(
-            v: View,
-            event: MotionEvent
-        ): Boolean { //play a custom match by swiping list item right
-            val listView = _binding.rvCustomMatchesList
-
-            val itemHeight: Float
-            val minSwipe = 400 //how long the swipe needs to be, to qualify as such an event
-            return if (listView.childCount != 0) { //there must be a list item to play a match
-                when (event.action) {
-                    MotionEvent.ACTION_DOWN -> {
-                        val yStart: Float
-                        itemHeight = listView.getChildAt(0).height.toFloat()
-                        val scrollStart: Float = listView.firstVisiblePosition * itemHeight +
-                                (itemHeight - listView.getChildAt(0).bottom) //list is scrolled down by n pixels
-                        xStart = event.x
-                        yStart = event.y + scrollStart
-                        itemTapped = floor((yStart / itemHeight).toDouble())
-                            .toInt() //index considering the whole list, not only shown items
-                        false
-                    }
-
-                    MotionEvent.ACTION_UP -> {
-                        val yFinish: Float
-                        val itemsScrolledFinish: Int //how many items were scrolled at finish of a gesture
-                        itemHeight = listView.getChildAt(0).height.toFloat()
-                        val scrollFinish: Float = listView.firstVisiblePosition * itemHeight +
-                                (itemHeight - listView.getChildAt(0).bottom) //list is scrolled down by n pixels
-                        val xFinish: Float = event.x
-                        yFinish = event.y + scrollFinish
-                        val itemReleased: Int = floor((yFinish / itemHeight).toDouble())
-                            .toInt() //at which item event performed action_up - is this the same from action_up? //index considering the whole list, not only shown items
-                        itemsScrolledFinish = floor((scrollFinish / itemHeight).toDouble())
-                            .toInt() //how many list items are COMPLETELY scrolled by (not visible)
-                        val view =
-                            listView.getChildAt(itemReleased - itemsScrolledFinish) //which item is being swiped
-                        val customMatchName =
-                            view.findViewById<TextView>(R.id.custom_match_name)
-                        if (itemTapped == itemReleased && xFinish - xStart > minSwipe) {
-                            customMatchName.setTextColor(
-                                ContextCompat.getColor(
-                                    requireContext(),
-                                    R.color.colorAccent
-                                )
-                            )
-
-                            val bundle = bundleOf("customMatchId" to customMatches[itemReleased].id)
-                            findNavController().navigate(R.id.action_customMatchFragmentList_to_timerFragment, bundle)
-                            true //event consumed
-                        } else { //user wants to change custom games, not to play a match
-                            view.performClick()
-                            false //don't consume event, save it for itemClick
-                        }
-                    }
-
-                    else -> false
-                }
-            } else false
-        }
-
-    }
-*/
 
 }

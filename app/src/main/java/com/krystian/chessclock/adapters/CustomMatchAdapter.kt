@@ -16,10 +16,8 @@ class CustomMatchAdapter(
         val binding = ListItemCustomMatchBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CustomMatchViewHolder(binding).apply {
             binding.root.setOnClickListener { callback.onMatchClicked(matches[absoluteAdapterPosition].id) }
-            binding.root.setOnLongClickListener {
-                callback.onMatchLongClicked(matches[absoluteAdapterPosition])
-                true
-            }
+            binding.btnEdit.setOnClickListener { callback.onEditMatchClicked(matches[absoluteAdapterPosition].id) }
+            binding.btnDelete.setOnClickListener { callback.onDeleteMatchClicked(matches[absoluteAdapterPosition]) }
         }
     }
 
@@ -38,7 +36,8 @@ class CustomMatchAdapter(
 
     interface Callback {
         fun onMatchClicked(matchId: Long)
-        fun onMatchLongClicked(match: CustomMatch)
+        fun onEditMatchClicked(matchId: Long)
+        fun onDeleteMatchClicked(match: CustomMatch)
     }
 
 

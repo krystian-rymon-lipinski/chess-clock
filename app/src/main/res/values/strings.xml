@@ -8,6 +8,9 @@
     <string name="slider_increment_two">Slider increment two</string>
     <string name="slider_number_of_games">Slider number of games</string>
 
+    <string name="icon_button_edit">Edit icon</string>
+    <string name="icon_button_delete">Delete icon</string>
+
     <!-- SETTINGS -->
     <string name="single_game">Pojedyncza partia</string>
     <string name="chess_match">Mecz szachowy</string>

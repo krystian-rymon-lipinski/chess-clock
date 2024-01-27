@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal" 
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:baselineAligned="false"
+    android:layout_marginHorizontal="16dp"
+    android:paddingVertical="4dp"
     android:id="@+id/custom_match">
     
     <LinearLayout
-        android:layout_margin="24dp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -16,7 +19,8 @@
         <TextView android:id="@+id/custom_match_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
+            style="@style/TextAppearance.Material3.TitleLarge"
+            android:layout_marginBottom="2dp"
             android:textStyle="bold"
             android:textColor="@color/blackColor"
             tools:text="Name example"/>
@@ -24,21 +28,34 @@
         <TextView android:id="@+id/custom_match_games"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
+            style="@style/TextAppearance.Material3.BodyMedium"
             android:text="@string/number_of_games"/>
         
         
     </LinearLayout>
 
-    <TextView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_margin="24dp"
-        android:layout_gravity="center_vertical"
-        android:gravity="center"
-        android:textSize="24sp"
-        android:textColor="@color/colorAccent"
-        android:text="@string/arrows"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_edit"
+            android:contentDescription="@string/icon_button_edit"
+            style="?attr/materialIconButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_edit"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_delete"
+            android:contentDescription="@string/icon_button_delete"
+            style="?attr/materialIconButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_delete"/>
+
+    </LinearLayout>
 
 </LinearLayout>
