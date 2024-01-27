@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView.GONE
 import androidx.recyclerview.widget.RecyclerView.VERTICAL
 import com.krystian.chessclock.MainActivityViewModel
 import com.krystian.chessclock.adapters.CustomMatchAdapter
@@ -52,6 +53,7 @@ class CustomMatchesFragment : Fragment() {
                     matchesAdapter?.let { adapter ->
                         adapter.setData(it)
                         adapter.notifyDataSetChanged()
+                        setMainLayout()
                     }
                 }
             }
@@ -63,6 +65,13 @@ class CustomMatchesFragment : Fragment() {
         _binding.rvCustomMatchesList.apply {
             adapter = matchesAdapter
             layoutManager = LinearLayoutManager(context).apply { orientation = VERTICAL }
+        }
+    }
+
+    private fun setMainLayout() {
+        matchesAdapter?.itemCount?.let {
+            _binding.rvCustomMatchesList.visibility = if (it > 0 ) View.VISIBLE else GONE
+            _binding.tvNoCustomMatches.visibility = if (it > 0) View.GONE else View.VISIBLE
         }
     }
 

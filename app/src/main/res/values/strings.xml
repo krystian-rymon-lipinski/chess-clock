@@ -49,11 +49,15 @@
     <string name="ok_button" translatable="false">OK</string>
 
     <!-- Custom Match List Item -->
+    <string name="no_custom_matches">No custom matches added</string>
+
     <string name="custom_match_name" translatable="false">%1$s</string>
     <string name="arrows" translatable="false">\u25B6 \u25B6 \u25B6</string>
     <string name="delete_match">Usunąć mecz?</string> <!-- in AlertDialog -->
 
     <!-- Custom Game List Item -->
+    <string name="no_custom_games">No custom games added</string>
+
     <string name="number_of_custom_game" translatable="false">%1$d</string>
     <string name="custom_game_description" translatable="false">%1$d+%2$ds vs. %3$d+%4$ds</string>
 </resources>

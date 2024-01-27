@@ -61,11 +61,18 @@ class CustomGamesFragment : Fragment() {
                         gamesAdapter?.let { adapter ->
                             adapter.setData(it)
                             adapter.notifyDataSetChanged()
+                            setMainLayout()
                         }
                     }
                 }
-
             }
+        }
+    }
+
+    private fun setMainLayout() {
+        gamesAdapter?.itemCount?.let {
+            _binding.rvCustomGamesList.visibility = if (it > 0 ) View.VISIBLE else RecyclerView.GONE
+            _binding.tvNoCustomGames.visibility = if (it > 0) View.GONE else View.VISIBLE
         }
     }
 
@@ -81,7 +88,6 @@ class CustomGamesFragment : Fragment() {
         override fun onDeleteGameClicked(game: CustomGame) {
             activityViewModel.deleteCustomGame(game)
         }
-
     }
 
 }
