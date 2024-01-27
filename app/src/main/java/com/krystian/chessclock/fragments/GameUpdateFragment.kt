@@ -48,7 +48,7 @@ class GameUpdateFragment : Fragment() {
         customMatchId = arguments?.getLong("customMatchId") ?: MATCH_ID_ARGUMENT_NOT_FOUND
         setupUi()
 
-        savedUiSetting?.let { setupViewState(it) } ?: collectGameData()
+        savedUiSetting?.let { setupViewState(it) } ?: collectGameDataFromDatabase()
     }
 
     private fun setupUi() {
@@ -58,7 +58,7 @@ class GameUpdateFragment : Fragment() {
         }
     }
 
-    private fun collectGameData() {
+    private fun collectGameDataFromDatabase() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 activityViewModel.getGameById(customGameId).collect {

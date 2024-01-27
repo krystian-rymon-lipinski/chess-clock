@@ -55,5 +55,5 @@
 
     <!-- Custom Game List Item -->
     <string name="number_of_custom_game" translatable="false">%1$d</string>
-    <string name="custom_game" translatable="false">%1$d+%2$ds vs. %3$d+%4$ds</string>
+    <string name="custom_game_description" translatable="false">%1$d+%2$ds vs. %3$d+%4$ds</string>
 </resources>

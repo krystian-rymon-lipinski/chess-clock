@@ -16,7 +16,8 @@ class CustomGameAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomGameViewHolder {
         val binding = ListItemCustomGameBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CustomGameViewHolder(binding).apply {
-            binding.root.setOnClickListener { callback.onGameClicked(games[absoluteAdapterPosition].id) }
+            binding.btnEdit.setOnClickListener { callback.onEditGameClicked(games[absoluteAdapterPosition].id) }
+            binding.btnDelete.setOnClickListener { callback.onDeleteGameClicked(games[absoluteAdapterPosition]) }
         }
     }
 
@@ -34,7 +35,8 @@ class CustomGameAdapter(
     }
 
     interface Callback {
-        fun onGameClicked(gameId: Long)
+        fun onEditGameClicked(gameId: Long)
+        fun onDeleteGameClicked(game: CustomGame)
     }
 
 
@@ -46,7 +48,7 @@ class CustomGameAdapter(
             _binding.apply {
                 customGameNumber.text = StringBuilder().append(absoluteAdapterPosition + 1).toString()
                 customGame.text = String.format(
-                    itemView.context.getString(R.string.custom_game),
+                    itemView.context.getString(R.string.custom_game_description),
                     item.whiteTime,
                     item.whiteIncrement,
                     item.blackTime,

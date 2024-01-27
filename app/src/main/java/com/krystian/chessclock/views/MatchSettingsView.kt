@@ -96,7 +96,10 @@ class MatchSettingsView @JvmOverloads constructor(
             slIncrementOne.value = (state.firstPlayerIncrement).toFloat()
             slGameTimeTwo.value = (state.secondPlayerGameTime).toFloat()
             slIncrementTwo.value = (state.secondPlayerIncrement).toFloat()
-            slNumberOfGames.value = (state.numberOfGames).toFloat()
+            if (_viewState.value.mode == MatchSettingUiState.Mode.MATCH_SETTING) {
+                slNumberOfGames.value = (state.numberOfGames).toFloat()
+            }
+
         }
     }
 

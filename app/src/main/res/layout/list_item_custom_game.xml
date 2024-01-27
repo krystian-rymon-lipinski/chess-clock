@@ -1,28 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:baselineAligned="false"
+    android:layout_marginHorizontal="16dp"
+    android:gravity="center_vertical"
+    android:paddingVertical="4dp">
 
     <TextView android:id="@+id/custom_game_number"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textSize="24sp"
+        style="@style/TextAppearance.Material3.TitleMedium"
         android:textStyle="bold"
-        android:gravity="end"
-        android:layout_margin="16dp"
         android:textColor="@color/blackColor"
-        android:text="@string/number_of_custom_game"/>
+        android:layout_marginEnd="16dp"
+        tools:text="1" />
 
     <TextView android:id="@+id/custom_game"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="7"
-        android:textSize="24sp"
-        android:gravity="start"
-        android:layout_margin="16dp"
-        android:textColor="@color/blackColor"
-        android:text="@string/custom_game"/>
+        android:layout_weight="1"
+        style="@style/TextAppearance.Material3.BodyLarge"
+        android:text="@string/custom_game_description" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_edit"
+        android:contentDescription="@string/icon_button_edit"
+        style="@style/ControlIconButton"
+        app:icon="@drawable/ic_edit"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_delete"
+        android:contentDescription="@string/icon_button_delete"
+        style="@style/ControlIconButton"
+        app:icon="@drawable/ic_delete"/>
 
 </LinearLayout>

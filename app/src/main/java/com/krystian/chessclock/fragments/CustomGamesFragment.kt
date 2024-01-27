@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.krystian.chessclock.MainActivityViewModel
 import com.krystian.chessclock.adapters.CustomGameAdapter
+import com.krystian.chessclock.models.CustomGame
 import com.krystianrymonlipinski.chessclock.R
 import com.krystianrymonlipinski.chessclock.databinding.FragmentCustomGamesBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -69,12 +70,16 @@ class CustomGamesFragment : Fragment() {
     }
 
     private val gamesAdapterCallback = object : CustomGameAdapter.Callback {
-        override fun onGameClicked(gameId: Long) {
+        override fun onEditGameClicked(gameId: Long) {
             val bundle = bundleOf(
                 "customMatchId" to customMatchId,
                 "customGameId" to gameId
             )
             findNavController().navigate(R.id.action_customGameListFragment_to_gameUpdateFragment, bundle)
+        }
+
+        override fun onDeleteGameClicked(game: CustomGame) {
+            activityViewModel.deleteCustomGame(game)
         }
 
     }
