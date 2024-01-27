@@ -12,52 +12,51 @@
     <string name="icon_button_delete">Delete icon</string>
 
     <!-- SETTINGS -->
-    <string name="single_game">Pojedyncza partia</string>
-    <string name="chess_match">Mecz szachowy</string>
-    <string name="game_time">"Czas na grę: %1$d "</string>
-    <string name="increment">Czas dodawany po ruchu: %1$d </string>
-    <string name="different_time">"Różny czas dla graczy? "</string>
-    <string name="game_time_two">"Czas na grę (gracz drugi): %1$d  "</string>
-    <string name="increment_two">Czas dodawany po ruchu (gracz drugi): %1$d  </string>
-    <string name="number_of_games">Ilość gier: %1$d </string>
-    <string name="play_button">Graj</string>
-    <string name="save_button">Zapisz</string> <!-- for setting custom games-->
-    <string name="custom_game_saved">Zapisywanie\u2026</string> <!-- for setting custom game -->
-    <string name="custom_match_button">Własne mecze</string> <!-- menu -->
-    <string name="add_new_match">Dodaj własny mecz</string>
+    <string name="single_game">Single game</string>
+    <string name="chess_match">Match</string>
+    <string name="game_time">Game time [min]: %1$d</string>
+    <string name="increment">Increment [s]: %1$d </string>
+    <string name="different_time">Different settings for players?</string>
+    <string name="game_time_two">Game time (second player): %1$d</string>
+    <string name="increment_two">Increment (second player)(gracz drugi): %1$d</string>
+    <string name="number_of_games">Number of games: %1$d</string>
+    <string name="play_button">Play</string>
+    <string name="save_button">Save</string> <!-- for setting custom games-->
+    <string name="custom_match_button">Custom matches</string>
+    <string name="add_new_match">Add custom match</string>
 
     <!-- Settings -> Dialog -->
-    <string name="match_name">Nazwa:</string>
-    <string name="no_name_chosen">Nadaj nazwę!</string>
-    <string name="match_created">Utworzono nowy mecz. Skonfiguruj poszczególne partie.</string>
-    <string name="hint" translatable="false">Blitz + Superblitz </string>
+    <string name="match_name">Name:</string>
+    <string name="no_name_chosen">Mach name cannot be empty</string>
+    <string name="match_created">Custom match created. Configure its games.</string>
+    <string name="custom_match_name_hint">Blitz + Superblitz</string>
 
-    <string name="cancel_button">Anuluj</string>
-    <string name="database_unreachable">Brak dostępu do bazy danych</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="database_unreachable">Database unreachable</string>
 
     <!-- TIMER -->
-    <string name="points" translatable="false">%1$.1f:%2$.1f</string>
-    <string name="move_number">Ruch %1$d.</string>
-    <string name="game_number">Gra %1$d/%2$d</string>
-    <string name="time" translatable="false">%1$02d:%2$02d:%3$02d</string>
-    <string name="first_move_text">%1$d sekund na wykonanie pierwszego ruchu</string>
-    <string name="draw_offer">Remis?</string>
-    <string name="resign">Poddaj</string>
-    <string name="new_game">Nowa partia</string>
-    <string name="next_game">Kolejna partia</string>
-    <string name="results">Mecz zakończony wynikiem %1$.1f:%2$.1f</string>
-    <string name="ok_button" translatable="false">OK</string>
+    <string name="points">%1$.1f:%2$.1f</string>
+    <string name="move_number">Move %1$d.</string>
+    <string name="game_number">Game %1$d/%2$d</string>
+    <string name="time">%1$02d:%2$02d:%3$02d</string>
+    <string name="first_move_text">%1$d seconds for first move</string>
+    <string name="draw_offer">Draw?</string>
+    <string name="resign">Resign</string>
+    <string name="new_game">New game</string>
+    <string name="next_game">Next gamr</string>
+    <string name="results">Match finished with result: %1$.1f:%2$.1f</string>
+    <string name="ok_button">OK</string>
 
     <!-- Custom Match List Item -->
     <string name="no_custom_matches">No custom matches added</string>
 
-    <string name="custom_match_name" translatable="false">%1$s</string>
-    <string name="arrows" translatable="false">\u25B6 \u25B6 \u25B6</string>
-    <string name="delete_match">Usunąć mecz?</string> <!-- in AlertDialog -->
+    <string name="custom_match_name">%1$s</string>
+    <string name="delete_match">Delete match?</string>
 
     <!-- Custom Game List Item -->
     <string name="no_custom_games">No custom games added</string>
 
-    <string name="number_of_custom_game" translatable="false">%1$d</string>
-    <string name="custom_game_description" translatable="false">%1$d+%2$ds vs. %3$d+%4$ds</string>
+    <string name="number_of_custom_game">%1$d</string>
+    <string name="custom_game_description">%1$d+%2$ds vs. %3$d+%4$ds</string>
+    <string name="custom_game_saved">Saving\\u2026</string>
 </resources>
