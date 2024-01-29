@@ -46,7 +46,7 @@
             <com.google.android.material.slider.Slider
                 android:id="@+id/sl_game_time_one"
                 android:contentDescription="@string/slider_game_time_one"
-                style = "@style/SettingsSeekBar"
+                style = "@style/SettingsSlider"
                 android:valueFrom="1.0"
                 android:valueTo="60.0"
                 android:stepSize="1.0"/>
@@ -59,7 +59,7 @@
             <com.google.android.material.slider.Slider
                 android:id="@+id/sl_increment_one"
                 android:contentDescription="@string/slider_increment_one"
-                style = "@style/SettingsSeekBar"
+                style = "@style/SettingsSlider"
                 android:valueFrom="0.0"
                 android:valueTo="60.0"
                 android:stepSize="1.0"/>
@@ -79,7 +79,7 @@
 
             <com.google.android.material.slider.Slider
                 android:id="@+id/sl_game_time_two"
-                style = "@style/SettingsSeekBar"
+                style = "@style/SettingsSlider"
                 android:valueFrom="1.0"
                 android:valueTo="60.0"
                 android:stepSize="1.0"
@@ -95,7 +95,7 @@
 
             <com.google.android.material.slider.Slider
                 android:id="@+id/sl_increment_two"
-                style = "@style/SettingsSeekBar"
+                style = "@style/SettingsSlider"
                 android:valueFrom="0.0"
                 android:valueTo="60.0"
                 android:stepSize="1.0"
@@ -111,7 +111,7 @@
 
             <com.google.android.material.slider.Slider
                 android:id="@+id/sl_number_of_games"
-                style = "@style/SettingsSeekBar"
+                style = "@style/SettingsSlider"
                 android:valueFrom="2.0"
                 android:valueTo="30.0"
                 android:stepSize="1.0"

@@ -18,7 +18,7 @@
     <string name="increment">Increment [s]: %1$d </string>
     <string name="different_time">Different settings for players?</string>
     <string name="game_time_two">Game time (second player): %1$d</string>
-    <string name="increment_two">Increment (second player)(gracz drugi): %1$d</string>
+    <string name="increment_two">Increment (second player): %1$d</string>
     <string name="number_of_games">Number of games: %1$d</string>
     <string name="play_button">Play</string>
     <string name="save_button">Save</string> <!-- for setting custom games-->
@@ -26,7 +26,7 @@
     <string name="add_new_match">Add custom match</string>
 
     <!-- Settings -> Dialog -->
-    <string name="match_name">Name:</string>
+    <string name="match_name">Name</string>
     <string name="no_name_chosen">Mach name cannot be empty</string>
     <string name="match_created">Custom match created. Configure its games.</string>
     <string name="custom_match_name_hint">Blitz + Superblitz</string>

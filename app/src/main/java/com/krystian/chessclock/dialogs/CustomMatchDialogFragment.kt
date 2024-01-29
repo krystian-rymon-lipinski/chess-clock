@@ -1,62 +1,66 @@
 package com.krystian.chessclock.dialogs
 
-import android.app.AlertDialog
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
-import android.view.View
-import android.widget.EditText
-import android.widget.SeekBar
-import android.widget.SeekBar.OnSeekBarChangeListener
-import android.widget.TextView
-import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.krystianrymonlipinski.chessclock.R
+import com.krystianrymonlipinski.chessclock.databinding.DialogFragmentNewCustomMatchBinding
+
 
 class CustomMatchDialogFragment(
     private val callback: Callback
-) : DialogFragment(), OnSeekBarChangeListener {
-    private var dialogView: View? = null
-    private var numberOfGamesBar: SeekBar? = null
-    private var numberOfGamesText: TextView? = null
-    private var matchName: EditText? = null
+) : DialogFragment() {
+
+    private val _binding: DialogFragmentNewCustomMatchBinding by lazy {
+        DialogFragmentNewCustomMatchBinding.inflate(layoutInflater)
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = AlertDialog.Builder(activity)
-        val inflater = requireActivity().layoutInflater
-        dialogView = inflater.inflate(R.layout.custom_match_dialog, null)
-        setViewComponents()
-        builder.setView(dialogView)
+        return MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.add_new_match)
-            .setPositiveButton(R.string.ok_button) { dialog: DialogInterface?, id: Int ->
-                val name = matchName!!.text.toString()
-                if (name.isEmpty()) {
-                    Toast.makeText(activity, R.string.no_name_chosen, Toast.LENGTH_SHORT).show()
-                } else {
-                    callback.onNewMatchCreated(name, numberOfGamesBar!!.progress + 2)
+            .setView(_binding.root)
+            .setPositiveButton(R.string.ok_button) { dialog: DialogInterface?, _: Int ->
+                callback.onNewMatchCreated(
+                    _binding.etMatchName.text.toString(),
+                    _binding.slNumberOfGames.value.toInt()
+                )
+                dialog?.dismiss()
+            }
+            .setNegativeButton(R.string.cancel_button) { dialog: DialogInterface?, _: Int ->
+                dialog?.dismiss()
+            }
+            .show()
+            .also {
+                setGamesText(_binding.slNumberOfGames.value.toInt())
+                setIsPositiveButtonEnabled(it, _binding.tfMatchName.editText?.text?.isNotBlank() ?: false)
+                setupListeners(it)
+            }
+    }
+
+    private fun setupListeners(alertDialog: AlertDialog) {
+        with(_binding) {
+            slNumberOfGames.addOnChangeListener { _, value, _ ->
+                setGamesText(value.toInt())
+            }
+            tfMatchName.editText?.doAfterTextChanged { text ->
+                text?.let {
+                    setIsPositiveButtonEnabled(alertDialog, text.isNotBlank())
                 }
             }
-            .setNegativeButton(R.string.cancel_button) { dialog: DialogInterface?, which: Int -> }
-        return builder.create()
+        }
     }
 
-    fun setViewComponents() {
-        numberOfGamesBar = dialogView!!.findViewById(R.id.number_of_games_bar)
-        numberOfGamesText = dialogView!!.findViewById(R.id.number_of_games_dialog)
-        matchName = dialogView!!.findViewById(R.id.match_name)
-        numberOfGamesBar?.setOnSeekBarChangeListener(this)
-        numberOfGamesBar?.progress = 3
-        numberOfGamesText?.text = getString(
-            R.string.number_of_games, numberOfGamesBar?.progress?.plus(2)
-        )
+    private fun setGamesText(number: Int) {
+        _binding.tvNumberOfGames.text = String.format(getString(R.string.number_of_games, number))
     }
 
-    override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-        val numberOfGames = progress + 2 //range 2-30
-        numberOfGamesText!!.text = getString(R.string.number_of_games, numberOfGames)
+    private fun setIsPositiveButtonEnabled(alertDialog: AlertDialog, isEnabled: Boolean) {
+        alertDialog.getButton(DialogInterface.BUTTON_POSITIVE)?.isEnabled = isEnabled
     }
-
-    override fun onStartTrackingTouch(seekBar: SeekBar) {}
-    override fun onStopTrackingTouch(seekBar: SeekBar) {}
 
     interface Callback {
         fun onNewMatchCreated(name: String, numberOfGames: Int)

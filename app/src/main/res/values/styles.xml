@@ -17,7 +17,7 @@
     </style>
 
     <!-- Settings - Sliders -->
-    <style name="SettingsSeekBar">
+    <style name="SettingsSlider" parent="Widget.Material3.Slider">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginBottom">4dp</item>
