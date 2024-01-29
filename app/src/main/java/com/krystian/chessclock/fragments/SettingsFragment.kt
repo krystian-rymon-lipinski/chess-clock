@@ -17,7 +17,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import com.krystian.chessclock.MainActivityViewModel
-import com.krystian.chessclock.dialogs.CustomMatchDialogFragment
+import com.krystian.chessclock.dialogs.NewCustomMatchDialogFragment
 import com.krystian.chessclock.states.MatchSettingUiState
 import com.krystianrymonlipinski.chessclock.R
 import com.krystianrymonlipinski.chessclock.databinding.FragmentSettingsBinding
@@ -77,7 +77,7 @@ class SettingsFragment : Fragment(), MenuProvider {
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         return when (menuItem.itemId) {
             R.id.add_new_match -> {
-                val custom = CustomMatchDialogFragment(newMatchCreatedCallback)
+                val custom = NewCustomMatchDialogFragment(newMatchCreatedCallback)
                 custom.show(childFragmentManager, "CustomMatchDialog")
                 true
             }
@@ -89,7 +89,7 @@ class SettingsFragment : Fragment(), MenuProvider {
         }
     }
 
-    private val newMatchCreatedCallback = object : CustomMatchDialogFragment.Callback {
+    private val newMatchCreatedCallback = object : NewCustomMatchDialogFragment.Callback {
         override fun onNewMatchCreated(name: String, numberOfGames: Int) {
             activityViewModel.addCustomMatchWithDefaultGames(name, numberOfGames)
             Toast.makeText(activity, R.string.match_created, Toast.LENGTH_LONG).show()

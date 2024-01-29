@@ -11,7 +11,7 @@ import com.krystianrymonlipinski.chessclock.R
 import com.krystianrymonlipinski.chessclock.databinding.DialogFragmentNewCustomMatchBinding
 
 
-class CustomMatchDialogFragment(
+class NewCustomMatchDialogFragment(
     private val callback: Callback
 ) : DialogFragment() {
 
